@@ -1,25 +1,23 @@
 {
-  "name": "instituteresourceplanning",
+  "name": "backend",
   "version": "1.0.0",
-  "description": "An institute ERP module in MERN",
+  "main": "src/server.js",
   "type": "module",
-  "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/index.js"
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "Project-SCD"
-  },
-  "keywords": [
-    "MERN",
-    "IRP"
-  ],
-  "author": "rohan_hadi",
+  "keywords": [],
+  "author": "",
   "license": "ISC",
+  "description": "IMS System Backend",
   "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
     "express": "^5.1.0",
-    "mongodb": "^7.0.0",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^9.0.0"
   },
   "devDependencies": {
