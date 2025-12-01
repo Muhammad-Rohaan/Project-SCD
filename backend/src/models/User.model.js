@@ -2,34 +2,41 @@ import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
 
-    fullName: { type: String, required: true, trim: true },
-    fatherName: { type: String, trim: true },
-    age: { type: Number, min: 12, max: 100 },
-    gender: { type: String, enum: ['Male', 'Female'] },
-    contact: { type: String, match: /^[0-9]{11}$/ },
-    fatherPhone: { type: String, required: true, match: /^[0-9]{11}$/ },
-    address: String,
-    email: { type: String, unique: true, sparse: true, lowercase: true },
-    password: { type: String, required: true, select: false },
+    fullName: {
+        type: String,
+        required: [true, 'Full name is required'],
+        trim: true,
+    },
 
-    // Student fields
-    className: String,
-    fields: String,
-    rollNo: { type: String, unique: true, sparse: true, index: true },
+    email: {
+        type: String,
+        required: [true, 'Email is required'],
+        unique: true,
+        trim: true,
+        lowercase: true,
+        match: [/^\S+@\S+\.\S+$/, 'Please enter valid email address'],
+    },
 
-    // Teacher fields
-    qualification: String,
-    salary: Number,
-    cnic: { type: String, unique: true, sparse: true },
+    password: {
+        type: String,
+        required: [true, 'Password is required'],
+        select: false,
+    },
 
     role: {
         type: String,
         enum: ['admin', 'receptionist', 'teacher', 'student'],
-        required: true,
-        lowercase: true
+        required: [true, 'Role is required'],
+        lowercase: true,
     },
 
-    isActive: { type: Boolean, default: true }
+    isActive: {
+        type: Boolean,
+        default: true,
+    }
 }, { timestamps: true });
 
-export const User = mongoose.model('User', userSchema);
+userSchema.index({ email: 1 }); // Email ke basis par fast searching ke liye
+userSchema.index({ role: 1 }); // Role-wise filtering ke liye
+
+export default mongoose.model('User', userSchema);
