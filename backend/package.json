@@ -8,7 +8,11 @@
     "dev": "nodemon src/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": [
+    "express",
+    "nodejs",
+    "ims"
+  ],
   "author": "",
   "license": "ISC",
   "description": "IMS System Backend",

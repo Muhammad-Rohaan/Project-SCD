@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: [true, 'Email is required'],
-        unique: true,
+        // unique: true,
         trim: true,
         lowercase: true,
         match: [/^\S+@\S+\.\S+$/, 'Please enter valid email address'],
@@ -30,13 +30,13 @@ const userSchema = new mongoose.Schema({
         lowercase: true,
     },
 
-    isActive: {
+    isActive: {  // still in Coa
         type: Boolean,
         default: true,
     }
 }, { timestamps: true });
 
-userSchema.index({ email: 1 }); // Email ke basis par fast searching ke liye
-userSchema.index({ role: 1 }); // Role-wise filtering ke liye
+// userSchema.index({ email: 1 }); // Email ke basis par fast searching ke liye
+// userSchema.index({ role: 1 }); // Role-wise filtering ke liye
 
 export default mongoose.model('User', userSchema);

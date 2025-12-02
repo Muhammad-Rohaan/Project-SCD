@@ -2,8 +2,8 @@ import mongoose from 'mongoose';
 
 const studentProfileSchema = new mongoose.Schema({
 
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
+    stdId: {
+        type: mongoose.Schema.Types.Number, /// It was ObjectId
         ref: 'User',
         required: true,
         unique: true
@@ -39,13 +39,13 @@ const studentProfileSchema = new mongoose.Schema({
         trim: true,
     },
 
-    stream: {
+    field: {
         type: String,
         required: true,
     },
 }, { timestamps: true });
 
-studentProfileSchema.index({ rollNo: 1 }); // Roll No ke basis pr fast searching ke liye
-studentProfileSchema.index({ className: 1 }); // Class wise filtering ke liye
+// studentProfileSchema.index({ rollNo: 1 }); // Roll No ke basis pr fast searching ke liye
+// studentProfileSchema.index({ className: 1 }); // Class wise filtering ke liye
 
 export default mongoose.model('StudentProfile', studentProfileSchema);
