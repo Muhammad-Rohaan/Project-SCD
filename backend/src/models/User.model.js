@@ -39,4 +39,14 @@ const userSchema = new mongoose.Schema({
 // userSchema.index({ email: 1 }); // Email ke basis par fast searching ke liye
 // userSchema.index({ role: 1 }); // Role-wise filtering ke liye
 
+userSchema.pre('save', async function (next) {
+    if (!this.isModified('password')) return next();
+    this.password = await bcrypt.hash(this.password, 12);
+    next();
+});
+
+userSchema.methods.correctPassword = async function (candidatePassword) {
+    return await bcrypt.compare(candidatePassword, this.password);
+};
+
 export default mongoose.model('User', userSchema);
