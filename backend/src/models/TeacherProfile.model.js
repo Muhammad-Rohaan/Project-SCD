@@ -33,9 +33,21 @@ const teacherProfileSchema = new mongoose.Schema({
     },
 
     subjects: [String],
-    contact: String,
-    address: String,
-    age: Number,
+    
+    contact: {
+        type: String,
+        required: true
+    },
+    
+    address: {
+        type: String,
+        required: true
+    },
+
+    age: {
+        type: Number,
+        required: true
+    },
 }, { timestamps: true });
 
 // teacherProfileSchema.index({ cnic: 1 }); // CNIC ke basis pr fast searching ke liye

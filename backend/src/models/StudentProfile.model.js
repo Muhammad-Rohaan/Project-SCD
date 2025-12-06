@@ -9,6 +9,13 @@ const studentProfileSchema = new mongoose.Schema({
         unique: true
     },
 
+    rollNo: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true,
+    },
+
     fatherName: {
         type: String,
         required: true,
@@ -21,15 +28,19 @@ const studentProfileSchema = new mongoose.Schema({
         match: [/^[0-9]{11}$/, 'Valid 11-digit phone number'],
     },
 
-    contact: String,
-    address: String,
-    age: Number,
-
-    rollNo: {
+    contact: {
         type: String,
-        required: true,
-        unique: true,
-        trim: true,
+        required: true
+    },
+
+    address: {
+        type: String,
+        required: true
+    },
+
+    age: {
+        type: Number,
+        required: true
     },
 
     className: {
