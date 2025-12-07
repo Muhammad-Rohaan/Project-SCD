@@ -26,7 +26,7 @@ app.use(express.json());
 connectDB();
 
 
-app.get("/", (req, res)=> {
+app.get("/", (req, res) => {
     res.json({
         message: "Welcom to AZ"
     });
@@ -68,5 +68,5 @@ app.use("/api/reception", receptionRoutes);
 
 app.listen(port, () => {
     console.log(`App Running on http://localhost:${port}/`);
-    
+
 })
