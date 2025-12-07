@@ -27,8 +27,6 @@ export const register = async (req, res) => {
         });
 
 
-
-
     } catch (error) {
         res.status(401).json({
             msg: "An err occured in registering"
