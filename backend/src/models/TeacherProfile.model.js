@@ -3,10 +3,18 @@ import mongoose from 'mongoose';
 const teacherProfileSchema = new mongoose.Schema({
 
     userId: {
-        type: mongoose.Schema.Types.Number, // was ObjectId
+        type: mongoose.Schema.Types.ObjectId, // was ObjectId
         ref: 'User',
         required: true,
         unique: true,
+    },
+
+    teacherRegId: {  // from this teacher can login
+        type: String,
+        required: true,
+        unique: true,
+        trim: true,
+        uppercase: true
     },
 
     cnic: {
@@ -33,9 +41,21 @@ const teacherProfileSchema = new mongoose.Schema({
     },
 
     subjects: [String],
-    contact: String,
-    address: String,
-    age: Number,
+    
+    contact: {
+        type: String,
+        required: true
+    },
+    
+    address: {
+        type: String,
+        required: true
+    },
+
+    age: {
+        type: Number,
+        required: true
+    },
 }, { timestamps: true });
 
 // teacherProfileSchema.index({ cnic: 1 }); // CNIC ke basis pr fast searching ke liye

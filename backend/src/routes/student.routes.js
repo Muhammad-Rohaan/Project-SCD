@@ -1,19 +1,34 @@
 import express from 'express';
-import { protect } from '../middleware/auth.middleware.js';
-import { restrictTo } from '../middleware/role.middleware.js';
-import { restrictToOwnClass } from '../middleware/restrictToOwnClass.middleware.js';
-import {
-    createStudent,
-    getAllStudents,
-    getClassStudents,
-    getMyProfile
-} from '../controllers/student.controller.js';
+import { protect, authorize } from '../middleware/auth.middleware.js';
+
+// Import your student controllers here
+// Example: import { getMyProfile, getMyAttendance, getMyResults } from '../controllers/student.controller.js';
 
 const router = express.Router();
 
-router.post('/', protect, restrictTo('admin', 'receptionist'), createStudent);
-router.get('/', protect, restrictTo('admin', 'receptionist'), getAllStudents);
-router.get('/class/:className', protect, restrictTo('teacher', 'admin', 'receptionist'), restrictToOwnClass, getClassStudents);
-router.get('/me', protect, restrictTo('student'), getMyProfile);
+// Apply protect and authorize middleware to all routes in this file
+router.use(protect, authorize('student'));
+
+/**
+ * @route   GET /api/student/profile
+ * @desc    Get the profile of the currently logged-in student
+ * @access  Private (Student)
+ */
+router.get('/profile', (req, res) => res.json({ success: true, user: req.user }));
+
+/**
+ * @route   GET /api/student/attendance
+ * @desc    Get the attendance record for the logged-in student
+ * @access  Private (Student)
+ */
+router.get('/attendance', (req, res) => res.json({ success: true, message: 'Your attendance record' }));
+
+/**
+ * @route   GET /api/student/fees
+ * @desc    Get the fee status for the logged-in student
+ * @access  Private (Student)
+ */
+router.get('/fees', (req, res) => res.json({ success: true, message: 'Your fee status' }));
+
 
 export default router;

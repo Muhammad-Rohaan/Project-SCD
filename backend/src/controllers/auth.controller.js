@@ -1,140 +1,113 @@
-import User from "../models/User.model.js";
+import UserModel from "../models/User.model.js";
+import StudentProfile from "../models/StudentProfile.model.js";
+import TeacherProfile from "../models/TeacherProfile.model.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
 
-// Token banane ka function
-const generateToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, {
-        expiresIn: process.env.JWT_EXPIRES_IN,
-    });
-};
-
-// ===== LOGIN =====
-export const login = async (req, res) => {
-    try {
-        const { email, password } = req.body;
-
-        // Email and password check
-        if (!email || !password) {
-            return res.status(400).json({
-                success: false,
-                message: 'Please enter email and password',
-            });
-        }
-
-        // User dhundo + password include karo
-        const user = await User.findOne({
-            email: email.toLowerCase()
-        }).select('+password');
-
-        if (!user || !(await bcrypt.compare(password, user.password))) {
-            return res.status(401).json({
-                success: false,
-                message: 'Invalid email or password',
-            });
-        }
-
-        if (!user.isActive) {
-            return res.status(401).json({
-                success: false,
-                message: 'Account deactivate hai, admin sey baat karo',
-            });
-        }
-
-        const token = generateToken(user._id);
-
-        res.status(200).json({
-            success: true,
-            token,
-            user: {
-                id: user._id,
-                fullName: user.fullName,
-                email: user.email,
-                role: user.role,
-            },
-        });
-    } catch (err) {
-        res.status(500).json({
-            success: false,
-            message: 'Server error'
-        });
-    }
-};
-
-// ===== REGISTER =====
-// Register (sirf admin kar sakta hai)
 export const register = async (req, res) => {
     try {
-        const { fullName, email, password, role } = req.body;
 
-        // Role is compulsory
-        if (!role) {
-            return res.status(400).json({
-                success: false,
-                message: 'Please enter role (admin, teacher, receptionist, student)',
-            });
-        }
+        const { fullName, email, password, role, isActive } = req.body;
+        const encryptedPassword = await bcrypt.hash(password, 10);
 
-        // Sirf admin he kisi ko bana sakta hai
-        if (req.user?.user && req.user.role !== 'admin') {
-            return res.status(403).json({
-                success: false,
-                message: 'Sirf admin naye users bana sakta hai',
-            });
-        }
-
-        // Email already hai?
-        const existingUser = await User.findOne({ email: email.toLowerCase() });
-        if (existingUser) {
-            return res.status(400).json({
-                success: false,
-                message: 'Email is already registered.',
-            });
-        }
-
-        // New user 
-        const user = await User.create({
+        const newUser = new UserModel({
             fullName,
-            email: email.toLowerCase(),
-            password, // pre-save hook hash kar dega
+            email,
+            password: encryptedPassword,
             role,
+            isActive
         });
 
-        const token = generateToken(user._id);
+        await newUser.save();
 
-        res.status(201).json({
-            success: true,
+        res.status(200).json({
+            msg: `User registered successfully ${newUser.fullName}`
+
+        });
+
+
+
+
+    } catch (error) {
+        res.status(401).json({
+            msg: "An err occured in registering"
+        });
+    }
+}
+
+// Login
+
+export const login = async (req, res) => {
+    try {
+
+        const { fullName, email, identifier, password } = req.body;
+
+        let user;
+
+        // 1. Try as Roll No (Student)
+        const student = await StudentProfile.findOne({ rollNo: identifier.toUpperCase() }).populate('userId');
+        if (student && student.userId) {
+            user = student.userId;
+            user.profileType = 'student';
+            user.profile = student;
+        }
+
+        // 2. Try as TeacherRegID
+        if (!user) {
+            const teacher = await TeacherProfile.findOne({ teacherRegId: identifier.toUpperCase() }).populate('userId');
+            if (teacher && teacher.userId) {
+                user = teacher.userId;
+                user.profileType = 'teacher';
+                user.profile = teacher;
+            }
+        }
+
+        // 3. Try as Email (Admin / Reception)
+        if (!user) {
+            user = await UserModel.findOne({
+                email: identifier.toLowerCase(),
+                role: { $in: ['admin', 'receptionist'] }
+            }).select('+password');
+            if (user) user.profileType = user.role;
+        }
+
+        if (!user || !(await user.comparePassword?.(password) || await bcrypt.compare(password, user.password))) {
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
+
+        const token = jwt.sign(
+            {
+                id: user._id,
+                role: user.role
+            },
+            process.env.JWT_SECRET,
+            {
+                expiresIn: process.env.JWT_EXPIRES_IN
+            }
+        );
+
+        res.json({
+            message: 'Login successful',
             token,
             user: {
                 id: user._id,
-                fullName: user.fullName,
-                email: user.email,
                 role: user.role,
-            },
+                name: user.profile?.fullName || 'User',
+                identifier: identifier,
+                profileType: user.profileType
+            }
         });
-    } catch (err) {
-        res.status(400).json({
-            success: false,
-            message: err.message.includes('duplicate')
-                ? 'Email already taken'
-                : err.message,
-        });
-    }
-};
 
-// ===== GET CURRENT USER (Logged in user ka data) =====
-export const getMe = async (req, res) => {
-    try {
-        // req.user protect middleware se aya hai
-        res.status(200).json({
-            success: true,
-            user: req.user,
-        });
-    } catch (err) {
-        res.status(500).json({
-            success: false,
-            message: 'Server error'
-        });
+
+    } catch (error) {
+        res.status(400).json({
+            msg: "err in log in"
+        })
     }
-};
+}
+
+
+
+// no need to export here do it before the func statr
+

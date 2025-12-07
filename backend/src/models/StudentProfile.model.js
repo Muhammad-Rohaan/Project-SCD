@@ -2,11 +2,19 @@ import mongoose from 'mongoose';
 
 const studentProfileSchema = new mongoose.Schema({
 
-    stdId: {
-        type: mongoose.Schema.Types.Number, /// It was ObjectId
+    userId: { // stdID
+        type: mongoose.Schema.Types.ObjectId, /// It was ObjectId
         ref: 'User',
         required: true,
         unique: true
+    },
+
+    rollNo: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true,
+        uppercase: true,
     },
 
     fatherName: {
@@ -21,15 +29,19 @@ const studentProfileSchema = new mongoose.Schema({
         match: [/^[0-9]{11}$/, 'Valid 11-digit phone number'],
     },
 
-    contact: String,
-    address: String,
-    age: Number,
-
-    rollNo: {
+    contact: {
         type: String,
-        required: true,
-        unique: true,
-        trim: true,
+        required: true
+    },
+
+    address: {
+        type: String,
+        required: true
+    },
+
+    age: {
+        type: Number,
+        required: true
     },
 
     className: {
