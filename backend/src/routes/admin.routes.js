@@ -20,7 +20,7 @@ router.get('/dashboard', (req, res) => res.json({ success: true, message: 'Welco
  * @desc    Register a new user (student, teacher, etc.)
  * @access  Private (Admin)
  */
-router.post('/register-user', register);
+router.post('/register-teacher', register);
 
 /**
  * @route   GET /api/admin/finances
