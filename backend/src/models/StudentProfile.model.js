@@ -2,8 +2,8 @@ import mongoose from 'mongoose';
 
 const studentProfileSchema = new mongoose.Schema({
 
-    stdId: {
-        type: mongoose.Schema.Types.Number, /// It was ObjectId
+    userId: { // stdID
+        type: mongoose.Schema.Types.ObjectId, /// It was ObjectId
         ref: 'User',
         required: true,
         unique: true
@@ -14,6 +14,7 @@ const studentProfileSchema = new mongoose.Schema({
         required: true,
         unique: true,
         trim: true,
+        uppercase: true,
     },
 
     fatherName: {

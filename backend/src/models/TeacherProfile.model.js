@@ -3,10 +3,18 @@ import mongoose from 'mongoose';
 const teacherProfileSchema = new mongoose.Schema({
 
     userId: {
-        type: mongoose.Schema.Types.Number, // was ObjectId
+        type: mongoose.Schema.Types.ObjectId, // was ObjectId
         ref: 'User',
         required: true,
         unique: true,
+    },
+
+    teacherRegId: {  // from this teacher can login
+        type: String,
+        required: true,
+        unique: true,
+        trim: true,
+        uppercase: true
     },
 
     cnic: {

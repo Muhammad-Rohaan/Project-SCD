@@ -10,4 +10,5 @@ const connectDB = async () => {
     }
 };
 
-export default connectDB;
+export default connectDB;  // syntx for module / import js
+
