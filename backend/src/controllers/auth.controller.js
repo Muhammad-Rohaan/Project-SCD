@@ -10,6 +10,7 @@ export const register = async (req, res) => {
 
     // Basic validation
     if (!fullName || !email || !password || !role) {
+        
         return res.status(400).json({ msg: "Please provide all required fields: fullName, email, password, role." });
     }
 

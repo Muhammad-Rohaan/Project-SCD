@@ -1,4 +1,5 @@
-/*import express from 'express';
+/*
+import express from 'express';
 import { protect, authorize } from '../middlewares/auth.middleware.js';
 import { getAdminData } from '../controllers/admin.controller.js'; // Example controller
 
@@ -7,7 +8,8 @@ const router = express.Router();
 // This route is protected and only accessible by users with the 'admin' role.
 router.get('/dashboard', protect, authorize('admin'), getAdminData);
 
-export default router;*/
+export default router;
+*/
 
 import express from 'express';
 import { register, login } from '../controllers/auth.controller.js';
