@@ -41,6 +41,11 @@ const teacherProfileSchema = new mongoose.Schema({
     },
 
     subjects: [String],
+
+    classes: {  // new field added
+        type: Number,
+        required: true
+    },  
     
     contact: {
         type: String,

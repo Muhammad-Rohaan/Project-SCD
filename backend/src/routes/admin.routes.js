@@ -1,8 +1,9 @@
 import express from 'express';
 import { protect, authorize } from '../middleware/auth.middleware.js';
 import { register } from '../controllers/auth.controller.js';
+import { fetchAllTeachers, fetchTeachersByClass, registerTeacher } from '../controllers/admin.controller.js';
 
-import { registerTeacher } from '../controllers/admin.controller.js';
+
 // Example: import { getDashboardStats, manageUser } from '../controllers/admin.controller.js';
 
 const router = express.Router();
@@ -17,7 +18,14 @@ router.get('/dashboard', (req, res) => res.json({ success: true, message: 'Welco
 
 router.post('/register-user', register);
 
-router.post('/register-teacher/create', registerTeacher)
+router.post('/az-teachers/register-teacher', registerTeacher)
+
+router.get('/az-teachers/fetch-all-teachers', fetchAllTeachers)
+
+router.get('/az-teachers/fetch-teachers-by-class/:class', fetchTeachersByClass)
+
+router.get('/az-teachers/fetch-teachers-by-class-and-subject/:class/:subject', )  // GET /api/admin/az-teachers/fetch-teachers-by-class-and-subject/9/computer
+
 
 
 router.get('/finances', (req, res) => res.json({ success: true, message: 'Financial reports endpoint' }));
