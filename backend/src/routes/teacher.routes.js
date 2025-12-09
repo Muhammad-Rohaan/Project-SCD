@@ -10,23 +10,23 @@ const router = express.Router();
 router.use(protect, authorize('teacher'));
 
 /**
- * @route   GET /api/teacher/profile
- * @desc    Get the profile of the currently logged-in teacher
- * @access  Private (Teacher)
+ * GET /api/teacher/profile
+ * Get the profile of the currently logged-in teacher
+ * Private (Teacher)
  */
 router.get('/profile', (req, res) => res.json({ success: true, user: req.user }));
 
 /**
- * @route   POST /api/teacher/attendance
- * @desc    Mark student attendance
- * @access  Private (Teacher)
+ * POST /api/teacher/attendance
+ * Mark student attendance
+ * Private (Teacher)
  */
 router.post('/attendance', (req, res) => res.json({ success: true, message: 'Attendance marked successfully' }));
 
 /**
- * @route   POST /api/teacher/results
- * @desc    Upload student results
- * @access  Private (Teacher)
+ * POST /api/teacher/results
+ * Upload student results
+ * Private (Teacher)
  */
 router.post('/results', (req, res) => res.json({ success: true, message: 'Results uploaded successfully' }));
 
