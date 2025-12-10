@@ -18,5 +18,5 @@ app.get('/api/health', (req, res) => res.json({ ok: true }));
 app.use('/api/quizzes', require('./routes/quizzes'));
 app.use('/api/results', require('./routes/results'));
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 8000;
 app.listen(port, () => {});
