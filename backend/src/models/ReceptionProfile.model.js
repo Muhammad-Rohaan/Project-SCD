@@ -1,6 +1,7 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const teacherProfileSchema = new mongoose.Schema({
+
+const receptionProfileSchema = new mongoose.Schema({
 
     userId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -9,13 +10,13 @@ const teacherProfileSchema = new mongoose.Schema({
         unique: true,
     },
 
-    teacherFullName: {
+    receptionistFullName: {
         type: String,
         required: [true, 'Full name is required'],
         trim: true,
     },
 
-    teacherRegId: {  // from this teacher can login
+    receptionRegId: {  // from this recp can login
         type: String,
         required: true,
         unique: true,
@@ -30,11 +31,6 @@ const teacherProfileSchema = new mongoose.Schema({
         match: [/^\d{5}-\d{7}-\d$/, 'CNIC format: 42123-1234567-1'],
     },
 
-    qualification: {
-        type: String,
-        required: true,
-    },
-
     salary: {
         type: Number,
         required: true,
@@ -46,12 +42,6 @@ const teacherProfileSchema = new mongoose.Schema({
         default: Date.now,
     },
 
-    subjects: [String],
-
-    classes: {
-        type: [Number], // Defines the field as an array of numbers
-        required: true   // Ensures the 'classes' field must be provided in the document
-    },
     contact: {
         type: String,
         required: true
@@ -62,12 +52,11 @@ const teacherProfileSchema = new mongoose.Schema({
         required: true
     },
 
-    age: {
-        type: Number,
-        required: true
-    },
-}, { timestamps: true });
 
-// teacherProfileSchema.index({ cnic: 1 }); // CNIC ke basis pr fast searching ke liye
 
-export default mongoose.model('TeacherProfile', teacherProfileSchema);
+}, {
+    timestamps: true
+});
+
+
+export default mongoose.model('ReceptionProfile', receptionProfileSchema);

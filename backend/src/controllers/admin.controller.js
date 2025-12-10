@@ -1,10 +1,88 @@
 import UserModel from "../models/User.model.js";
-// import StudentProfile from "../models/StudentProfile.model.js";
+import StudentProfile from "../models/StudentProfile.model.js";
 import TeacherProfile from "../models/TeacherProfile.model.js";
+import ReceptionProfileModel from "../models/ReceptionProfile.model.js";
+import mongoose from "mongoose";
+
+
+
+/**
+ * create Receptionist
+ * /api/admin/az-reception/register-receptionist
+ */
+
+export const registerReceptionist = async (req, res) => {
+    try {
+        const {
+            fullName,
+            email,
+            password,
+            receptionRegId,
+            cnic,
+            salary,
+            joiningDate,
+            contact,
+            address
+        } = req.body;
+
+        // Step 1: Create User (with role 'receptionist')
+        const user = await UserModel.create({
+            fullName,
+            email,
+            password,
+            role: 'receptionist'
+        });
+
+        await ReceptionProfileModel.create({
+            userId: user._id,
+            receptionistFullName: fullName,
+            receptionRegId: receptionRegId.toUpperCase(),
+            cnic,
+            salary,
+            joiningDate,
+            contact,
+            address
+        });
+
+        // Success response
+        res.status(201).json({
+            message: "Receptionist registered successfully",
+            receptionRegId: receptionRegId.toUpperCase()
+        });
+
+
+
+    } catch (error) {
+        console.error("Receptionist Registration Error:", error);
+
+        // Handle duplicate key error (email, cnic, receptionRegId already exists)
+        if (error.code === 11000) {
+            const field = Object.keys(error.keyValue)[0];
+            const value = error.keyValue[field];
+            let message = "Already exists";
+
+            if (field === "email") message = "Email already registered";
+            else if (field === "cnic") message = "CNIC already registered";
+            else if (field === "receptionRegId") message = "Receptionist Registration ID already taken";
+
+            return res.status(409).json({
+                message: `Registration failed: ${message} (${value})`
+            });
+        }
+
+        // Other errors
+        res.status(500).json({
+            message: "An internal server error occurred during Receptionist registration.",
+            error: error.message
+        });
+    }
+}
+
 
 
 // teacher Crud Operations
 
+// api/admin/AZ-teachers/register-teacher
 // api/admin/AZ-teachers/register-teacher
 export const registerTeacher = async (req, res) => {
     try {
@@ -24,16 +102,18 @@ export const registerTeacher = async (req, res) => {
             age
         } = req.body;
 
+        // Step 1: Create User (with role 'teacher')
         const user = await UserModel.create({
-            fullName: fullName,
+            fullName,
             email,
             password,
             role: 'teacher'
         });
 
-        // 2. TeacherProfile banao
+        // Step 2: Create TeacherProfile
         await TeacherProfile.create({
             userId: user._id,
+            teacherFullName: fullName,
             teacherRegId: teacherRegId.toUpperCase(),
             cnic,
             qualification,
@@ -46,18 +126,37 @@ export const registerTeacher = async (req, res) => {
             age
         });
 
+        // Success response
         res.status(201).json({
-            "message": "Teacher registered successfully",
-            "teacherRegId": teacherRegId.toUpperCase()
+            message: "Teacher registered successfully",
+            teacherRegId: teacherRegId.toUpperCase()
         });
-
 
     } catch (error) {
-        res.status(400).json({
-            "errMsg": "Teacher registration failed"
+        console.error("Teacher Registration Error:", error);
+
+        // Handle duplicate key error (email, cnic, teacherRegId already exists)
+        if (error.code === 11000) {
+            const field = Object.keys(error.keyValue)[0];
+            const value = error.keyValue[field];
+            let message = "Already exists";
+
+            if (field === "email") message = "Email already registered";
+            else if (field === "cnic") message = "CNIC already registered";
+            else if (field === "teacherRegId") message = "Teacher Registration ID already taken";
+
+            return res.status(409).json({
+                message: `Registration failed: ${message} (${value})`
+            });
+        }
+
+        // Other errors
+        res.status(500).json({
+            message: "An internal server error occurred during teacher registration.",
+            error: error.message
         });
     }
-}
+};
 
 // api/admin/az-teachers/fetch-all-teachers
 export const fetchAllTeachers = async (req, res) => {
@@ -83,7 +182,7 @@ export const fetchTeachersByClass = async (req, res) => {
 
         const classNumberFilter = Number(req.params.class);
 
-        if (!classNumberFilter) {   // if not work see the below func
+        if (isNaN(classNumberFilter)) {
             res.status(400).json({
                 "msg": "Class number must be entered"
             });
@@ -91,7 +190,7 @@ export const fetchTeachersByClass = async (req, res) => {
 
         const curTeachers = await TeacherProfile.find({
             classes: classNumberFilter
-        });
+        }); //.populate('userId', 'fullName email')
 
 
         res.status(200).json({
@@ -114,9 +213,9 @@ export const searchTeacherByClassAndSubject = async (req, res) => {
     try {
 
         const clsFilter = Number(req.params.class);
-        const subjectFilter = req.params.subject.toLowerCase();
+        const subjectFilter = req.params.subject;
 
-        if (isNaN(classNumberFilter)) {
+        if (isNaN(clsFilter)) {
             res.status(400).json({
                 "msg": "Class number must be entered"
             });
@@ -130,7 +229,7 @@ export const searchTeacherByClassAndSubject = async (req, res) => {
                     $in: [subjectFilter]
                 }
             }
-        );
+        );  // .populate('userId', 'fullName email')
 
         res.status(200).json({
             "TotalCount": curTeacher.length,
@@ -143,3 +242,121 @@ export const searchTeacherByClassAndSubject = async (req, res) => {
     }
 }
 
+/**
+ * update teacher
+ * /admin/az-teachers/update-teacher/:teacherRegId
+ */
+
+export const updateTeacher = async (req, res) => {
+    try {
+
+        // const { teacherRegId } = req.params;
+        // const updateData = req.body;
+
+        // if (Object.keys(updateData).length === 0) {
+        //     return res.status(400).json({ message: "No update data provided." });
+        // }
+
+        // // Find the teacher profile
+        // const teacherProfile = await TeacherProfile.findOne({ teacherRegId: teacherRegId.toUpperCase() });
+
+        // if (!teacherProfile) {
+        //     return res.status(404).json({ message: "Teacher not found with the provided registration ID." });
+        // }
+
+        // // Separate data for User and TeacherProfile models
+        // const { fullName, email, isActive, ...profileUpdates } = updateData;
+        // const userUpdates = { fullName, email, isActive };
+
+        // // Filter out undefined values so we only update provided fields
+        // Object.keys(userUpdates).forEach(key => userUpdates[key] === undefined && delete userUpdates[key]);
+        // Object.keys(profileUpdates).forEach(key => profileUpdates[key] === undefined && delete profileUpdates[key]);
+
+        // // Update User model if there's data for it
+        // if (Object.keys(userUpdates).length > 0) {
+        //     await UserModel.findByIdAndUpdate(teacherProfile.userId, userUpdates, { new: true, runValidators: true });
+        // }
+
+        // // Update TeacherProfile model
+        // const updatedTeacherProfile = await TeacherProfile.findByIdAndUpdate(
+        //     teacherProfile._id,
+        //     profileUpdates,
+        //     { new: true, runValidators: true }
+        // ).populate('userId', 'fullName email isActive');
+
+        // res.status(200).json({
+        //     message: "Teacher updated successfully.",
+        //     teacher: updatedTeacherProfile
+        // });
+
+        const teacherRegId = req.params.teacherRegId.toUpperCase();
+        const updTeacherDoc = req.body;
+
+        const updatedTeacherRecord = await TeacherProfile.findOneAndUpdate(
+            {
+                teacherRegId
+            },
+            updTeacherDoc,
+            { new: true, runValidators: true }
+
+        );
+
+        if (!updated) {
+            return res.status(404).json({ message: "Teacher not found." });
+        }
+
+        res.status(200).json({
+            msg: "Updated",
+            "UpdatedTeacherRecord": updatedTeacherRecord
+        });
+
+
+
+
+    } catch (error) {
+        console.error("Update Teacher Error:", error);
+        res.status(500).json({
+            message: "An error occurred while updating the teacher.",
+            error: error.message
+        });
+    }
+}
+
+/**
+ * update the specific field (patch)
+ * 
+ */
+
+/**
+ * Delete teacher
+ * /admin/az-teachers/delete-teacher/:teacherRegId
+ */
+
+export const deleteTeacherById = async (req, res) => {
+    try {
+
+        const teacherRegId = req.params.teacherRegId.toUpperCase();
+        const currTeacher = await TeacherProfile.findOne({ teacherRegId });
+
+        if (!currTeacher) {
+            return res.status(404).json({
+                msg: "No Such teacher Found"
+            });
+        }
+
+        const deletedTeacher = await TeacherProfile.deleteOne({ teacherRegId });
+
+        await UserModel.findByIdAndDelete(currTeacher.userId);
+
+        res.status(200).json({
+            msg: "teacher deleted",
+            delTeacher: deletedTeacher
+        })
+
+    } catch (error) {
+        res.status(400).json({
+            "msg": "Err in deleting Teacher",
+            "error": error
+        })
+    }
+}
