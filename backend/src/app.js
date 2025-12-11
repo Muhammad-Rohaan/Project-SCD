@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import bcrypt from "bcryptjs";
 import UserModel from "./models/User.model.js";
 
@@ -21,6 +22,7 @@ const port = process.env.PORT || 5001;
 // Middlewares
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 
 // DB Connection
 connectDB();
