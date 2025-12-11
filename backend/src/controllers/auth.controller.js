@@ -5,42 +5,52 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
 
-export const register = async (req, res) => {
-    const { fullName, email, password, role } = req.body;
-
-    // Basic validation
-    if (!fullName || !email || !password || !role) {
-        
-        return res.status(400).json({ msg: "Please provide all required fields: fullName, email, password, role." });
-    }
-
+export const register = async (req, res, helperData) => {
     try {
+        // This allows the function to be used as a route handler (req, res)
+        // or as a helper function by passing data in the third argument.
+        const isRouteHandler = req && req.body;
+        const userData = isRouteHandler ? req.body : helperData;
+        const { fullName, email, password, role } = userData;
+
+        // Basic validation
+        if (!fullName || !email || !password || !role) {
+            const message = "Please provide all required fields: fullName, email, password, role.";
+            return isRouteHandler ? res.status(400).json({ msg: message }) : Promise.reject(new Error(message));
+        }
+
         const encryptedPassword = await bcrypt.hash(password, 10);
 
         const newUser = new UserModel({
             fullName,
             email,
             password: encryptedPassword,
-            role
-            // isActive is true by default
+            role,
         });
 
         await newUser.save();
 
-        res.status(201).json({
-            msg: `User '${newUser.fullName}' registered successfully.`,
-            user: {
-                id: newUser._id,
-                role: newUser.role
-            }
-        });
+        if (isRouteHandler) {
+            return res.status(201).json({
+                msg: `User '${newUser.fullName}' registered successfully.`,
+                user: { id: newUser._id, role: newUser.role }
+            });
+        }
+
+        // If used as a helper, return the new user
+        return newUser;
 
     } catch (error) {
         console.error("Registration Error:", error);
+        const isRouteHandler = res && typeof res.status === 'function';
+
         if (error.code === 11000) { // Duplicate key error
-            return res.status(409).json({ msg: "Email already exists." });
+            if (isRouteHandler) return res.status(409).json({ msg: "Email already exists." });
+            throw error; // Re-throw for the calling controller to handle
         }
-        res.status(500).json({ msg: "An error occurred during registration." });
+
+        if (isRouteHandler) return res.status(500).json({ msg: "An error occurred during registration." });
+        throw error; // Re-throw for the calling controller to handle
     }
 }
 

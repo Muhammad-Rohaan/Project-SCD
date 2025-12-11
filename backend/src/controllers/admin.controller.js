@@ -2,8 +2,10 @@ import UserModel from "../models/User.model.js";
 import StudentProfile from "../models/StudentProfile.model.js";
 import TeacherProfile from "../models/TeacherProfile.model.js";
 import ReceptionProfileModel from "../models/ReceptionProfile.model.js";
+import { register } from "./auth.controller.js";
 import mongoose from "mongoose";
-
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 
 
 /**
@@ -25,13 +27,11 @@ export const registerReceptionist = async (req, res) => {
             address
         } = req.body;
 
-        // Step 1: Create User (with role 'receptionist')
-        const user = await UserModel.create({
-            fullName,
-            email,
-            password,
-            role: 'receptionist'
-        });
+        const user = await register(null, null, { fullName, email, password, role: 'receptionist' });
+        
+
+
+
 
         await ReceptionProfileModel.create({
             userId: user._id,
@@ -102,13 +102,7 @@ export const registerTeacher = async (req, res) => {
             age
         } = req.body;
 
-        // Step 1: Create User (with role 'teacher')
-        const user = await UserModel.create({
-            fullName,
-            email,
-            password,
-            role: 'teacher'
-        });
+        const user = await register(null, null, { fullName, email, password, role: 'teacher' });  // req, res -> null
 
         // Step 2: Create TeacherProfile
         await TeacherProfile.create({
