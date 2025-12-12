@@ -20,29 +20,37 @@ const Login = () => {
         setError('');
         setLoading(true);
 
-        const result = await loginUser(formData);
+        try {
+            const result = await loginUser(formData);
+            console.log("Login Result:", result);
 
-        if (result.success) {
-            switch (result.role) {
-                case 'admin':
-                    navigate('/admin/dashboard');
-                    break;
-                case 'reception':
-                    navigate('/reception/dashboard');
-                    break;
-                case 'teacher':
-                    navigate('/teacher/dashboard');
-                    break;
-                case 'student':
-                    navigate('/student/dashboard');
-                    break;
-                default:
-                    navigate('/');
+            if (result.success) {
+                const role = result.user.role;
+                switch (role) {
+                    case 'admin':
+                        navigate('/admin/dashboard');
+                        break;
+                    case 'reception':
+                        navigate('/reception/dashboard');
+                        break;
+                    case 'teacher':
+                        navigate('/teacher/dashboard');
+                        break;
+                    case 'student':
+                        navigate('/student/dashboard');
+                        break;
+                    default:
+                        navigate('/');
+                }
+            } else {
+                setError(result.message || "Login failed");
             }
-        } else {
-            setError(result.message);
+        } catch (err) {
+            console.error(err);
+            setError("Something went wrong");
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     return (

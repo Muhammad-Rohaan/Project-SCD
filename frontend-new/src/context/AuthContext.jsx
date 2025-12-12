@@ -55,14 +55,15 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('userInfo', JSON.stringify(user));
 
             setAuth({
-                user: null,
-                role: null,
+                user: user, // set actual user here 
+                role: user.role, // set role
                 loading: false
             });
 
             return {
                 success: true,
-                role: user.role
+                user: user,   // return user object
+                message: "Login successful"
             };
 
         } catch (error) {
