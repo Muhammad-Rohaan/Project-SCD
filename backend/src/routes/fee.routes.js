@@ -1,16 +1,20 @@
+// routes/fee.routes.js
 import express from 'express';
-import { protect } from '../middleware/auth.middleware.js';
-import { restrictTo } from '../middleware/role.middleware.js';
-import {
-    createFeeRecord,
-    payFee,
-    getStudentFees
-} from '../controllers/fee.controller.js';
+import { protect, authorize } from '../middleware/auth.middleware.js';
+import { 
+    createFeeVoucher, 
+    collectFee, 
+    getStudentFeeStatus,
+    getAllPendingFees 
+} from '../controllers/reception.controller.js';
 
 const router = express.Router();
 
-router.post('/', protect, restrictTo('admin', 'receptionist'), createFeeRecord);
-router.patch('/:id/pay', protect, restrictTo('receptionist', 'admin'), payFee);
-router.get('/student/:studentId', protect, restrictTo('student', 'admin', 'receptionist'), getStudentFees);
+router.use(protect, authorize('receptionist'));
+
+// router.post('/create-voucher', createFeeVoucher);
+router.post('/collect/:studentId/:month', collectFee);
+router.get('/student/:rollNo', getStudentFeeStatus);
+router.get('/pending', getAllPendingFees);
 
 export default router;
