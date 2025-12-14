@@ -2,11 +2,10 @@
 import express from 'express';
 import { protect, authorize } from '../middleware/auth.middleware.js';
 import { 
-    createFeeVoucher, 
     collectFee, 
     getStudentFeeStatus,
     getAllPendingFees 
-} from '../controllers/reception.controller.js';
+} from '../controllers/fees.controller.js';
 
 const router = express.Router();
 

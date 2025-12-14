@@ -1,6 +1,7 @@
 import UserModel from "../models/User.model.js";
 import StudentProfile from "../models/StudentProfile.model.js";
 import Fee from "../models/Fee.model.js";
+import { register } from "./auth.controller.js";
 import Attendance from "../models/Attendance.model.js";
 import TeacherProfile from "../models/TeacherProfile.model.js";
 import ReceptionProfileModel from "../models/ReceptionProfile.model.js";
@@ -8,6 +9,7 @@ import mongoose from "mongoose";
 
 // POST /api/reception/az-students/register-student
 export const registerStudent = async (req, res) => {
+    let newUser = null;
     try {
         const {
             fullName,
@@ -23,18 +25,14 @@ export const registerStudent = async (req, res) => {
             field
         } = req.body;
 
-        // Step 1: Create User with role 'student'
-        const user = await UserModel.create({
-            fullName,
-            email,
-            password,
-            role: 'student'
-        });
+        newUser = await register(null, null, { fullName, email, password, role: 'student' });
+
 
         // Step 2: Create StudentProfile
-        await StudentProfile.create({
-            userId: user._id,
+        await StudentProfile.create([{
+            userId: newUser._id,
             rollNo: rollNo.toUpperCase(),
+            stdName: fullName,
             fatherName,
             fatherPhone,
             contact,
@@ -42,7 +40,7 @@ export const registerStudent = async (req, res) => {
             age,
             className: className.toUpperCase(),
             field
-        });
+        }]);
 
         res.status(201).json({
             message: "Student registered successfully",
@@ -51,6 +49,11 @@ export const registerStudent = async (req, res) => {
 
     } catch (error) {
         console.error("Student Registration Error:", error);
+
+        // Manual Rollback: If user was created but profile failed, delete the user.
+        if (newUser && newUser._id) {
+            await UserModel.findByIdAndDelete(newUser._id);
+        }
 
         if (error.code === 11000) {
             const field = Object.keys(error.keyValue)[0];
@@ -94,8 +97,7 @@ export const fetchStudentByRollNo = async (req, res) => {
     try {
         const rollNo = req.params.rollNo.toUpperCase();
 
-        const student = await StudentProfile.findOne({ rollNo })
-            .populate('userId', 'fullName email isActive');
+        const student = await StudentProfile.findOne({ rollNo });
 
         if (!student) {
             return res.status(404).json({ message: "Student not found with this Roll No." });
@@ -113,9 +115,7 @@ export const fetchStudentsByClass = async (req, res) => {
     try {
         const className = req.params.className.toUpperCase();
 
-        const students = await StudentProfile.find({ className })
-            .populate('userId', 'fullName email isActive')
-            .sort({ rollNo: 1 });
+        const students = await StudentProfile.find({ className });
 
         res.status(200).json({
             total: students.length,
@@ -131,37 +131,58 @@ export const fetchStudentsByClass = async (req, res) => {
 // PATCH /api/reception/az-students/update-student/:rollNo
 export const updateStudent = async (req, res) => {
     try {
-        const rollNo = req.params.rollNo.toUpperCase();
-        const updateData = req.body;
 
-        if (Object.keys(updateData).length === 0) {
-            return res.status(400).json({ message: "No update data provided." });
-        }
+        // patch
+        // const rollNo = req.params.rollNo.toUpperCase();
+        // const updateData = req.body;
 
-        // Find student profile
-        const studentProfile = await StudentProfile.findOne({ rollNo });
-        if (!studentProfile) {
+        // if (Object.keys(updateData).length === 0) {
+        //     return res.status(400).json({ message: "No update data provided." });
+        // }
+
+        // // Find student profile
+        // const studentProfile = await StudentProfile.findOne({ rollNo });
+        // if (!studentProfile) {
+        //     return res.status(404).json({ message: "Student not found." });
+        // }
+
+        // // Separate updates: User fields vs Profile fields
+        // const { fullName, email, isActive, ...profileUpdates } = updateData;
+
+        // // Update User if any user fields are provided
+        // if (fullName || email || isActive !== undefined) {
+        //     await UserModel.findByIdAndUpdate(
+        //         studentProfile.userId,
+        //         { fullName, email, isActive },
+        //         { new: true, runValidators: true }
+        //     );
+        // }
+
+        // // Always update profile fields (even if empty object, it won't change anything)
+        // const updatedProfile = await StudentProfile.findByIdAndUpdate(
+        //     studentProfile._id,
+        //     { $set: profileUpdates },
+        //     { new: true, runValidators: true }
+        // ).populate('userId', 'fullName email isActive');
+
+        const rollNo = req.body.params.toUpperCase();
+        const updatedStdDoc = req.body;
+
+        const updatedStd = await StudentProfile.findOneAndUpdate(
+            {
+                rollNo
+            },
+            updatedStdDoc,
+            {
+                new: true, runValidators: true
+            }
+        )
+        
+        if (!updatedStd) {
             return res.status(404).json({ message: "Student not found." });
         }
 
-        // Separate updates: User fields vs Profile fields
-        const { fullName, email, isActive, ...profileUpdates } = updateData;
 
-        // Update User if any user fields are provided
-        if (fullName || email || isActive !== undefined) {
-            await UserModel.findByIdAndUpdate(
-                studentProfile.userId,
-                { fullName, email, isActive },
-                { new: true, runValidators: true }
-            );
-        }
-
-        // Always update profile fields (even if empty object, it won't change anything)
-        const updatedProfile = await StudentProfile.findByIdAndUpdate(
-            studentProfile._id,
-            { $set: profileUpdates },
-            { new: true, runValidators: true }
-        ).populate('userId', 'fullName email isActive');
 
         res.status(200).json({
             message: "Student updated successfully",
@@ -214,71 +235,3 @@ export const deleteStudent = async (req, res) => {
     }
 }
 
-// receptions other methods (fees collection, attendance)
-
-export const collectFee = async (req, res) => {
-    try {
-        const { studentId, month } = req.params;
-        const { paid_Amount } = req.body;
-
-        const fee = await Fee.findOne({ studentId, month });
-
-        if (!fee) {
-            return res.status(404).json({ message: "Fee record not found" });
-        }
-
-        if (fee.status === 'paid') {
-            return res.status(400).json({ message: "Fee already paid!" });
-        }
-
-        fee.paid_Amount = paid_Amount || fee.amount;
-        fee.status = fee.paid_Amount >= fee.amount ? 'paid' : 'pending';
-        fee.collectedBy = req.user.fullName || req.user.email;
-
-        await fee.save();
-
-        res.status(200).json({
-            message: "Fee collected successfully",
-            fee
-        });
-
-    } catch (error) {
-        res.status(500).json({ message: "Error collecting fee", error: error.message });
-    }
-}
-
-// 3. Get Student Fee Status by Roll No
-export const getStudentFeeStatus = async (req, res) => {
-    try {
-        const { rollNo } = req.params;
-        const student = await StudentProfile.findOne({ rollNo: rollNo.toUpperCase() }).populate('userId');
-
-        if (!student) return res.status(404).json({ message: "Student not found" });
-
-        const fees = await Fee.find({ studentId: student._id }).sort({ month: -1 });
-
-        res.status(200).json({
-            student: {
-                name: student.userId.fullName,
-                rollNo: student.rollNo,
-                className: student.className
-            },
-            fees
-        });
-    } catch (error) {
-        res.status(500).json({ message: "Error fetching fee status" });
-    }
-}
-
-// 4. Get All Pending Fees (Receptionist Dashboard)
-export const getAllPendingFees = async (req, res) => {
-    try {
-        const pending = await Fee.find({ status: { $ne: 'paid' } })
-            .populate('studentId', 'rollNo className')
-            .sort({ month: 1 });
-
-        res.status(200).json({ total: pending.length, pending });
-    } catch (error) {
-        res.status(500).json({ message: "Error fetching pending fees" });
-    }
-}

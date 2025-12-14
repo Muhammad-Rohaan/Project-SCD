@@ -28,7 +28,7 @@ connectDB();
 
 app.get("/", (req, res) => {
     res.json({
-        message: "Welcom to AZ"
+        message: "Welcome to AZ"
     });
 })
 

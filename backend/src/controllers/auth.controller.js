@@ -3,9 +3,17 @@ import StudentProfile from "../models/StudentProfile.model.js";
 import TeacherProfile from "../models/TeacherProfile.model.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import mongoose from "mongoose";
 
-
+/*
+        OLD BUT WORKING WITHOUT TRANSACTIONS
 export const register = async (req, res, helperData) => {
+    // _________________________________
+
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    // _________________________________
+
     try {
         // This allows the function to be used as a route handler (req, res)
         // or as a helper function by passing data in the third argument.
@@ -26,9 +34,18 @@ export const register = async (req, res, helperData) => {
             email,
             password: encryptedPassword,
             role,
-        });
+            // _________________________________
+        }, { session });
+        // _________________________________
+
 
         await newUser.save();
+
+        // _________________________________
+        await session.commitTransaction();
+        session.endSession();
+        // _________________________________
+
 
         if (isRouteHandler) {
             return res.status(201).json({
@@ -53,6 +70,57 @@ export const register = async (req, res, helperData) => {
         throw error; // Re-throw for the calling controller to handle
     }
 }
+*/
+
+export const register = async (req, res, helperData) => {
+    const isRouteHandler = req && req.body;
+
+    try {
+        
+        const userData = isRouteHandler ? req.body : helperData;
+        const { fullName, email, password, role } = userData;
+
+        if (!fullName || !email || !password || !role) {
+            throw new Error("Please provide all required fields: fullName, email, password, role.");
+        }
+
+        // Hash password
+        const encryptedPassword = await bcrypt.hash(password, 10);
+
+        // Yeh sahi tareeka hai transaction mein
+        const [newUser] = await UserModel.create([{
+            fullName,
+            email: email.toLowerCase(),
+            password: encryptedPassword,
+            role: role.toLowerCase(),
+        }]);
+
+        if (isRouteHandler) {
+            return res.status(201).json({
+                message: `${role} registered successfully`,
+                user: { id: newUser._id, name: newUser.fullName, role: newUser.role }
+            });
+        }
+
+        return newUser; // Helper ke liye return
+
+    } catch (error) {
+        console.error("Registration Error:", error);
+
+        if (error.code === 11000) {
+            const field = Object.keys(error.keyValue)[0];
+            return isRouteHandler
+                ? res.status(409).json({ message: `${field} already exists` })
+                : Promise.reject(error);
+        }
+
+        const msg = error.message || "Registration failed";
+        return isRouteHandler
+            ? res.status(500).json({ message: msg })
+            : Promise.reject(error);
+    }
+}
+
 
 // Login
 

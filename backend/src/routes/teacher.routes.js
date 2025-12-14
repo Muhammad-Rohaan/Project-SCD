@@ -25,7 +25,7 @@ router.post('/attendance', (req, res) => res.json({ success: true, message: 'Att
 
 /**
  * POST /api/teacher/results
- * Upload student results
+ * Upload student results image
  * Private (Teacher)
  */
 router.post('/results', (req, res) => res.json({ success: true, message: 'Results uploaded successfully' }));

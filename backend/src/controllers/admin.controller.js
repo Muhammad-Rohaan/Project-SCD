@@ -14,6 +14,7 @@ import bcrypt from "bcryptjs";
  */
 
 export const registerReceptionist = async (req, res) => {
+    let user = null;
     try {
         const {
             fullName,
@@ -27,13 +28,9 @@ export const registerReceptionist = async (req, res) => {
             address
         } = req.body;
 
-        const user = await register(null, null, { fullName, email, password, role: 'receptionist' });
-        
+        user = await register(null, null, { fullName, email, password, role: 'receptionist' });
 
-
-
-
-        await ReceptionProfileModel.create({
+        await ReceptionProfileModel.create([{
             userId: user._id,
             receptionistFullName: fullName,
             receptionRegId: receptionRegId.toUpperCase(),
@@ -42,7 +39,7 @@ export const registerReceptionist = async (req, res) => {
             joiningDate,
             contact,
             address
-        });
+        }]);
 
         // Success response
         res.status(201).json({
@@ -50,12 +47,14 @@ export const registerReceptionist = async (req, res) => {
             receptionRegId: receptionRegId.toUpperCase()
         });
 
-
-
     } catch (error) {
         console.error("Receptionist Registration Error:", error);
 
-        // Handle duplicate key error (email, cnic, receptionRegId already exists)
+        // Manual Rollback
+        if (user && user._id) {
+            await UserModel.findByIdAndDelete(user._id);
+        }
+
         if (error.code === 11000) {
             const field = Object.keys(error.keyValue)[0];
             const value = error.keyValue[field];
@@ -70,7 +69,6 @@ export const registerReceptionist = async (req, res) => {
             });
         }
 
-        // Other errors
         res.status(500).json({
             message: "An internal server error occurred during Receptionist registration.",
             error: error.message
@@ -85,6 +83,7 @@ export const registerReceptionist = async (req, res) => {
 // api/admin/AZ-teachers/register-teacher
 // api/admin/AZ-teachers/register-teacher
 export const registerTeacher = async (req, res) => {
+    let user = null;
     try {
         const {
             fullName,
@@ -102,10 +101,10 @@ export const registerTeacher = async (req, res) => {
             age
         } = req.body;
 
-        const user = await register(null, null, { fullName, email, password, role: 'teacher' });  // req, res -> null
+        user = await register(null, null, { fullName, email, password, role: 'teacher' });  // req, res -> null
 
         // Step 2: Create TeacherProfile
-        await TeacherProfile.create({
+        await TeacherProfile.create([{
             userId: user._id,
             teacherFullName: fullName,
             teacherRegId: teacherRegId.toUpperCase(),
@@ -118,7 +117,7 @@ export const registerTeacher = async (req, res) => {
             contact,
             address,
             age
-        });
+        }]);
 
         // Success response
         res.status(201).json({
@@ -129,7 +128,11 @@ export const registerTeacher = async (req, res) => {
     } catch (error) {
         console.error("Teacher Registration Error:", error);
 
-        // Handle duplicate key error (email, cnic, teacherRegId already exists)
+        // Manual Rollback
+        if (user && user._id) {
+            await UserModel.findByIdAndDelete(user._id);
+        }
+
         if (error.code === 11000) {
             const field = Object.keys(error.keyValue)[0];
             const value = error.keyValue[field];
@@ -144,7 +147,6 @@ export const registerTeacher = async (req, res) => {
             });
         }
 
-        // Other errors
         res.status(500).json({
             message: "An internal server error occurred during teacher registration.",
             error: error.message
@@ -207,7 +209,7 @@ export const searchTeacherByClassAndSubject = async (req, res) => {
     try {
 
         const clsFilter = Number(req.params.class);
-        const subjectFilter = req.params.subject;
+        const subjectFilter = req.params.subject.toLowerCase();
 
         if (isNaN(clsFilter)) {
             res.status(400).json({
@@ -284,7 +286,7 @@ export const updateTeacher = async (req, res) => {
         // });
 
         const teacherRegId = req.params.teacherRegId.toUpperCase();
-        const updTeacherDoc = req.body;
+        const updTeacherDoc = req.body; 
 
         const updatedTeacherRecord = await TeacherProfile.findOneAndUpdate(
             {

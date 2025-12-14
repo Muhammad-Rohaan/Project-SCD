@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const studentProfileSchema = new mongoose.Schema({
 
-    userId: { // stdID
+    userId: { 
         type: mongoose.Schema.Types.ObjectId, /// It was ObjectId
         ref: 'User',
         required: true,
@@ -17,6 +17,13 @@ const studentProfileSchema = new mongoose.Schema({
         uppercase: true,
     },
 
+    stdName: {
+        type: String,
+        required: true,
+        trim: true,
+    },
+
+
     fatherName: {
         type: String,
         required: true,
@@ -30,8 +37,7 @@ const studentProfileSchema = new mongoose.Schema({
     },
 
     contact: {
-        type: String,
-        required: true
+        type: String
     },
 
     address: {
@@ -53,6 +59,7 @@ const studentProfileSchema = new mongoose.Schema({
 
     field: {
         type: String,
+        enum: ['cs', 'medical', 'engineering', 'commerce', 'arts'],  // 
         required: true,
     },
 }, { timestamps: true });

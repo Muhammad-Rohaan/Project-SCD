@@ -46,7 +46,11 @@ const teacherProfileSchema = new mongoose.Schema({
         default: Date.now,
     },
 
-    subjects: [String],
+    subjects: {
+        type: [String], // Defines the field as an array of strings
+        required: true,
+        lowercase: true
+    },
 
     classes: {
         type: [Number], // Defines the field as an array of numbers
