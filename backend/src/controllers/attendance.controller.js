@@ -1,6 +1,8 @@
 // import UserModel from "../models/User.model";
 import AttendanceModel from "../models/Attendance.model.js";
 import StudentProfileModel from "../models/StudentProfile.model.js";
+import UserModel from "../models/User.model.js";
+import { sendEmail } from "../utils/email.js";
 
 
 export const markAttendance = async (req, res) => {
@@ -43,6 +45,28 @@ export const markAttendance = async (req, res) => {
                 status
             }
         );
+
+        let stdUserId = std.userId;
+
+
+        const user = await UserModel.findById(stdUserId);
+
+        console.log(user.email);
+
+
+
+        const message = `
+🔴 Attendance Alert
+
+Student: ${std.stdName}
+Status: ${status}
+Date: ${new Date().toDateString()}
+
+- AZ Coaching Management System
+    `;
+
+        await sendEmail(user.email, "Attendance Notification", message);
+
 
         res.json({
             message: "Attendance marked successfully",
