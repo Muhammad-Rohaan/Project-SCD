@@ -5,13 +5,8 @@
   "type": "module",
   "scripts": {
     "start": "node src/app.js",
-<<<<<<< HEAD
     "dev": "nodemon app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"   
-=======
-    "dev": "nodemon backend/src/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
->>>>>>> 1ee3f86ab52d340a73ff437f619b085a176ec8dc
   },
   "keywords": [],
   "author": "",
