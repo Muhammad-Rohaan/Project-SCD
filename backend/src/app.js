@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import bcrypt from "bcryptjs";
 import UserModel from "./models/User.model.js";
 
@@ -18,11 +19,15 @@ import attendanceRoutes from "./routes/attendance.routes.js"
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 5001;
+const port = process.env.PORT || 5000;
 
 // Middlewares
-app.use(cors());
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true
+}));
 app.use(express.json());
+app.use(cookieParser());
 
 // DB Connection
 connectDB();

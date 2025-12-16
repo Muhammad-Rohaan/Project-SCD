@@ -5,8 +5,13 @@
   "type": "module",
   "scripts": {
     "start": "node src/app.js",
+<<<<<<< HEAD
     "dev": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"   
+=======
+    "dev": "nodemon backend/src/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+>>>>>>> 1ee3f86ab52d340a73ff437f619b085a176ec8dc
   },
   "keywords": [],
   "author": "",
@@ -14,6 +19,7 @@
   "description": "IMS System Backend",
   "dependencies": {
     "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",

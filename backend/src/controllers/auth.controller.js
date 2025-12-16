@@ -194,20 +194,73 @@ export const login = async (req, res) => {
             { expiresIn: process.env.JWT_EXPIRES_IN }
         );
 
-        res.json({
+        // JWT_COOKIE_EXPIRES_IN ko days se milliseconds mein convert karna
+        const cookieExpiresInDays = parseInt(process.env.JWT_COOKIE_EXPIRES_IN, 10);
+
+        // NAYA COOKIE CODE:
+        const options = {
+            expires: new Date(Date.now() + 24 * 60 * 60 * 10000), // 1 day
+            httpOnly: true, // Frontend JS cannot access this security.
+            secure: process.env.NODE_ENV === 'production',
+            // HTTPS only in production
+            sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+            // Agar frontend aur backend alag domains par hon
+        };
+
+        // 2. Response: Token ko Cookie mein daalo aur User ka data JSON body mein bhejo
+        res.status(200).cookie('token', token, options).json({
             message: 'Login successful',
-            token,
+            // YEH OBJECT FRONTEND KO ZAROORI HAI:
             user: {
                 id: user._id,
                 name: user.fullName,
                 role: user.role,
-                profileType: profileType,
+                profileType: profileType, // 'student' ya 'teacher' ya 'admin' etc.
                 profile: profile
             }
         });
+
+        // res.json({
+        //     message: 'Login successful',
+        //     token,
+        //     user: {
+        //         id: user._id,
+        //         name: user.fullName,
+        //         role: user.role,
+        //         profileType: profileType,
+        //         profile: profile
+        //     }
+        // });
 
     } catch (error) {
         console.error("Login Error:", error);
         res.status(500).json({ message: "An internal server error occurred." });
     }
 }
+
+// LOGOUT
+
+export const logout = async (req, res) => {
+    try {
+        res.cookie('token', 'none', {
+            maxAge: 0,
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+        });
+
+        // Successful response bhej dein
+        res.status(200).json({
+            success: true,
+            message: "User logged out successfully"
+        });
+
+    } catch (error) {
+        // Agar koi unexpected server error ho jaye to handle karein
+        console.error("Logout error:", error);
+        res.status(500).json({
+            success: false,
+            message: "An internal server error occurred during logout."
+        });
+    }
+};
