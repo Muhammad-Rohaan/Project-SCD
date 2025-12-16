@@ -8,7 +8,7 @@ import {
 
 const router = express.Router();
 
-router.use(protect, authorize('receptionist', "admin"));  // check
+router.use(protect, authorize('receptionist'));  // check
 
 // router.post('/create-voucher', createFeeVoucher);
 router.post('/collect', collectFee);
