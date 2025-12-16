@@ -16,7 +16,7 @@ const receptionProfileSchema = new mongoose.Schema({
         trim: true,
     },
 
-    receptionRegId: {  // from this recp can login
+    receptionRegId: {  
         type: String,
         required: true,
         unique: true,

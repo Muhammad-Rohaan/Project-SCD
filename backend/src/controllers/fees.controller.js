@@ -23,6 +23,8 @@ export const collectFee = async (req, res) => {
             rollNo: rollNo.toUpperCase()
         });
 
+
+
         if (!student) {
             res.status(404).json({ message: "Student not found" });
             return;
@@ -34,7 +36,7 @@ export const collectFee = async (req, res) => {
             year
         });
 
-        if(!fees) {
+        if (!fees) {
             fees = new Fee(
                 {
                     stdId: student._id,
@@ -54,16 +56,17 @@ export const collectFee = async (req, res) => {
         fees.collectedBy = req.user.fullName || "Receptionist";
         fees.collectedDate = new Date();
 
-        await fees.save();
 
-        if(fees.feesAmount > 0) {
+        // await fees.save();
+
+        if (fees.feesAmount >= 4500 || fees.feesAmount >= 5000) {
             fees.status = 'paid';
-            await fees.save();
+
         } else {
             fees.status = 'pending';
-            await fees.save();
         }
 
+        await fees.save();
 
         res.status(200).json({
             message: "Fee collected successfully",
@@ -71,9 +74,18 @@ export const collectFee = async (req, res) => {
         });
 
     } catch (error) {
+        console.error("Collect Fee Error:", error);
+        if (error.code === 11000) {
+            return res.status(400).json({ message: "Fee record for this month/year already exists" });
+        }
         res.status(500).json({ message: "Error collecting fee", error: error.message });
     }
 }
+
+
+
+
+
 
 // 3. Get Student Fee Status by Roll No
 export const getStudentFeeStatus = async (req, res) => {
@@ -83,33 +95,46 @@ export const getStudentFeeStatus = async (req, res) => {
 
         if (!student) return res.status(404).json({ message: "Student not found" });
 
-        const fees = await Fee.find({ studentId: student._id }).sort({ month: -1 });
+        const fees = await Fee.find({ stdId: student._id });
 
         res.status(200).json({
             student: {
                 name: student.stdName,
                 rollNo: student.rollNo,
                 className: student.className
+
             },
-            fees
-        });
+
+            fees: fees.map(fee => ({
+                status: fee.status,
+                collectedBy: fee.collectedBy,
+                collectedDate: fee.collectedDate
+            }))
+
+        })
+
+
     } catch (error) {
         res.status(500).json({ message: "Error fetching fee status" });
     }
 }
 
-// 4. Get All Pending Fees (Receptionist Dashboard)
+
+
+/*
 export const getAllPendingFees = async (req, res) => {
     try {
-        const pending = await Fee.find({ status: { $ne: 'paid' } })
-            .sort({ month: 1 });
+        const pending = await Fee.find({
+            status: "pending"
+        })
 
-        // The 'studentId' in Fee.model.js is a String, not an ObjectId, so .populate() won't work as expected.
-        // If you need student details, you would have to fetch them separately or change the schema.
-        // For now, I'm removing the populate to prevent potential errors.
 
         res.status(200).json({ total: pending.length, pending });
     } catch (error) {
         res.status(500).json({ message: "Error fetching pending fees" });
     }
 }
+
+*/
+
+

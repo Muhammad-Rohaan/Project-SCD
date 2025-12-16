@@ -72,6 +72,14 @@ export const register = async (req, res, helperData) => {
 }
 */
 
+
+/**
+ * ONE MORE REGISTER STUDENT NEEDED 
+ * WHERE EMAIL NOT REQUIRE FOR STUDENTS ONLY 
+ */
+
+
+
 export const register = async (req, res, helperData) => {
     const isRouteHandler = req && req.body;
 
@@ -102,7 +110,7 @@ export const register = async (req, res, helperData) => {
             });
         }
 
-        return newUser; // Helper ke liye return
+        return newUser; 
 
     } catch (error) {
         console.error("Registration Error:", error);

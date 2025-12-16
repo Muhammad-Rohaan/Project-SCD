@@ -13,7 +13,7 @@ export const registerStudent = async (req, res) => {
     try {
         const {
             fullName,
-            email,
+            email = "temp@gmail.com",
             password,
             rollNo,
             fatherName,
@@ -128,7 +128,7 @@ export const fetchStudentsByClass = async (req, res) => {
     }
 }
 
-// PATCH /api/reception/az-students/update-student/:rollNo
+//  /api/reception/az-students/update-student/:rollNo
 export const updateStudent = async (req, res) => {
     try {
 

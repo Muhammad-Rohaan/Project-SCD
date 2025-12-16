@@ -12,6 +12,8 @@ import adminRoutes from "./routes/admin.routes.js";
 import teacherRoutes from "./routes/teacher.routes.js";
 import studentRoutes from "./routes/student.routes.js";
 import receptionRoutes from "./routes/reception.routes.js";
+import feeRoutes from "./routes/fee.routes.js"
+import attendanceRoutes from "./routes/attendance.routes.js"
 
 dotenv.config();
 
@@ -65,6 +67,9 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/teacher", teacherRoutes);
 app.use("/api/student", studentRoutes);
 app.use("/api/reception", receptionRoutes);
+app.use("/api/reception/attendance", attendanceRoutes);
+app.use("/api/reception/fees", feeRoutes);
+
 
 app.listen(port, () => {
     console.log(`App Running on http://localhost:${port}/`);

@@ -76,6 +76,40 @@ export const registerReceptionist = async (req, res) => {
     }
 }
 
+export const removeReceptionist = async (req, res) => {
+    try {
+
+        const receptionRegId = req.params.receptionRegId.toUpperCase();
+        const curRecp = await ReceptionProfileModel.findOne({ receptionRegId })
+
+        if(!curRecp) {
+            res.status(404).json({
+                "msg": "No Data Found"
+            });
+        }
+
+        const deletedRecp = await ReceptionProfileModel.deleteOne({
+            receptionRegId
+        });
+
+        // del user
+        await UserModel.findByIdAndDelete(curRecp.userId)
+
+
+        res.status(200).json({
+            "msg": `Deleted receptionist`
+        })
+
+
+
+
+    } catch (error) {
+        res.status(400).json({
+            "msg": "Err in deleting Receptionist",
+            "error": error
+        })
+    }
+}
 
 
 // teacher Crud Operations
@@ -286,7 +320,7 @@ export const updateTeacher = async (req, res) => {
         // });
 
         const teacherRegId = req.params.teacherRegId.toUpperCase();
-        const updTeacherDoc = req.body; 
+        const updTeacherDoc = req.body;
 
         const updatedTeacherRecord = await TeacherProfile.findOneAndUpdate(
             {
