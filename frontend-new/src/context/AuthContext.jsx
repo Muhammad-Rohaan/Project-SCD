@@ -1,6 +1,5 @@
 import { createContext, useState, useEffect, useContext } from 'react';
 import axiosInstance from '../api/axios.js';
-import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext({});
 
@@ -8,30 +7,39 @@ export const AuthProvider = ({ children }) => {
     const [auth, setAuth] = useState({
         user: null,
         role: null,
-        loading: true
+        loading: true // Initial load k liyey true hai.
     });
 
-    const navigate = useNavigate();
-
+    // Page load pe localStorage se user load karo
     useEffect(() => {
-        // App load par LocalStorage se user info load karein
-        const storedUser = localStorage.getItem('userInfo');
+        const loadUser = () => {
+            const storedUser = localStorage.getItem('userInfo');
+            if (storedUser) {
+                try {
+                    const user = JSON.parse(storedUser);
+                    setAuth({
+                        user,
+                        role: user.role,
+                        loading: false
+                    });
+                } catch (err) {
+                    localStorage.removeItem('userInfo');
+                    setAuth({
+                        user: null,
+                        role: null,
+                        loading: false
+                    });
+                }
+            } else {
+                setAuth({
+                    user: null,
+                    role: null,
+                    loading: false
+                });
+            }
+        };
 
-        if (storedUser) {
-            const user = JSON.parse(storedUser);
-            // Assuming the token is valid, set the state (Token validation backend par hoga)
-            setAuth({
-                user,
-                role: user.role,
-                loading: false
-            });
-        } else {
-            setAuth({
-                user: null,
-                role: null,
-                loading: false
-            });
-        }
+        loadUser();
     }, []);
 
     const loginUser = async (loginData) => {
@@ -54,20 +62,22 @@ export const AuthProvider = ({ children }) => {
             // User details LocalStorage mein save karein (Cookie khud manage ho jayegi)
             localStorage.setItem('userInfo', JSON.stringify(user));
 
+            // State update
             setAuth({
-                user: user, // set actual user here 
+                user, // set actual user here 
                 role: user.role, // set role
                 loading: false
             });
 
             return {
                 success: true,
-                user: user,   // return user object
+                user,   // return user object
                 message: "Login successful"
             };
 
         } catch (error) {
             // ... (Error handling logic) ...
+            console.error("Login error", error);
             return {
                 success: false,
                 message: error.response?.data?.message || "Login failed"
@@ -88,13 +98,14 @@ export const AuthProvider = ({ children }) => {
                 role: null,
                 loading: false
             });
-            navigate('/login');
+            // Navigate ko yahan nahi kar sakte — isliye Login page pe redirect component se karenge
         }
     };
 
     return (
         <AuthContext.Provider value={{ auth, loginUser, logoutUser }}>
-            {!auth.loading && children}
+            {children}
+            {/* Ye {!auth.loading && children} hata diya — blank screen nahi aayega */}
         </AuthContext.Provider>
     );
 };

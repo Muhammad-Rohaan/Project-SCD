@@ -28,7 +28,11 @@ export const registerReceptionist = async (req, res) => {
             address
         } = req.body;
 
-        user = await register(null, null, { fullName, email, password, role: 'receptionist' });
+        const user = await register(null, null, { fullName, email, password, role: 'receptionist' });
+
+
+
+
 
         await ReceptionProfileModel.create([{
             userId: user._id,
@@ -82,7 +86,7 @@ export const removeReceptionist = async (req, res) => {
         const receptionRegId = req.params.receptionRegId.toUpperCase();
         const curRecp = await ReceptionProfileModel.findOne({ receptionRegId })
 
-        if(!curRecp) {
+        if (!curRecp) {
             res.status(404).json({
                 "msg": "No Data Found"
             });
@@ -184,6 +188,21 @@ export const registerTeacher = async (req, res) => {
         res.status(500).json({
             message: "An internal server error occurred during teacher registration.",
             error: error.message
+        });
+    }
+};
+
+// api/admin/az-reception/fetch-all-receptionists
+
+export const fetchAllReceptionists = async (req, res) => {
+    try {
+        const receptionists = await ReceptionProfileModel.find();
+        res.status(200).json({
+            receptionists: receptionists
+        });
+    } catch (error) {
+        res.status(400).json({
+            "errMsg": "Failed to fetch receptionists"
         });
     }
 };
@@ -306,14 +325,31 @@ export const updateTeacher = async (req, res) => {
             await UserModel.findByIdAndUpdate(teacherProfile.userId, userUpdates, { new: true, runValidators: true });
         }
 
-        // Update TeacherProfile model if there's data for it
-        let updatedTeacherProfile = teacherProfile;
-        if (Object.keys(profileUpdates).length > 0) {
-            updatedTeacherProfile = await TeacherProfile.findByIdAndUpdate(
-                teacherProfile._id,
-                profileUpdates,
-                { new: true, runValidators: true }
-            );
+        // // Update TeacherProfile model
+        // const updatedTeacherProfile = await TeacherProfile.findByIdAndUpdate(
+        //     teacherProfile._id,
+        //     profileUpdates,
+        //     { new: true, runValidators: true }
+        // ).populate('userId', 'fullName email isActive');
+
+        // res.status(200).json({
+        //     message: "Teacher updated successfully.",
+        //     teacher: updatedTeacherProfile
+        // });
+
+        const teacherRegId = req.params.teacherRegId.toUpperCase();
+        const updTeacherDoc = req.body;
+
+        const updatedTeacherRecord = await TeacherProfile.findOneAndUpdate(
+            {
+                teacherRegId
+            },
+            updTeacherDoc,
+            { new: true, runValidators: true }
+        );
+
+        if (!updated) {
+            return res.status(404).json({ message: "Teacher not found." });
         }
 
         // Fetch the latest state to ensure response is consistent
@@ -331,7 +367,7 @@ export const updateTeacher = async (req, res) => {
             error: error.message
         });
     }
-}
+};
 
 /**
  * update the specific field (patch)
