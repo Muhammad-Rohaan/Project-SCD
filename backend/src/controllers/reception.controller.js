@@ -132,57 +132,47 @@ export const fetchStudentsByClass = async (req, res) => {
 export const updateStudent = async (req, res) => {
     try {
 
-        // patch
-        // const rollNo = req.params.rollNo.toUpperCase();
-        // const updateData = req.body;
+        const rollNo = req.params.rollNo.toUpperCase();
+        const updateData = req.body;
 
-        // if (Object.keys(updateData).length === 0) {
-        //     return res.status(400).json({ message: "No update data provided." });
-        // }
+        if (Object.keys(updateData).length === 0) {
+            return res.status(400).json({ message: "No update data provided." });
+        }
 
-        // // Find student profile
-        // const studentProfile = await StudentProfile.findOne({ rollNo });
-        // if (!studentProfile) {
-        //     return res.status(404).json({ message: "Student not found." });
-        // }
-
-        // // Separate updates: User fields vs Profile fields
-        // const { fullName, email, isActive, ...profileUpdates } = updateData;
-
-        // // Update User if any user fields are provided
-        // if (fullName || email || isActive !== undefined) {
-        //     await UserModel.findByIdAndUpdate(
-        //         studentProfile.userId,
-        //         { fullName, email, isActive },
-        //         { new: true, runValidators: true }
-        //     );
-        // }
-
-        // // Always update profile fields (even if empty object, it won't change anything)
-        // const updatedProfile = await StudentProfile.findByIdAndUpdate(
-        //     studentProfile._id,
-        //     { $set: profileUpdates },
-        //     { new: true, runValidators: true }
-        // ).populate('userId', 'fullName email isActive');
-
-        const rollNo = req.body.params.toUpperCase();
-        const updatedStdDoc = req.body;
-
-        const updatedStd = await StudentProfile.findOneAndUpdate(
-            {
-                rollNo
-            },
-            updatedStdDoc,
-            {
-                new: true, runValidators: true
-            }
-        )
-        
-        if (!updatedStd) {
+        // Find student profile
+        const studentProfile = await StudentProfile.findOne({ rollNo });
+        if (!studentProfile) {
             return res.status(404).json({ message: "Student not found." });
         }
 
+        // Separate updates: User fields vs Profile fields
+        const { fullName, email, isActive, ...profileUpdates } = updateData;
+        const userUpdates = { fullName, email, isActive };
 
+        // Filter out undefined values so we only update provided fields
+        Object.keys(userUpdates).forEach(key => userUpdates[key] === undefined && delete userUpdates[key]);
+
+        // Update User if any user fields are provided
+        if (Object.keys(userUpdates).length > 0) {
+            await UserModel.findByIdAndUpdate(
+                studentProfile.userId,
+                userUpdates,
+                { new: true, runValidators: true }
+            );
+        }
+
+        // Update profile fields if there are any
+        if (Object.keys(profileUpdates).length > 0) {
+            await StudentProfile.findByIdAndUpdate(
+                studentProfile._id,
+                { $set: profileUpdates },
+                { new: true, runValidators: true }
+            );
+        }
+
+        // Fetch the final, populated student profile to return
+        const updatedProfile = await StudentProfile.findById(studentProfile._id)
+            .populate('userId', 'fullName email isActive');
 
         res.status(200).json({
             message: "Student updated successfully",
@@ -234,4 +224,3 @@ export const deleteStudent = async (req, res) => {
         });
     }
 }
-

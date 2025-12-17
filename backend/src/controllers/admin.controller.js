@@ -280,68 +280,49 @@ export const searchTeacherByClassAndSubject = async (req, res) => {
 export const updateTeacher = async (req, res) => {
     try {
 
-        // const { teacherRegId } = req.params;
-        // const updateData = req.body;
+        const { teacherRegId } = req.params;
+        const updateData = req.body;
 
-        // if (Object.keys(updateData).length === 0) {
-        //     return res.status(400).json({ message: "No update data provided." });
-        // }
-
-        // // Find the teacher profile
-        // const teacherProfile = await TeacherProfile.findOne({ teacherRegId: teacherRegId.toUpperCase() });
-
-        // if (!teacherProfile) {
-        //     return res.status(404).json({ message: "Teacher not found with the provided registration ID." });
-        // }
-
-        // // Separate data for User and TeacherProfile models
-        // const { fullName, email, isActive, ...profileUpdates } = updateData;
-        // const userUpdates = { fullName, email, isActive };
-
-        // // Filter out undefined values so we only update provided fields
-        // Object.keys(userUpdates).forEach(key => userUpdates[key] === undefined && delete userUpdates[key]);
-        // Object.keys(profileUpdates).forEach(key => profileUpdates[key] === undefined && delete profileUpdates[key]);
-
-        // // Update User model if there's data for it
-        // if (Object.keys(userUpdates).length > 0) {
-        //     await UserModel.findByIdAndUpdate(teacherProfile.userId, userUpdates, { new: true, runValidators: true });
-        // }
-
-        // // Update TeacherProfile model
-        // const updatedTeacherProfile = await TeacherProfile.findByIdAndUpdate(
-        //     teacherProfile._id,
-        //     profileUpdates,
-        //     { new: true, runValidators: true }
-        // ).populate('userId', 'fullName email isActive');
-
-        // res.status(200).json({
-        //     message: "Teacher updated successfully.",
-        //     teacher: updatedTeacherProfile
-        // });
-
-        const teacherRegId = req.params.teacherRegId.toUpperCase();
-        const updTeacherDoc = req.body;
-
-        const updatedTeacherRecord = await TeacherProfile.findOneAndUpdate(
-            {
-                teacherRegId
-            },
-            updTeacherDoc,
-            { new: true, runValidators: true }
-
-        );
-
-        if (!updated) {
-            return res.status(404).json({ message: "Teacher not found." });
+        if (Object.keys(updateData).length === 0) {
+            return res.status(400).json({ message: "No update data provided." });
         }
 
+        // Find the teacher profile
+        const teacherProfile = await TeacherProfile.findOne({ teacherRegId: teacherRegId.toUpperCase() });
+
+        if (!teacherProfile) {
+            return res.status(404).json({ message: "Teacher not found with the provided registration ID." });
+        }
+
+        // Separate data for User and TeacherProfile models
+        const { fullName, email, isActive, ...profileUpdates } = updateData;
+        const userUpdates = { fullName, email, isActive };
+
+        // Filter out undefined values so we only update provided fields
+        Object.keys(userUpdates).forEach(key => userUpdates[key] === undefined && delete userUpdates[key]);
+
+        // Update User model if there's data for it
+        if (Object.keys(userUpdates).length > 0) {
+            await UserModel.findByIdAndUpdate(teacherProfile.userId, userUpdates, { new: true, runValidators: true });
+        }
+
+        // Update TeacherProfile model if there's data for it
+        let updatedTeacherProfile = teacherProfile;
+        if (Object.keys(profileUpdates).length > 0) {
+            updatedTeacherProfile = await TeacherProfile.findByIdAndUpdate(
+                teacherProfile._id,
+                profileUpdates,
+                { new: true, runValidators: true }
+            );
+        }
+
+        // Fetch the latest state to ensure response is consistent
+        const finalTeacherProfile = await TeacherProfile.findById(teacherProfile._id).populate('userId', 'fullName email isActive');
+
         res.status(200).json({
-            msg: "Updated",
-            "UpdatedTeacherRecord": updatedTeacherRecord
+            message: "Teacher updated successfully.",
+            teacher: finalTeacherProfile
         });
-
-
-
 
     } catch (error) {
         console.error("Update Teacher Error:", error);
