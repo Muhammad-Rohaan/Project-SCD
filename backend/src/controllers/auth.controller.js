@@ -144,18 +144,17 @@ export const login = async (req, res) => {
         let profile = null;
         let profileType = '';
 
-        // 1. Determine login strategy: identifier-based or email-based
-        if (identifier) { // Strategy 1: Login with RollNo or TeacherRegId
+        // 1. Try to find as Student or Teacher via identifier
+        if (identifier) {
             const upperIdentifier = identifier.toUpperCase();
-
-            // Try to find as a student first
             const studentProfile = await StudentProfile.findOne({ rollNo: upperIdentifier });
             if (studentProfile) {
                 user = await UserModel.findById(studentProfile.userId).select('+password');
-                profile = studentProfile;
-                profileType = 'student';
+                if (user) {
+                    profile = studentProfile;
+                    profileType = 'student';
+                }
             } else {
-                // If not a student, try to find as a teacher
                 const teacherProfile = await TeacherProfile.findOne({ teacherRegId: upperIdentifier });
                 if (teacherProfile) {
                     user = await UserModel.findById(teacherProfile.userId).select('+password');
@@ -163,28 +162,25 @@ export const login = async (req, res) => {
                     profileType = 'teacher';
                 }
             }
-        } else { // Strategy 2: Login with email
-            if (!email) {
-                // This case is already handled by the initial check, but for safety:
-                return res.status(400).json({ message: "Please provide login credentials." });
-            }
+        }
 
+        // 2. If not found via identifier, try as Admin/Receptionist via email
+        if (!user) {
+            if (!email) {
+                return res.status(401).json({ message: 'Invalid credentials' });
+            }
             user = await UserModel.findOne({
                 email: email.toLowerCase(),
+                role: { $in: ['admin', 'receptionist'] }
             }).select('+password');
 
             if (user) {
                 profileType = user.role;
-                if (user.role === 'admin' || user.role === 'receptionist') {
-                    // Create a synthetic profile for admin/receptionist for a consistent response structure
-                    profile = {
-                        fullName: user.fullName,
-                        email: user.email,
-                    };
-                } else if (user.role === 'teacher') {
-                    // If the user is a teacher, we need to fetch their full profile
-                    profile = await TeacherProfile.findOne({ userId: user._id });
-                }
+                // Create a synthetic profile for admin/receptionist for a consistent response structure
+                profile = {
+                    fullName: user.fullName,
+                    email: user.email,
+                };
             }
         }
 

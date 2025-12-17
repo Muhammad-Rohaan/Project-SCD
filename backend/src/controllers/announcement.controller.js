@@ -8,8 +8,6 @@ import { sendEmail } from "../utils/email.js";
 export const createAnnouncement = async (req, res) => {
     try {
 
-        // when have Whatsapp API
-
         
         
     } catch (error) {
