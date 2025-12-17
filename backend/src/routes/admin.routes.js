@@ -1,7 +1,22 @@
 import express from 'express';
 import { protect, authorize } from '../middleware/auth.middleware.js';
 import { register } from '../controllers/auth.controller.js';
-import { deleteTeacherById, fetchAllReceptionists, fetchAllTeachers, fetchTeachersByClass, registerReceptionist, registerTeacher, removeReceptionist, searchTeacherByClassAndSubject, updateTeacher } from '../controllers/admin.controller.js';
+import { 
+    deleteTeacherById, 
+    fetchAllReceptionists, 
+    fetchAllTeachers, 
+    fetchTeachersByClass, 
+    registerReceptionist, 
+    registerTeacher, 
+    removeReceptionist, 
+    searchTeacherByClassAndSubject, 
+    updateTeacher,
+    registerStudent,
+    fetchAllStudents,
+    fetchStudentById,
+    updateStudent,
+    deleteStudentById
+} from '../controllers/admin.controller.js';
 
 
 // Example: import { getDashboardStats, manageUser } from '../controllers/admin.controller.js';
@@ -40,6 +55,16 @@ router.put('/az-teachers/update-teacher/:teacherRegId', updateTeacher);
 
 router.delete('/az-teachers/delete-teacher/:teacherRegId', deleteTeacherById);
 
+/**
+ * students creation in admin
+ * api/admin/...
+ */
+
+router.post('/az-students/register-student', registerStudent);
+router.get('/az-students/fetch-all-students', fetchAllStudents);
+router.get('/az-students/fetch-student/:studentRegId', fetchStudentById);
+router.put('/az-students/update-student/:studentRegId', updateStudent);
+router.delete('/az-students/delete-student/:studentRegId', deleteStudentById);
 
 
 router.get('/finances', (req, res) => res.json({ success: true, message: 'Financial reports endpoint' }));

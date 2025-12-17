@@ -3,11 +3,17 @@ import { AuthProvider, useAuth } from './context/AuthContext.jsx';
 import Login from './pages/Login';
 import AdminDashboard from './pages/Admin/AdminDashboard.jsx';
 import DashboardContent from './components/Admin/DashboardContent.jsx';
-import StudentsPage from './components/Admin/StudentsPage.jsx';
-import TeachersPage from './components/Admin/TeachersPage.jsx';
-import ReceptionistsPage from './components/Admin/ReceptionistsPage.jsx';
+import ListStudents from './pages/Students/ListStudents.jsx';
+import AddStudent from './pages/Students/AddStudent.jsx';
+import EditStudent from './pages/Students/EditStudent.jsx';
+import ListTeachers from './pages/Teachers/ListTeachers.jsx';
+import AddTeacher from './pages/Teachers/AddTeacher.jsx';
+import EditTeacher from './pages/Teachers/EditTeacher.jsx';
+import ListReceptionists from './pages/Receptionists/ListReceptionists.jsx';
+import AddReceptionist from './pages/Receptionists/AddReceptionist.jsx';
+import ListAnnouncements from './pages/Announcement/ListAnnouncements.jsx';
+import CreateAnnouncement from './pages/Announcement/CreateAnnouncement.jsx';
 import FinancePage from './components/Admin/FinancePage.jsx';
-import AnnouncementPage from './components/Admin/AnnouncementPage.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
 
 const App = () => {
@@ -33,11 +39,17 @@ const App = () => {
           {/* Nested Routes inside Admin-Dashboard (Outlet se render hongay) */}
           <Route index element={<Navigate to="dashboard" replace />} /> {/* /admin => /admin/dashboard */}
           <Route path="dashboard" element={<DashboardContent />} />
-          <Route path="az-students" element={<StudentsPage />} />
-          <Route path="az-teachers" element={<TeachersPage />} />
-          <Route path="az-receptionists" element={<ReceptionistsPage />} />
+          <Route path="students" element={<ListStudents />} />
+          <Route path="students/add" element={<AddStudent />} />
+          <Route path="students/edit/:studentRegId" element={<EditStudent />} />
+          <Route path="teachers" element={<ListTeachers />} />
+          <Route path="teachers/add" element={<AddTeacher />} />
+          <Route path="teachers/edit/:teacherRegId" element={<EditTeacher />} />
+          <Route path="receptionists" element={<ListReceptionists />} />
+          <Route path="receptionists/add" element={<AddReceptionist />} />
+          <Route path="announcements" element={<ListAnnouncements />} />
+          <Route path="announcements/create" element={<CreateAnnouncement />} />
           <Route path="finance" element={<FinancePage />} />
-          <Route path="announcements" element={<AnnouncementPage />} />
 
           {/* Agar koi unauthorized access ya unknown admin routes par yey route catch ho */}
           <Route path="*" element={<Navigate to="dashboard" replace />} />

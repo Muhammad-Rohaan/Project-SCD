@@ -121,7 +121,7 @@ export const getStudentFeeStatus = async (req, res) => {
 
 
 
-/*
+
 export const getAllPendingFees = async (req, res) => {
     try {
         const pending = await Fee.find({
@@ -135,6 +135,26 @@ export const getAllPendingFees = async (req, res) => {
     }
 }
 
-*/
+export const getTotalRevenue = async (req, res) => {
+    try {
+        const result = await Fee.aggregate([
+            { $match: { status: 'paid' } },
+            { $group: { _id: null, totalRevenue: { $sum: '$feesAmount' } } }
+        ]);
+        const totalRevenue = result.length > 0 ? result[0].totalRevenue : 0;
+        res.status(200).json({ totalRevenue });
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching total revenue" });
+    }
+};
+
+export const getAllTransactions = async (req, res) => {
+    try {
+        const transactions = await Fee.find();
+        res.status(200).json({ transactions });
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching transactions" });
+    }
+};
 
 

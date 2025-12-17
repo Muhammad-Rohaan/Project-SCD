@@ -7,9 +7,9 @@ import { useAuth } from '../../context/AuthContext'; // Logout ke liye AuthConte
 // Admin links define karein
 const adminNavLinks = [
     { name: 'Dashboard', href: '/admin/dashboard', icon: HomeIcon },
-    { name: 'Students', href: '/admin/az-students', icon: UsersIcon },
-    { name: 'Teachers', href: '/admin/az-teachers', icon: AcademicCapIcon },
-    { name: 'Receptionists', href: '/admin/az-receptionists', icon: UsersIcon },
+    { name: 'Students', href: '/admin/students', icon: UsersIcon },
+    { name: 'Teachers', href: '/admin/teachers', icon: AcademicCapIcon },
+    { name: 'Receptionists', href: '/admin/receptionists', icon: UsersIcon },
     { name: 'Finance/Fees', href: '/admin/finance', icon: BanknotesIcon },
     { name: 'Announcements', href: '/admin/announcements', icon: BellIcon },
 ];

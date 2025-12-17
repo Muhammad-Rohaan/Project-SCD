@@ -1,56 +1,53 @@
-import UserModel from "../models/User.model.js";
-import StudentProfile from "../models/StudentProfile.model.js";
-import TeacherProfile from "../models/TeacherProfile.model.js";
-import ReceptionProfileModel from "../models/ReceptionProfile.model.js";
-import { register } from "./auth.controller.js";
-import mongoose from "mongoose";
-import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs";
-
-
 /**
- * create Receptionist
- * /api/admin/az-reception/register-receptionist
+ * =================================================================
+ *                      Student CRUD Operations
+ * =================================================================
  */
 
-export const registerReceptionist = async (req, res) => {
+/**
+ * Register a new student
+ * /api/admin/az-students/register-student
+ */
+export const registerStudent = async (req, res) => {
     let user = null;
     try {
         const {
             fullName,
             email,
             password,
-            receptionRegId,
-            cnic,
-            salary,
-            joiningDate,
+            rollNo,
+            fatherName,
+            fatherPhone,
             contact,
-            address
+            address,
+            age,
+            className,
+            field,
         } = req.body;
 
-        user = await register(null, null, { fullName, email, password, role: 'receptionist' });
+        user = await register(null, null, { fullName, email, password, role: 'student' });
 
-        await ReceptionProfileModel.create([{
+        await StudentProfile.create({
             userId: user._id,
-            receptionistFullName: fullName,
-            receptionRegId: receptionRegId.toUpperCase(),
-            cnic,
-            salary,
-            joiningDate,
+            stdName: fullName,
+            rollNo: rollNo.toUpperCase(),
+            fatherName,
+            fatherPhone,
             contact,
-            address
-        }]);
+            address,
+            age,
+            className,
+            field,
+        });
 
-        // Success response
         res.status(201).json({
-            message: "Receptionist registered successfully",
-            receptionRegId: receptionRegId.toUpperCase()
+            message: "Student registered successfully",
+            rollNo: rollNo.toUpperCase(),
         });
 
     } catch (error) {
-        console.error("Receptionist Registration Error:", error);
+        console.error("Student Registration Error:", error);
 
-        // Manual Rollback
         if (user && user._id) {
             await UserModel.findByIdAndDelete(user._id);
         }
@@ -61,8 +58,7 @@ export const registerReceptionist = async (req, res) => {
             let message = "Already exists";
 
             if (field === "email") message = "Email already registered";
-            else if (field === "cnic") message = "CNIC already registered";
-            else if (field === "receptionRegId") message = "Receptionist Registration ID already taken";
+            else if (field === "rollNo") message = "Roll number already exists";
 
             return res.status(409).json({
                 message: `Registration failed: ${message} (${value})`
@@ -70,319 +66,118 @@ export const registerReceptionist = async (req, res) => {
         }
 
         res.status(500).json({
-            message: "An internal server error occurred during Receptionist registration.",
-            error: error.message
-        });
-    }
-}
-
-// api/admin/az-reception/fetch-all-receptionists
-
-export const fetchAllReceptionists = async (req, res) => {
-    try {
-        const receptionists = await ReceptionProfileModel.find();
-        res.status(200).json({
-            receptionists: receptionists
-        });
-    } catch (error) {
-        res.status(400).json({
-            "errMsg": "Failed to fetch receptionists"
-        });
-    }
-}
-
-export const removeReceptionist = async (req, res) => {
-    try {
-
-        const receptionRegId = req.params.receptionRegId.toUpperCase();
-        const curRecp = await ReceptionProfileModel.findOne({ receptionRegId })
-
-        if(!curRecp) {
-            res.status(404).json({
-                "msg": "No Data Found"
-            });
-        }
-
-        const deletedRecp = await ReceptionProfileModel.deleteOne({
-            receptionRegId
-        });
-
-        // del user
-        await UserModel.findByIdAndDelete(curRecp.userId)
-
-
-        res.status(200).json({
-            "msg": `Deleted receptionist`
-        })
-
-
-
-
-    } catch (error) {
-        res.status(400).json({
-            "msg": "Err in deleting Receptionist",
-            "error": error
-        })
-    }
-}
-
-
-// teacher Crud Operations
-
-// api/admin/AZ-teachers/register-teacher
-// api/admin/AZ-teachers/register-teacher
-export const registerTeacher = async (req, res) => {
-    let user = null;
-    try {
-        const {
-            fullName,
-            email,
-            password,
-            teacherRegId,
-            cnic,
-            qualification,
-            salary,
-            joiningDate,
-            subjects,
-            classes,
-            contact,
-            address,
-            age
-        } = req.body;
-
-        user = await register(null, null, { fullName, email, password, role: 'teacher' });  // req, res -> null
-
-        // Step 2: Create TeacherProfile
-        await TeacherProfile.create([{
-            userId: user._id,
-            teacherFullName: fullName,
-            teacherRegId: teacherRegId.toUpperCase(),
-            cnic,
-            qualification,
-            salary,
-            joiningDate,
-            subjects,
-            classes,
-            contact,
-            address,
-            age
-        }]);
-
-        // Success response
-        res.status(201).json({
-            message: "Teacher registered successfully",
-            teacherRegId: teacherRegId.toUpperCase()
-        });
-
-    } catch (error) {
-        console.error("Teacher Registration Error:", error);
-
-        // Manual Rollback
-        if (user && user._id) {
-            await UserModel.findByIdAndDelete(user._id);
-        }
-
-        if (error.code === 11000) {
-            const field = Object.keys(error.keyValue)[0];
-            const value = error.keyValue[field];
-            let message = "Already exists";
-
-            if (field === "email") message = "Email already registered";
-            else if (field === "cnic") message = "CNIC already registered";
-            else if (field === "teacherRegId") message = "Teacher Registration ID already taken";
-
-            return res.status(409).json({
-                message: `Registration failed: ${message} (${value})`
-            });
-        }
-
-        res.status(500).json({
-            message: "An internal server error occurred during teacher registration.",
+            message: "An internal server error occurred during student registration.",
             error: error.message
         });
     }
 };
 
-// api/admin/az-teachers/fetch-all-teachers
-export const fetchAllTeachers = async (req, res) => {
+/**
+ * Fetch all students
+ * /api/admin/az-students/fetch-all-students
+ */
+export const fetchAllStudents = async (req, res) => {
     try {
-        const teachers = await TeacherProfile.find();
+        const students = await StudentProfile.find().populate('userId', 'name email');
         res.status(200).json({
-            "teachers": teachers
+            students: students
         });
     } catch (error) {
         res.status(400).json({
-            "errMsg": "Teacher fetching failed"
+            "errMsg": "Failed to fetch students"
         });
     }
-}
+};
 
 /**
- * get teachers by class 
- * api/admin/az-teachers/fetch-teachers-byClass/:class
+ * Fetch a single student by registration ID
+ * /api/admin/az-students/fetch-student/:studentRegId
  */
-
-export const fetchTeachersByClass = async (req, res) => {
+export const fetchStudentById = async (req, res) => {
     try {
-
-        const classNumberFilter = Number(req.params.class);
-
-        if (isNaN(classNumberFilter)) {
-            res.status(400).json({
-                "msg": "Class number must be entered"
-            });
+        const rollNo = req.params.studentRegId.toUpperCase();
+        const student = await StudentProfile.findOne({ rollNo }).populate('userId', 'name email');
+        if (!student) {
+            return res.status(404).json({ msg: "Student not found" });
         }
-
-        const curTeachers = await TeacherProfile.find({
-            classes: classNumberFilter
-        }); //.populate('userId', 'fullName email')
-
-
-        res.status(200).json({
-            "TotalCount": curTeachers.length,
-            "Teachers": curTeachers
-        });
-
-
+        res.status(200).json({ student });
     } catch (error) {
-        res.status(500).json({ message: "Can not find By Class Errrrrr ", error: error.message });
+        res.status(500).json({ message: "Error fetching student", error: error.message });
     }
-}
+};
 
 /**
- * get search teachers by class + subject 
- * /admin/az-teachers/fetch-teachers-by-class-and-subject/:class/:subject
+ * Update a student's profile
+ * /api/admin/az-students/update-student/:studentRegId
  */
-
-export const searchTeacherByClassAndSubject = async (req, res) => {
+export const updateStudent = async (req, res) => {
     try {
-
-        const clsFilter = Number(req.params.class);
-        const subjectFilter = req.params.subject.toLowerCase();
-
-        if (isNaN(clsFilter)) {
-            res.status(400).json({
-                "msg": "Class number must be entered"
-            });
-        }
-
-
-        const curTeacher = await TeacherProfile.find(
-            {
-                classes: clsFilter,
-                subjects: {
-                    $in: [subjectFilter]
-                }
-            }
-        );  // .populate('userId', 'fullName email')
-
-        res.status(200).json({
-            "TotalCount": curTeacher.length,
-            "Teachers": curTeacher
-        });
-
-
-    } catch (error) {
-        res.status(500).json({ message: "Can not find By Class and subjetcs Errrrrr ", error: error.message });
-    }
-}
-
-/**
- * update teacher
- * /admin/az-teachers/update-teacher/:teacherRegId
- */
-
-export const updateTeacher = async (req, res) => {
-    try {
-
-        const { teacherRegId } = req.params;
+        const rollNo = req.params.studentRegId.toUpperCase();
         const updateData = req.body;
 
-        if (Object.keys(updateData).length === 0) {
-            return res.status(400).json({ message: "No update data provided." });
+        const studentProfile = await StudentProfile.findOne({ rollNo });
+
+        if (!studentProfile) {
+            return res.status(404).json({ message: "Student not found" });
         }
 
-        // Find the teacher profile
-        const teacherProfile = await TeacherProfile.findOne({ teacherRegId: teacherRegId.toUpperCase() });
+        const { fullName, email, ...profileUpdates } = updateData;
+        const userUpdates = { name: fullName, email };
 
-        if (!teacherProfile) {
-            return res.status(404).json({ message: "Teacher not found with the provided registration ID." });
-        }
-
-        // Separate data for User and TeacherProfile models
-        const { fullName, email, isActive, ...profileUpdates } = updateData;
-        const userUpdates = { fullName, email, isActive };
-
-        // Filter out undefined values so we only update provided fields
         Object.keys(userUpdates).forEach(key => userUpdates[key] === undefined && delete userUpdates[key]);
 
-        // Update User model if there's data for it
         if (Object.keys(userUpdates).length > 0) {
-            await UserModel.findByIdAndUpdate(teacherProfile.userId, userUpdates, { new: true, runValidators: true });
+            await UserModel.findByIdAndUpdate(studentProfile.userId, userUpdates, { new: true, runValidators: true });
         }
 
-        // Update TeacherProfile model if there's data for it
-        let updatedTeacherProfile = teacherProfile;
         if (Object.keys(profileUpdates).length > 0) {
-            updatedTeacherProfile = await TeacherProfile.findByIdAndUpdate(
-                teacherProfile._id,
+            await StudentProfile.findByIdAndUpdate(
+                studentProfile._id,
                 profileUpdates,
                 { new: true, runValidators: true }
             );
         }
 
-        // Fetch the latest state to ensure response is consistent
-        const finalTeacherProfile = await TeacherProfile.findById(teacherProfile._id).populate('userId', 'fullName email isActive');
+        const finalStudentProfile = await StudentProfile.findById(studentProfile._id).populate('userId', 'name email');
 
         res.status(200).json({
-            message: "Teacher updated successfully.",
-            teacher: finalTeacherProfile
+            message: "Student updated successfully.",
+            student: finalStudentProfile
         });
 
     } catch (error) {
-        console.error("Update Teacher Error:", error);
+        console.error("Update Student Error:", error);
         res.status(500).json({
-            message: "An error occurred while updating the teacher.",
+            message: "An error occurred while updating the student.",
             error: error.message
         });
     }
-}
+};
 
 /**
- * update the specific field (patch)
- * 
+ * Delete a student
+ * /api/admin/az-students/delete-student/:studentRegId
  */
-
-/**
- * Delete teacher
- * /admin/az-teachers/delete-teacher/:teacherRegId
- */
-
-export const deleteTeacherById = async (req, res) => {
+export const deleteStudentById = async (req, res) => {
     try {
+        const rollNo = req.params.studentRegId.toUpperCase();
+        const student = await StudentProfile.findOne({ rollNo });
 
-        const teacherRegId = req.params.teacherRegId.toUpperCase();
-        const currTeacher = await TeacherProfile.findOne({ teacherRegId });
-
-        if (!currTeacher) {
-            return res.status(404).json({
-                msg: "No Such teacher Found"
-            });
+        if (!student) {
+            return res.status(404).json({ msg: "Student not found" });
         }
 
-        const deletedTeacher = await TeacherProfile.deleteOne({ teacherRegId });
-
-        await UserModel.findByIdAndDelete(currTeacher.userId);
+        await StudentProfile.deleteOne({ rollNo });
+        await UserModel.findByIdAndDelete(student.userId);
 
         res.status(200).json({
-            msg: "teacher deleted",
-            delTeacher: deletedTeacher
-        })
+            msg: "Student deleted successfully"
+        });
 
     } catch (error) {
         res.status(400).json({
-            "msg": "Err in deleting Teacher",
+            "msg": "Error in deleting student",
             "error": error
-        })
+        });
     }
-}
+};

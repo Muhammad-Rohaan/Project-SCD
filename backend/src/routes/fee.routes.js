@@ -3,18 +3,21 @@ import express from 'express';
 import { protect, authorize } from '../middleware/auth.middleware.js';
 import { 
     collectFee, 
-    getStudentFeeStatus
+    getStudentFeeStatus,
+    getAllPendingFees,
+    getTotalRevenue,
+    getAllTransactions
 } from '../controllers/fees.controller.js';
 
 const router = express.Router();
 
-router.use(protect, authorize('receptionist'));  // check
+// Receptionist routes
+router.post('/collect', protect, authorize('receptionist'), collectFee);
+router.get('/student/:rollNo', protect, authorize('receptionist'), getStudentFeeStatus);
 
-// router.post('/create-voucher', createFeeVoucher);
-router.post('/collect', collectFee);
-router.get('/student/:rollNo', getStudentFeeStatus);
-
-
-// router.get('/pending', getAllPendingFees);
+// Admin routes
+router.get('/pending', protect, authorize('admin'), getAllPendingFees);
+router.get('/revenue', protect, authorize('admin'), getTotalRevenue);
+router.get('/transactions', protect, authorize('admin'), getAllTransactions);
 
 export default router;
