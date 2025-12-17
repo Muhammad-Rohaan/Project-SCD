@@ -1,29 +1,75 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext.jsx';
 import Login from './pages/Login';
-import RequireAuth from './components/RequireAuth';
-import Unauthorized from './pages/Unauthorized';
-import AdminDashboard from './pages/AdminDashboard';
+import AdminDashboard from './pages/Admin/AdminDashboard.jsx';
+import DashboardContent from './components/Admin/DashboardContent.jsx';
+import StudentsPage from './components/Admin/StudentsPage.jsx';
+import TeachersPage from './components/Admin/TeachersPage.jsx';
+import ReceptionistsPage from './components/Admin/ReceptionistsPage.jsx';
+import FinancePage from './components/Admin/FinancePage.jsx';
+import AnnouncementPage from './components/Admin/AnnouncementPage.jsx';
+import ProtectedRoute from './ProtectedRoute.jsx';
 
-function App() {
+const App = () => {
   return (
-    <Routes>
-      {/* 1. Login page ko /login path par set karein */}
-      <Route path='/login' element={<Login />} />
+    <AuthProvider>
+      <Routes>
+        {/* Public Routes */}
+        <Route path='/login' element={<Login />} />
 
-      {/* 2. Default root path (/) ko bhi login par set karein */}
-      <Route path='/' element={<Login />} />
+        {/* Protected Admin Routes */}
+        <Route
+          path='/admin/*'
+          element={
+            <ProtectedRoute>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        >
+          {/* Nested routes ka use tab kiya jaata hai jab aap kisi parent page (jaise ki Dashboard) ke andar sub-sections 
+          (jaise Profile, Settings) banana chahte hain, jismein layout kaafi had tak same 
+          rehta hai aur sirf content area change hota hai.  */}
 
-      <Route path='/unauthorized' element={<Unauthorized />} />
+          {/* Nested Routes inside Admin-Dashboard (Outlet se render hongay) */}
+          <Route index element={<Navigate to="dashboard" replace />} /> {/* /admin => /admin/dashboard */}
+          <Route path="dashboard" element={<DashboardContent />} />
+          <Route path="az-students" element={<StudentsPage />} />
+          <Route path="az-teachers" element={<TeachersPage />} />
+          <Route path="az-receptionists" element={<ReceptionistsPage />} />
+          <Route path="finance" element={<FinancePage />} />
+          <Route path="announcements" element={<AnnouncementPage />} />
 
-      {/* Protected Routes yahan aate hain */}
-      <Route element={<RequireAuth allowedRoles={['admin']} />}>
-        <Route path='/admin/dashboard' element={<AdminDashboard />} />
-      </Route>
+          {/* Agar koi unauthorized access ya unknown admin routes par yey route catch ho */}
+          <Route path="*" element={<Navigate to="dashboard" replace />} />
+        </Route>
 
-      {/* 404 Route */}
-      <Route path='*' element={<h1>404 Not Found</h1>} />
-    </Routes>
+        {/* Root Route - Agar logged in hai to dashboard, warna login */}
+        <Route path="/" element={<RootRedirect />} />
+
+        {/* Koi unknown route hoga to login par bhej dey ga */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    </AuthProvider>
   );
-}
+};
 
+
+// Helper Component for Root Redirect
+const RootRedirect = () => {
+  const { auth } = useAuth();
+
+  if (auth.loading) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center text-white">
+        Loading...
+      </div>
+    );
+  }
+
+  if (auth.user && auth.user.role === 'admin') {
+    return <Navigate to="/admin/dashboard" replace />;
+  }
+
+  return <Navigate to="/login" replace />;
+};
 export default App;

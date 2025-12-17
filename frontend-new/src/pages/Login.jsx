@@ -54,40 +54,54 @@ const Login = () => {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen w-full bg-gradient-to-br from-slate-800 to-slate-900 p-4">
+        <div className="flex items-center justify-center min-h-screen w-full bg-gradient-to-br 
+         from-slate-900 via-indigo-950 to-slate-900 p-4">
             <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, ease: 'easeOut' }}
-                className="w-full max-w-md p-10 space-y-8 bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20"
+                initial={{ opacity: 0, scale: 0.9, y: 50 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: 'easeOut' }}
+                className="w-full max-w-md p-10 space-y-8 bg-white/5 backdrop-blur-xl rounded-3xl 
+                shadow-2xl border border-cyan-400/20 hover:border-cyan-400/40 transition-all 
+                duration-500"
             >
                 <div className="text-center">
-                    <h1 className="text-4xl font-extrabold text-white tracking-wide">Institute ERP</h1>
-                    <p className="mt-2 text-sm text-slate-200">Sign in to continue</p>
+                    <motion.h1
+                        initial={{ y: -20 }}
+                        animate={{ y: 0 }}
+                        className="text-4xl font-extrabold tracking-wide bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 
+                        bg-clip-text text-transparent"
+                    >
+                        AZ Coaching
+                    </motion.h1>
+                    <p className="mt-3 text-sm text-gray-300">Sign in to access admin dashboard</p>
                 </div>
 
                 {error && (
                     <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="p-3 text-sm text-red-200 bg-red-500/20 rounded border border-red-400/40"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="p-4 text-sm text-red-300 bg-red-900/30 rounded-2xl border 
+                        border-red-500/40 backdrop-blur-sm"
                     >
                         {error}
                     </motion.div>
                 )}
 
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-                    <div className="space-y-4">
+                    <div className="space-y-5">
                         <div>
-                            <label htmlFor="loginInput" className="block text-sm font-medium text-white">
-                                Email
+                            <label htmlFor="loginInput" className="block text-sm font-medium text-gray-200">
+                                Email or ID
                             </label>
                             <input
+                                autoFocus
                                 id="loginInput"
                                 name="loginInput"
                                 type="text"
                                 required
-                                className="mt-1 block w-full px-4 py-3 bg-white/20 text-white placeholder-slate-300 border border-white/30 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 outline-none backdrop-blur-md"
+                                className="mt-2 block w-full px-5 py-4 bg-white/10 text-white placeholder-gray-400 
+                                border border-cyan-400/30 rounded-2xl focus:ring-4 focus:ring-cyan-400/50 
+                                focus:border-cyan-400 outline-none backdrop-blur-md transition-all"
                                 placeholder="admin@example.com"
                                 value={formData.loginInput}
                                 onChange={handleChange}
@@ -95,7 +109,7 @@ const Login = () => {
                         </div>
 
                         <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-white">
+                            <label htmlFor="password" className="block text-sm font-medium text-gray-200">
                                 Password
                             </label>
                             <input
@@ -103,21 +117,26 @@ const Login = () => {
                                 name="password"
                                 type="password"
                                 required
-                                className="mt-1 block w-full px-4 py-3 bg-white/20 text-white placeholder-slate-300 border border-white/30 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 outline-none backdrop-blur-md"
+                                className="mt-2 block w-full px-5 py-4 bg-white/10 text-white placeholder-gray-400 
+                                border border-cyan-400/30 rounded-2xl focus:ring-4 focus:ring-cyan-400/50 
+                                focus:border-cyan-400 outline-none backdrop-blur-md transition-all"
                                 value={formData.password}
                                 onChange={handleChange}
                             />
                         </div>
                     </div>
 
-                    <button
+                    <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                         type="submit"
                         disabled={loading}
-                        className="w-full py-3 px-4 text-sm font-semibold rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 active:scale-95 
-                        transition-all duration-300 shadow-lg hover:shadow-indigo-500/30 tracking wide"
+                        className="w-full py-4 px-6 text-lg font-semibold rounded-2xl text-white 
+                        bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 
+                        shadow-2xl hover:shadow-cyan-500/50 transition-all duration-300"
                     >
                         {loading ? 'Signing in…' : 'Sign In'}
-                    </button>
+                    </motion.button>
                 </form>
             </motion.div>
         </div>

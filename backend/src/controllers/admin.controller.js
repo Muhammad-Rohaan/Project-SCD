@@ -28,7 +28,7 @@ export const registerReceptionist = async (req, res) => {
         } = req.body;
 
         const user = await register(null, null, { fullName, email, password, role: 'receptionist' });
-        
+
 
 
 
@@ -78,6 +78,40 @@ export const registerReceptionist = async (req, res) => {
     }
 }
 
+export const removeReceptionist = async (req, res) => {
+    try {
+
+        const receptionRegId = req.params.receptionRegId.toUpperCase();
+        const curRecp = await ReceptionProfileModel.findOne({ receptionRegId })
+
+        if (!curRecp) {
+            res.status(404).json({
+                "msg": "No Data Found"
+            });
+        }
+
+        const deletedRecp = await ReceptionProfileModel.deleteOne({
+            receptionRegId
+        });
+
+        // del user
+        await UserModel.findByIdAndDelete(curRecp.userId)
+
+
+        res.status(200).json({
+            "msg": `Deleted receptionist`
+        })
+
+
+
+
+    } catch (error) {
+        res.status(400).json({
+            "msg": "Err in deleting Receptionist",
+            "error": error
+        })
+    }
+}
 
 
 // teacher Crud Operations
@@ -148,6 +182,21 @@ export const registerTeacher = async (req, res) => {
         res.status(500).json({
             message: "An internal server error occurred during teacher registration.",
             error: error.message
+        });
+    }
+};
+
+// api/admin/az-reception/fetch-all-receptionists
+
+export const fetchAllReceptionists = async (req, res) => {
+    try {
+        const receptionists = await ReceptionProfileModel.find();
+        res.status(200).json({
+            receptionists: receptionists
+        });
+    } catch (error) {
+        res.status(400).json({
+            "errMsg": "Failed to fetch receptionists"
         });
     }
 };
@@ -292,7 +341,6 @@ export const updateTeacher = async (req, res) => {
             },
             updTeacherDoc,
             { new: true, runValidators: true }
-
         );
 
         if (!updated) {
@@ -304,9 +352,6 @@ export const updateTeacher = async (req, res) => {
             "UpdatedTeacherRecord": updatedTeacherRecord
         });
 
-
-
-
     } catch (error) {
         console.error("Update Teacher Error:", error);
         res.status(500).json({
@@ -314,7 +359,7 @@ export const updateTeacher = async (req, res) => {
             error: error.message
         });
     }
-}
+};
 
 /**
  * update the specific field (patch)

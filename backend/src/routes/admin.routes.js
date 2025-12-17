@@ -1,7 +1,7 @@
 import express from 'express';
 import { protect, authorize } from '../middleware/auth.middleware.js';
 import { register } from '../controllers/auth.controller.js';
-import { deleteTeacherById, fetchAllTeachers, fetchTeachersByClass, registerReceptionist, registerTeacher, searchTeacherByClassAndSubject, updateTeacher } from '../controllers/admin.controller.js';
+import { deleteTeacherById, fetchAllReceptionists, fetchAllTeachers, fetchTeachersByClass, registerReceptionist, registerTeacher, removeReceptionist, searchTeacherByClassAndSubject, updateTeacher } from '../controllers/admin.controller.js';
 
 
 // Example: import { getDashboardStats, manageUser } from '../controllers/admin.controller.js';
@@ -20,7 +20,8 @@ router.post('/register-user', register);  // not good ...
 // creating reception routes
 
 router.post('/az-reception/register-receptionist', registerReceptionist);
-
+router.get('/az-reception/fetch-all-receptionists', fetchAllReceptionists);
+router.delete('/az-reception/delete-receptionist/:receptionRegId', removeReceptionist);
 
 /**
  * teachers creation in admin 
