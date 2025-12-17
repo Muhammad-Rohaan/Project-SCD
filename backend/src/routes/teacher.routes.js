@@ -9,12 +9,8 @@ const router = express.Router();
 // Apply protect and authorize middleware to all routes in this file
 router.use(protect, authorize('teacher'));
 
-/**
- * GET /api/teacher/profile
- * Get the profile of the currently logged-in teacher
- * Private (Teacher)
- */
-router.get('/profile', (req, res) => res.json({ success: true, user: req.user }));
+
+// router.get('/students/:class');
 
 /**
  * POST /api/teacher/attendance
