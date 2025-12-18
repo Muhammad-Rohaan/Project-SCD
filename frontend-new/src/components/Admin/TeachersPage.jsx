@@ -67,6 +67,37 @@ const TeachersPage = () => {
         if (!value) setSelectedSubject(''); // class clear ho to subject bhi clear
     };
 
+    // Delete Function
+    const handleDelete = async (teacherRegId) => {
+        if (!confirm(`Are you sure you want to delete this teacher ${teacherRegId}?`)) return;
+        try {
+            await axiosInstance.delete(`/admin/az-teachers/delete-teacher/${teacherRegId}`);
+            setTeachers(teachers.filter(t => t.teacherRegId !== teacherRegId));
+            setFilteredTeachers(filteredTeachers.filter(t => t.teacherRegId !== teacherRegId));
+            alert('Teacher deleted successfully.');
+        } catch (err) {
+            console.error("Error deleting teacher:", err);
+            alert('Delete failed: ' + (err.response?.data?.msg || 'Try again'));
+        }
+    };
+
+    // Edit Function
+    const handleEdit = (teacher) => {
+        setEditTeacher(teacher);
+    };
+
+    const handleEditSuccess = () => {
+        setEditTeacher(null);
+        // refresh list
+        const refresh = async () => {
+            const res = await axiosInstance.get('/admin/az-teachers/fetch-all-teachers');
+            const allTeachers = res.data.teachers || [];
+            setTeachers(allTeachers);
+            setFilteredTeachers(allTeachers);
+        };
+        refresh();
+    };
+
     if (loading) {
         return <p className="text-center text-white text-2xl animate-pulse">Loading teachers...</p>;
     }
@@ -146,14 +177,33 @@ const TeachersPage = () => {
                                     <td className="p-4 text-gray-300">{teacher.classes.join(', ')}</td>
                                     <td className="p-4 text-gray-300">{teacher.subjects.join(', ')}</td>
                                     <td className="p-4">
-                                        <button onClick={() => setEditTeacher(teacher)} className="text-yellow-400 mr-4 hover:text-yellow-300">Edit</button>
-                                        <button onClick={() => handleDelete(teacher.teacherRegId)} className="text-red-400 hover:text-red-300">Delete</button>
+                                        <button
+                                            onClick={() => handleEdit(teacher)}
+                                            className="text-yellow-400 mr-4 hover:text-yellow-300 font-medium"
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            onClick={() => handleDelete(teacher.teacherRegId)}
+                                            className="text-red-400 hover:text-red-300 font-medium"
+                                        >
+                                            Delete
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 </div>
+            )}
+
+            {/* Edit Teacher Modal */}
+            {editTeacher && (
+                <RegisterTeacher
+                    teacher={editTeacher}
+                    onClose={() => setEditTeacher(null)}
+                    onSuccess={handleEditSuccess}
+                />
             )}
         </div>
     );

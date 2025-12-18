@@ -44,11 +44,16 @@ const RegisterReceptionist = ({ onClose, receptionist, onSuccess }) => {
             const response = await axiosInstance.post('/admin/az-reception/register-receptionist', dataToSend);
 
             alert(response.data.message || "Receptionist registered successfully!");
-            onSuccess(); // List refresh
-            onClose(); // Modal band
+            onClose();
+            if (onSuccess) onSuccess();
+
         } catch (err) {
-            const msg = err.response?.data?.message || 'Registration failed';
-            alert('Error: ' + msg);
+            console.error("Registration error:", err);
+            if (err.response) {
+                alert('Error: ' + (err.response.data.message || 'Registration failed'));
+            } else {
+                alert('Network error. Please try again later.');
+            }
         } finally {
             setLoading(false);
         }
