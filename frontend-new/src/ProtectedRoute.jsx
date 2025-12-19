@@ -1,20 +1,26 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from "./context/AuthContext.jsx";
+import { useAuth } from './context/AuthContext.jsx';
 
-const ProtectedRoute = ({ children }) => {
-    const { auth, loading } = useAuth();
+const ProtectedRoute = ({ children, requiredRole }) => {
+    const { auth } = useAuth();
 
-    // Loading dikhao jab tak state load na ho
-    if (loading) {
+    // Jab tak auth load ho raha hai
+    if (auth.loading) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-900 to-indigo-950">
-                <p className="text-white text-2xl animate-pulse">Welcome back! Loading dashboard...</p>
+            <div className="flex items-center justify-center min-h-screen bg-slate-900 text-white">
+                Loading...
             </div>
         );
     }
 
-    if (!auth.user || auth.role !== 'admin') {
+    // Login nahi hai
+    if (!auth.user) {
+        return <Navigate to="/login" replace />;
+    }
+
+    // Role required hai aur match nahi ho raha
+    if (requiredRole && auth.user.role !== requiredRole) {
         return <Navigate to="/login" replace />;
     }
 

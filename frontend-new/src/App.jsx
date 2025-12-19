@@ -8,6 +8,12 @@ import TeachersPage from './components/Admin/TeachersPage.jsx';
 import ReceptionistsPage from './components/Admin/ReceptionistsPage.jsx';
 import FinancePage from './components/Admin/FinancePage.jsx';
 import AnnouncementPage from './components/Admin/AnnouncementPage.jsx';
+
+// Reception Imports
+import ReceptionLayout from './components/Layouts/ReceptionLayout.jsx';
+import ReceptionDashboard from './components/Reception/ReceptionistDashboard.jsx';
+import ReceptionStudentsPage from './components/Reception/ReceptionStudentsPage.jsx';
+
 import ProtectedRoute from './ProtectedRoute.jsx';
 
 const App = () => {
@@ -39,9 +45,42 @@ const App = () => {
           <Route path="finance" element={<FinancePage />} />
           <Route path="announcements" element={<AnnouncementPage />} />
 
-          {/* Agar koi unauthorized access ya unknown admin routes par yey route catch ho */}
+        </Route>
+
+        {/* Protected Reception Routes */}
+        <Route path='/reception/*'
+          element={
+            <ProtectedRoute requiredRole="receptionist">
+              <ReceptionLayout />
+            </ProtectedRoute>
+          }>
+
+          <Route index element={<Navigate to="dashboard" replace />} /> {/* /reception => /reception/dashboard */}
+          <Route path="dashboard" element={<ReceptionDashboard />} />
+          <Route path="az-students" element={<ReceptionStudentsPage />} />
+          {/* Future mein fees, announcements etc add kar sakte ho */}
           <Route path="*" element={<Navigate to="dashboard" replace />} />
         </Route>
+
+        {/* Teacher Routes (future mein) */}
+        {/* <Route
+          path="/teacher/*"
+          element={
+            <ProtectedRoute requiredRole="teacher">
+              <TeacherLayout />
+            </ProtectedRoute>
+          }>
+        </Route> */}
+
+        {/* Student Routes */}
+        {/* <Route
+          path="/student/*"
+          element={
+            <ProtectedRoute requiredRole="student">
+              <StudentLayout />
+            </ProtectedRoute>
+          }>
+        </Route> */}
 
         {/* Root Route - Agar logged in hai to dashboard, warna login */}
         <Route path="/" element={<RootRedirect />} />
@@ -66,10 +105,15 @@ const RootRedirect = () => {
     );
   }
 
-  if (auth.user && auth.user.role === 'admin') {
-    return <Navigate to="/admin/dashboard" replace />;
+  if (auth.user) {
+    if (auth.user.role === 'admin') {
+      return <Navigate to="/admin/dashboard" replace />;
+    } else if (auth.user.role === 'receptionist') {
+      return <Navigate to="/reception/dashboard" replace />;
+    }
   }
 
   return <Navigate to="/login" replace />;
 };
+
 export default App;
