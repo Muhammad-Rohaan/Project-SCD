@@ -95,33 +95,8 @@ export const uploadResultImage = async (req, res) => {
   }
 };
 
-// Get Results for Student's Class
-export const getMyClassResults = async (req, res) => {
-  try {
-    // Student apni class ke results dekhega
-    const student = await StudentProfileModel.findOne({ userId: req.user._id });
-    if (!student) return res.status(404).json({ message: "Student profile not found." });
 
-    const results = await ResultImage.find({ className: student.className })
 
-    console.log(results);
-    
-
-    res.json({
-      className: student.className,
-      totalResults: results.length,
-      results: results.map(result => ({
-        testName: result.testName,
-        imageUrl: result.imageUrl
-      }))
-
-    });
-
-  } catch (error) {
-    console.error("Get My Class Results Error:", error);
-    res.status(500).json({ message: "Error fetching results." });
-  }
-};
 
 // Get All Results (Teacher/Admin)
 export const getAllResults = async (req, res) => {

@@ -41,8 +41,7 @@ const ReceptionDashboard = () => {
                         const today = new Date();
                         const registered = new Date(s.createdAt || s.joiningDate);
                         return registered.toDateString() === today.toDateString();
-                    }).length,
-                    pendingFees: 0 // future mein real fees se calculate kar lenge
+                    }).length
                 });
             } catch (err) {
                 console.error(err);
@@ -103,7 +102,7 @@ const ReceptionDashboard = () => {
             <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                 <StatCard name="Active Students" stat={stats.activeStudents} icon={UsersIcon} color="bg-gradient-to-br from-purple-800 to-indigo-900" />
                 <StatCard name="Today's Admissions" stat={stats.todayAdmissions} icon={UsersIcon} color="bg-gradient-to-br from-cyan-800 to-blue-900" />
-                <StatCard name="Pending Fees" stat={stats.pendingFees} icon={BellIcon} color="bg-gradient-to-br from-red-800 to-pink-900" />
+                {/* <StatCard name="Collected Fees" stat={stats.collectedFees} icon={BellIcon} color="bg-gradient-to-br from-red-800 to-pink-900" /> */}
             </div>
 
             {/* Quick Actions - Admin jaisa */}

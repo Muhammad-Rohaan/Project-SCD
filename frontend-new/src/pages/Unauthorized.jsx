@@ -29,7 +29,7 @@ const Unauthorized = () => {
 
                 <h2 className="text-3xl font-bold text-white mb-4">Access Denied</h2>
 
-                <p className="text-lg text-gray-300 mb-8">Aapke paas iss page ko dekhne ki permission nahi hai.<br />
+                <p className="text-lg text-gray-300 mb-8">You Dont have access to this page.<br />
                     Please contact Admin.
                 </p>
 
