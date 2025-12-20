@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import axiosInstance from '../../api/axios.js';
 import RegisterTeacher from '../../components/Admin/RegisterTeacher.jsx';
 import RegisterReceptionist from '../../components/Admin/RegisterReceptionist.jsx';
+import RegisterUser from '../../components/Admin/RegisterUser.jsx';
 
 const StatCard = ({ name, stat, icon: Icon, color }) => (
     <div className={`p-5 rounded-2xl shadow-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-cyan-500/30 backdrop-blur-md border border-cyan-400/20 ${color} text-white`}>
@@ -23,6 +24,7 @@ const StatCard = ({ name, stat, icon: Icon, color }) => (
 const DashboardContent = () => {
     const [showTeacher, setShowTeacher] = useState(false);
     const [showReceptionist, setShowReceptionist] = useState(false);
+    const [showRegisterUser, setShowRegisterUser] = useState(false);
     const [stats, setStats] = useState({
         students: 0,
         teachers: 0,
@@ -118,6 +120,13 @@ const DashboardContent = () => {
                             ➕ Register New Receptionist
                         </button>
 
+                        <button
+                            onClick={() => setShowRegisterUser(true)}
+                            className="w-full text-left p-4 rounded-xl bg-gradient-to-r from-purple-800/50 to-indigo-800/50 hover:from-purple-900/50 hover:to-indigo-900/50 text-cyan-300 font-medium transition transform hover:scale-105 shadow-md"
+                        >
+                            ➕ Register User (Generic)
+                        </button>
+
                         {/* Announcement Button */}
                         <button className="w-full text-left p-4 rounded-xl bg-gradient-to-r from-pink-800/50 to-red-800/50 hover:from-pink-900/50 hover:to-red-900/50 text-pink-300 font-medium transition transform hover:scale-105 shadow-md">
                             📢 Create Announcement
@@ -129,6 +138,9 @@ const DashboardContent = () => {
                     )}
                     {showReceptionist && (
                         <RegisterReceptionist onClose={() => setShowReceptionist(false)} />
+                    )}
+                    {showRegisterUser && (
+                        <RegisterUser onClose={() => setShowRegisterUser(false)} />
                     )}
                 </div>
             </div>

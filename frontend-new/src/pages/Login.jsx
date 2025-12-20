@@ -30,7 +30,7 @@ const Login = () => {
                     case 'admin':
                         navigate('/admin/dashboard');
                         break;
-                    case 'reception':
+                    case 'receptionist':
                         navigate('/reception/dashboard');
                         break;
                     case 'teacher':

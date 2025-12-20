@@ -7,7 +7,8 @@ import RegisterReceptionist from '../../components/Admin/RegisterReceptionist.js
 const ReceptionistsPage = () => {
     const [receptionists, setReceptionists] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [editReceptionist, setEditReceptionist] = useState(null); // Edit ke liye
+    
+    const [showRegister, setShowRegister] = useState(false);
 
     useEffect(() => {
         fetchReceptionists();
@@ -41,13 +42,9 @@ const ReceptionistsPage = () => {
         }
     };
 
-    const handleEdit = (receptionist) => {
-        setEditReceptionist(receptionist);
-    };
-
-    const handleUpdateSuccess = () => {
-        setEditReceptionist(null);
-        fetchReceptionists(); // List refresh
+    const handleRegisterSuccess = () => {
+        setShowRegister(false);
+        fetchReceptionists();
     };
 
     if (loading) {
@@ -56,9 +53,18 @@ const ReceptionistsPage = () => {
 
     return (
         <div className="space-y-8">
-            <h1 className="text-4xl font-extrabold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
-                AZ Receptionists ({receptionists.length})
-            </h1>
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <h1 className="text-4xl font-extrabold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+                    AZ Receptionists ({receptionists.length})
+                </h1>
+
+                <button
+                    onClick={() => setShowRegister(true)}
+                    className="py-3 px-6 rounded-2xl bg-gradient-to-r from-purple-600/80 to-cyan-600/80 hover:from-purple-600 hover:to-cyan-600 text-white font-bold transition shadow-lg"
+                >
+                    + Register Receptionist
+                </button>
+            </div>
 
             {receptionists.length === 0 ? (
                 <p className="text-center text-gray-400 text-xl py-10">No receptionists registered yet.</p>
@@ -85,12 +91,6 @@ const ReceptionistsPage = () => {
                                     <td className="p-4 text-gray-300">{rec.contact}</td>
                                     <td className="p-4">
                                         <button
-                                            onClick={() => handleEdit(rec)}
-                                            className="text-yellow-400 mr-4 hover:text-yellow-300 font-medium"
-                                        >
-                                            Edit
-                                        </button>
-                                        <button
                                             onClick={() => handleDelete(rec.receptionRegId)}
                                             className="text-red-400 hover:text-red-300 font-medium"
                                         >
@@ -104,12 +104,10 @@ const ReceptionistsPage = () => {
                 </div>
             )}
 
-            {/* Edit Modal */}
-            {editReceptionist && (
+            {showRegister && (
                 <RegisterReceptionist
-                    receptionist={editReceptionist}
-                    onClose={() => setEditReceptionist(null)}
-                    onSuccess={handleUpdateSuccess}
+                    onClose={() => setShowRegister(false)}
+                    onSuccess={handleRegisterSuccess}
                 />
             )}
         </div>
