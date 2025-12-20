@@ -22,7 +22,7 @@ export const AuthProvider = ({ children }) => {
                         role: user.role,
                         loading: false
                     });
-                } catch (err) {
+                } catch {
                     localStorage.removeItem('userInfo');
                     setAuth({
                         user: null,

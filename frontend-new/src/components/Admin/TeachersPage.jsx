@@ -32,34 +32,30 @@ const TeachersPage = () => {
 
     // Filter function - jab class ya subject change ho
     useEffect(() => {
-        if (!selectedClass && !selectedSubject) {
-            setFilteredTeachers(teachers);
-            return;
-        }
+        if (!selectedClass) return;
 
         let url = '/admin/az-teachers';
 
-        if (selectedClass && selectedSubject) {
+        if (selectedSubject) {
             url += `/fetch-teachers-by-class-and-subject/${selectedClass}/${selectedSubject}`;
-        } else if (selectedClass) {
-            url += `/fetch-teachers-by-class/${selectedClass}`;
         } else {
-            setFilteredTeachers(teachers);
-            return;
+            url += `/fetch-teachers-by-class/${selectedClass}`;
         }
 
         const fetchFiltered = async () => {
             try {
                 const res = await axiosInstance.get(url);
                 setFilteredTeachers(res.data.Teachers || res.data.teachers || []);
-            } catch (err) {
+            } catch {
                 alert('No teachers found for this filter');
                 setFilteredTeachers([]);
             }
         };
 
         fetchFiltered();
-    }, [selectedClass, selectedSubject, teachers]);
+    }, [selectedClass, selectedSubject]);
+
+    const displayedTeachers = selectedClass ? filteredTeachers : teachers;
 
     const handleClassChange = (e) => {
         const value = e.target.value;
@@ -105,7 +101,7 @@ const TeachersPage = () => {
     return (
         <div className="space-y-8">
             <h1 className="text-4xl font-extrabold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
-                AZ Teachers ({filteredTeachers.length})
+                AZ Teachers ({displayedTeachers.length})
             </h1>
 
             {/* Filter Section */}
@@ -155,7 +151,7 @@ const TeachersPage = () => {
             </div>
 
             {/* Teachers Table/List */}
-            {filteredTeachers.length === 0 ? (
+            {displayedTeachers.length === 0 ? (
                 <p className="text-center text-gray-400 text-xl">No teachers found for selected filter.</p>
             ) : (
                 <div className="overflow-x-auto">
@@ -170,7 +166,7 @@ const TeachersPage = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredTeachers.map(teacher => (
+                            {displayedTeachers.map(teacher => (
                                 <tr key={teacher._id} className="border-t border-cyan-400/20">
                                     <td className="p-4 text-white">{teacher.teacherRegId}</td>
                                     <td className="p-4 text-white">{teacher.teacherFullName}</td>

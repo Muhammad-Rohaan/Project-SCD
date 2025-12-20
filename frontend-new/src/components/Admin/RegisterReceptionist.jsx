@@ -1,11 +1,9 @@
 // src/components/Admin/RegisterReceptionistModal.jsx
 
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../api/axios.js';
 
 const RegisterReceptionist = ({ onClose, receptionist, onSuccess }) => {
-    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
 
     const [formData, setFormData] = useState({

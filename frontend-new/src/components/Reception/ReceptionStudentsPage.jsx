@@ -23,7 +23,7 @@ const ReceptionStudentsPage = () => {
         try {
             const response = await axiosInstance.get('/reception/az-students/fetch-all-students');
             setStudents(response.data.students || []);
-        } catch (err) {
+        } catch {
             alert('Failed to load students');
         } finally {
             setLoading(false);

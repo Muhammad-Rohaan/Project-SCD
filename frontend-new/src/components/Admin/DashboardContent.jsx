@@ -1,25 +1,27 @@
 import React, { useState, useEffect } from 'react';
 // Heroicons import karein
 import { UsersIcon, AcademicCapIcon, CalendarDaysIcon } from '@heroicons/react/24/solid';
-import { motion } from 'framer-motion';
 import axiosInstance from '../../api/axios.js';
 import RegisterTeacher from '../../components/Admin/RegisterTeacher.jsx';
 import RegisterReceptionist from '../../components/Admin/RegisterReceptionist.jsx';
 import RegisterUser from '../../components/Admin/RegisterUser.jsx';
 
-const StatCard = ({ name, stat, icon: Icon, color }) => (
-    <div className={`p-5 rounded-2xl shadow-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-cyan-500/30 backdrop-blur-md border border-cyan-400/20 ${color} text-white`}>
-        <div className="flex items-center justify-between">
-            <div>
-                <p className="text-sm font-medium opacity-90">{name}</p>
-                <p className="text-3xl font-extrabold mt-1">{stat}</p>
-            </div>
-            <div className="bg-white/10 p-3 rounded-full">
-                <Icon className="h-6 w-6" />
+const StatCard = ({ name, stat, icon, color }) => {
+    const iconEl = icon ? React.createElement(icon, { className: 'h-6 w-6' }) : null;
+    return (
+        <div className={`p-5 rounded-2xl shadow-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-cyan-500/30 backdrop-blur-md border border-cyan-400/20 ${color} text-white`}>
+            <div className="flex items-center justify-between">
+                <div>
+                    <p className="text-sm font-medium opacity-90">{name}</p>
+                    <p className="text-3xl font-extrabold mt-1">{stat}</p>
+                </div>
+                <div className="bg-white/10 p-3 rounded-full">
+                    {iconEl}
+                </div>
             </div>
         </div>
-    </div>
-);
+    );
+};
 
 const DashboardContent = () => {
     const [showTeacher, setShowTeacher] = useState(false);
@@ -65,12 +67,7 @@ const DashboardContent = () => {
 
             {/* ==== Ye Naya Beautiful Header ==== */}
             <div className="mb-10">
-                <motion.div
-                    initial={{ opacity: 0, x: -50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.6 }}
-                    className="flex items-center gap-4"
-                >
+                <div className="flex items-center gap-4">
                     <div className="p-3 rounded-2xl bg-gradient-to-br from-cyan-500 to-purple-600 shadow-lg shadow-cyan-500/30">
                         <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -84,7 +81,7 @@ const DashboardContent = () => {
                         </h1>
                         <p className="text-gray-400 mt-1 text-sm">Monitor your institute's performance at a glance</p>
                     </div>
-                </motion.div>
+                </div>
             </div>
             {/* ==== Header Khatam ==== */}
 

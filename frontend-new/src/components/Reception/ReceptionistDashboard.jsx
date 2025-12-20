@@ -1,24 +1,26 @@
 // src/components/Reception/ReceptionDashboard.jsx
 
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { UsersIcon, AcademicCapIcon, BellIcon } from '@heroicons/react/24/solid';
+import { UsersIcon } from '@heroicons/react/24/solid';
 import axiosInstance from '../../api/axios.js';
 import RegisterStudent from './RegisterStudent.jsx';
 
-const StatCard = ({ name, stat, icon: Icon, color }) => (
-    <div className={`p-6 rounded-2xl shadow-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-cyan-500/30 backdrop-blur-md border border-cyan-400/20 ${color} text-white`}>
-        <div className="flex items-center justify-between">
-            <div>
-                <p className="text-sm font-medium opacity-90">{name}</p>
-                <p className="text-4xl font-extrabold mt-2">{stat}</p>
-            </div>
-            <div className="bg-white/10 p-4 rounded-full">
-                <Icon className="h-8 w-8" />
+const StatCard = ({ name, stat, icon, color }) => {
+    const iconEl = icon ? React.createElement(icon, { className: 'h-8 w-8' }) : null;
+    return (
+        <div className={`p-6 rounded-2xl shadow-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-cyan-500/30 backdrop-blur-md border border-cyan-400/20 ${color} text-white`}>
+            <div className="flex items-center justify-between">
+                <div>
+                    <p className="text-sm font-medium opacity-90">{name}</p>
+                    <p className="text-4xl font-extrabold mt-2">{stat}</p>
+                </div>
+                <div className="bg-white/10 p-4 rounded-full">
+                    {iconEl}
+                </div>
             </div>
         </div>
-    </div>
-);
+    );
+};
 
 const ReceptionDashboard = () => {
     const [showStudent, setShowStudent] = useState(false);
@@ -79,11 +81,7 @@ const ReceptionDashboard = () => {
     return (
         <div className="space-y-8 p-6 lg:p-10 bg-gradient-to-br from-slate-900 to-indigo-950 min-h-screen">
             {/* Header - Admin jaisa */}
-            <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-6"
-            >
+            <div className="flex items-center gap-6">
                 <div className="p-4 rounded-2xl bg-gradient-to-br from-cyan-500 to-purple-600 shadow-2xl">
                     <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -96,7 +94,7 @@ const ReceptionDashboard = () => {
                     </h1>
                     <p className="text-gray-400 mt-1 text-lg">Monitor admissions and manage students efficiently</p>
                 </div>
-            </motion.div>
+            </div>
 
             {/* Stats Cards - Admin jaisa */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
