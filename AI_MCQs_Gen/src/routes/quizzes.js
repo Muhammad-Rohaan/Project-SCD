@@ -38,7 +38,7 @@ router.post('/generate', async (req, res) => {
         if (m) questions = JSON.parse(m[0]);
       }
     }
-  } catch (_) {}
+  } catch (_) { }
 
   if (!Array.isArray(questions) || questions.length === 0) {
     questions = [

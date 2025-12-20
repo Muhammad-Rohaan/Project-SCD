@@ -37,14 +37,16 @@ const DashboardContent = () => {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                // Teachers count fetch karo
-                const teachersRes = await axiosInstance.get('/admin/az-teachers/fetch-all-teachers');
-                const teachersCount = teachersRes.data.teachers?.length || 0;
+                const [teachersRes, studentsRes] = await Promise.all([
+                    axiosInstance.get('/admin/az-teachers/fetch-all-teachers'),
+                    axiosInstance.get('/admin/az-teachers/getAllStudents')
+                ]);
 
-                // Baaki counts future mein add kar sakte ho (students, announcements)
+                const teachersCount = teachersRes.data.teachers?.length || 0;
+                const studentsCount = studentsRes.data.getStds?.length || 0;
 
                 setStats({
-                    students: 0, // abhi dummy, baad mein real API se
+                    students: studentsCount,
                     teachers: teachersCount,
                     announcements: 0
                 });
