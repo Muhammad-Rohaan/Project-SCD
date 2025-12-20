@@ -21,7 +21,7 @@ const ProtectedRoute = ({ children, requiredRole }) => {
 
     // Role required hai aur match nahi ho raha
     if (requiredRole && auth.user.role !== requiredRole) {
-        return <Navigate to="/login" replace />;
+        return <Navigate to="/unauthorized" replace />;
     }
 
     return children;
