@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { HomeIcon, UsersIcon } from '@heroicons/react/24/outline';
+import { HomeIcon, UsersIcon, CurrencyDollarIcon } from '@heroicons/react/24/outline';
 
 const ReceptionSidebar = () => {
     return (
@@ -34,6 +34,18 @@ const ReceptionSidebar = () => {
                 >
                     <UsersIcon className="w-6 h-6 mr-4" />
                     AZ Students
+                </NavLink>
+
+                <NavLink
+                    to="/reception/fees"
+                    className={({ isActive }) =>
+                        `flex items-center p-4 rounded-xl transition-all ${isActive
+                            ? 'bg-gradient-to-r from-purple-600 to-cyan-600 shadow-lg shadow-cyan-500/30'
+                            : 'hover:bg-indigo-800/60'}`
+                    }
+                >
+                    <CurrencyDollarIcon className="w-6 h-6 mr-4" />
+                    Fees Management
                 </NavLink>
             </nav>
         </div>

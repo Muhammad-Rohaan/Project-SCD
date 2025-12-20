@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { UsersIcon, AcademicCapIcon, BellIcon } from '@heroicons/react/24/solid';
 import axiosInstance from '../../api/axios.js';
 import RegisterStudent from './RegisterStudent.jsx';
+import CollectFee from './CollectFee.jsx';
 
 const StatCard = ({ name, stat, icon: Icon, color }) => (
     <div className={`p-6 rounded-2xl shadow-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-cyan-500/30 backdrop-blur-md border border-cyan-400/20 ${color} text-white`}>
@@ -21,6 +22,7 @@ const StatCard = ({ name, stat, icon: Icon, color }) => (
 );
 
 const ReceptionDashboard = () => {
+    const [showCollectFee, setShowCollectFee] = useState(false);
     const [showStudent, setShowStudent] = useState(false);
     const [stats, setStats] = useState({
         activeStudents: 0,
@@ -73,6 +75,17 @@ const ReceptionDashboard = () => {
         setShowStudent(false);
     };
 
+    // Fee collect hone ke baad refresh
+    const handleFeeCollected = () => {
+        // Pending fees count ghat jaye
+        setStats(prev => ({
+            ...prev,
+            pendingFees: Math.max(0, prev.pendingFees - 1) // simple decrement
+        }));
+        setShowCollectFee(false);
+    };
+
+
     if (loading) {
         return <p className="text-white text-center text-2xl animate-pulse">Loading dashboard...</p>;
     }
@@ -112,12 +125,21 @@ const ReceptionDashboard = () => {
                     Quick Actions
                 </h3>
 
-                <div className="space-y-6">
+                <div className="space-y-4">
                     <button
                         onClick={() => setShowStudent(true)}
-                        className="w-full py-5 px-8 rounded-2xl bg-gradient-to-r from-purple-600/70 to-cyan-600/70 hover:from-purple-600/90 hover:to-cyan-600/90 text-white font-bold text-lg transition transform hover:scale-105 shadow-lg"
+                        className="w-full text-left p-4 rounded-xl bg-gradient-to-r from-indigo-800/50 to-purple-800/50 hover:from-indigo-900/50 hover:to-purple-900/50 text-cyan-300 font-medium transition transform hover:scale-105 shadow-md"
                     >
                         ➕ Register New Student
+                    </button>
+
+                    {/* Future mein aur buttons add kar sakte ho */}
+
+                    <button
+                        onClick={() => setShowCollectFee(true)}
+                        className="w-full text-left p-4 rounded-xl bg-gradient-to-r from-teal-800/50 to-teal-800/50 hover:from-teal-900/50 hover:to-teal-900/50 text-cyan-300 font-medium transition transform hover:scale-105 shadow-md"
+                    >
+                        💰 Collect Fees
                     </button>
 
                     {/* Future mein aur buttons add kar sakte ho */}
@@ -129,6 +151,17 @@ const ReceptionDashboard = () => {
                 <RegisterStudent
                     onClose={() => setShowStudent(false)}
                     onSuccess={handleStudentRegistered}
+                />
+            )}
+
+            {showCollectFee && (
+                <CollectFee
+                    onClose={() => setShowCollectFee(false)}
+                    onSuccess={() => {
+                        // future mein pending count refresh
+                        setShowCollectFee(false)
+                    }}
+                    onSuccess={handleFeeCollected}
                 />
             )}
         </div>

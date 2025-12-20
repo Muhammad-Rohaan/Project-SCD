@@ -13,6 +13,7 @@ import AnnouncementPage from './components/Admin/AnnouncementPage.jsx';
 import ReceptionLayout from './components/Layouts/ReceptionLayout.jsx';
 import ReceptionDashboard from './components/Reception/ReceptionistDashboard.jsx';
 import ReceptionStudentsPage from './components/Reception/ReceptionStudentsPage.jsx';
+import CollectFee from './components/Reception/CollectFee.jsx';
 
 import ProtectedRoute from './ProtectedRoute.jsx';
 
@@ -59,7 +60,7 @@ const App = () => {
           <Route path="dashboard" element={<ReceptionDashboard />} />
           <Route path="az-students" element={<ReceptionStudentsPage />} />
           {/* Future mein fees, announcements etc add kar sakte ho */}
-          <Route path="*" element={<Navigate to="dashboard" replace />} />
+          <Route path="fees" element={<CollectFee />} />
         </Route>
 
         {/* Teacher Routes (future mein) */}
