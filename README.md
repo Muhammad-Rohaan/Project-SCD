@@ -243,15 +243,6 @@ backend:
     - ./backend/uploads:/app/uploads
 ```
 
----
-
-## Security Notes (Recommended for Production)
-- Do not hardcode secrets; keep them in `.env` / secret manager
-- Use HTTPS in production (cookies with `SameSite=None` require HTTPS)
-- Remove/disable the first-admin setup route after initial setup
-- Restrict CORS to only your real frontend domain
-
----
 
 ## Scripts
 
