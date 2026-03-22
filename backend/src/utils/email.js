@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
   secure: false, // true for 465, false for 587
   auth: {
     user: process.env.GMAIL_USER || "learning82005@gmail.com",
-    pass: process.env.GMAIL_PASS || "rzla pfnb oxgf ogyg",
+    pass: process.env.GMAIL_PASS || "chav biuq nviq zlpo",
   },
 });
 
