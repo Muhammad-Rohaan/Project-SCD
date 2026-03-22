@@ -1,0 +1,102 @@
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
+
+const TeacherDashboard = () => {
+    const [file, setFile] = useState(null);
+    const [uploadStatus, setUploadStatus] = useState('');
+    // NEW: Added state for required backend fields
+    const [formDataFields, setFormDataFields] = useState({
+        title: '',
+        subject: '',
+        className: ''
+    });
+
+    const handleInputChange = (e) => {
+        setFormDataFields({ ...formDataFields, [e.target.name]: e.target.value });
+    };
+
+    const handleFileChange = (e) => {
+        setFile(e.target.files[0]);
+    };
+
+    const handleUpload = async (e) => {
+        e.preventDefault();
+        if (!file || !formDataFields.title || !formDataFields.subject || !formDataFields.className) {
+            return alert("Please fill all fields and select a file!");
+        }
+
+        const formData = new FormData();
+        formData.append('file', file); 
+        formData.append('title', formDataFields.title);
+        formData.append('subject', formDataFields.subject);
+        formData.append('className', formDataFields.className);
+
+        try {
+            setUploadStatus('Uploading...');
+            
+            // FIX 1: Get token from localStorage (assuming that's where you store it on login)
+            const token = localStorage.getItem('token'); 
+
+            // FIX 2: Correct URL and Add Authorization Header
+            const res = await axios.post('http://localhost:5000/api/teacher/upload-notes', formData, {
+                headers: { 
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}` // Critical for 'protect' middleware
+                },
+                withCredentials: true // Helpful for cookies if you use them
+            });
+
+            setUploadStatus('Success! Notes uploaded.');
+            console.log(res.data);
+        } catch (err) {
+            // FIX 3: Better error logging
+            const errorMsg = err.response?.data?.message || 'Upload failed. Try again.';
+            setUploadStatus(errorMsg);
+            console.error("Upload Error:", err.response);
+        }
+    };
+
+    return (
+        <div className="space-y-8 p-6 max-w-4xl mx-auto">
+            <h1 className="text-4xl font-extrabold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+                Teacher Dashboard
+            </h1>
+
+            {/* Quick Actions (Unchanged) */}
+            <div className="bg-indigo-950/50 backdrop-blur-md rounded-2xl border border-cyan-400/30 p-8 shadow-2xl">
+                <h3 className="text-2xl font-semibold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent mb-8">Quick Actions</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Link to="/teacher/results" className="py-6 px-8 rounded-2xl bg-gradient-to-r from-purple-600/70 to-cyan-600/70 hover:from-purple-600 hover:to-cyan-600 text-white font-bold text-lg transition shadow-lg text-center">View Results</Link>
+                    <Link to="/teacher/students" className="py-6 px-8 rounded-2xl bg-gradient-to-r from-cyan-600/70 to-purple-600/70 hover:from-cyan-600 hover:to-purple-600 text-white font-bold text-lg transition shadow-lg text-center">Find Students</Link>
+                </div>
+            </div>
+
+            {/* --- UPLOAD SECTION --- */}
+            <div className="bg-indigo-950/50 backdrop-blur-md rounded-2xl border border-purple-400/30 p-8 shadow-2xl">
+                <h3 className="text-2xl font-semibold text-purple-400 mb-6">Upload Notes</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <input type="text" name="title" placeholder="Note Title" onChange={handleInputChange} className="bg-indigo-900/50 border border-purple-500/30 rounded-lg p-2 text-white outline-none" />
+                    <input type="text" name="subject" placeholder="Subject" onChange={handleInputChange} className="bg-indigo-900/50 border border-purple-500/30 rounded-lg p-2 text-white outline-none" />
+                    <input type="text" name="className" placeholder="Class (e.g. 10A)" onChange={handleInputChange} className="bg-indigo-900/50 border border-purple-500/30 rounded-lg p-2 text-white outline-none" />
+                </div>
+
+                <div className="flex flex-col md:flex-row items-center gap-4">
+                    <input type="file" onChange={handleFileChange} className="block w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-cyan-600 file:text-white hover:file:bg-cyan-700 transition cursor-pointer" />
+                    <button onClick={handleUpload} className="w-full md:w-auto py-2 px-8 rounded-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold transition shadow-lg">
+                        Upload
+                    </button>
+                </div>
+
+                {uploadStatus && (
+                    <p className={`mt-4 text-sm font-medium ${uploadStatus.includes('Success') ? 'text-green-400' : 'text-cyan-300'} animate-pulse`}>
+                        {uploadStatus}
+                    </p>
+                )}
+            </div>
+        </div>
+    );
+};
+
+export default TeacherDashboard;
