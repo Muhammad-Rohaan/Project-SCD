@@ -13,7 +13,7 @@ export const registerStudent = async (req, res) => {
     try {
         const {
             fullName,
-            email = "temp@gmail.com",
+            email,
             password,
             rollNo,
             fatherName,

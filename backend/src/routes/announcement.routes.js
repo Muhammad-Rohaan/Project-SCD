@@ -1,6 +1,6 @@
 import express from 'express';
 import { protect } from '../middleware/auth.middleware.js';
-import { restrictTo } from '../middleware/role.middleware.js';
+import { authorize } from '../middleware/auth.middleware.js';
 import {
     createAnnouncement,
     getAnnouncements,
@@ -9,8 +9,8 @@ import {
 
 const router = express.Router();
 
-router.post('/', protect, restrictTo('admin', 'teacher', 'receptionist'), createAnnouncement);
+router.post('/create-new-announcement', protect, authorize('admin', 'teacher', 'receptionist'), createAnnouncement);
 router.get('/', protect, getAnnouncements);
-router.delete('/:id', protect, restrictTo('admin'), deleteAnnouncement);
+// router.delete('/:id', protect, authorize('admin'), deleteAnnouncement);
 
 export default router;

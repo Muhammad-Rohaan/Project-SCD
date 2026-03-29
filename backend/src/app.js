@@ -15,6 +15,7 @@ import studentRoutes from "./routes/student.routes.js";
 import receptionRoutes from "./routes/reception.routes.js";
 import feeRoutes from "./routes/fee.routes.js"
 import attendanceRoutes from "./routes/attendance.routes.js"
+import announcementRoutes from "./routes/announcement.routes.js"
 
 dotenv.config();
 
@@ -76,6 +77,7 @@ app.use("/api/student", studentRoutes);
 app.use("/api/reception", receptionRoutes);
 app.use("/api/reception/attendance", attendanceRoutes);
 app.use("/api/reception/fees", feeRoutes);
+app.use("/api/announcement", announcementRoutes)
 
 
 app.listen(port, () => {
