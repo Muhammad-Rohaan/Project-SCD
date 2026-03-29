@@ -1,4 +1,4 @@
-# Institute Resource Planning (MERN) — AZ Coaching
+# Institute Resource Planning (MERN) — AZ Coaching Center
 
 A role-based institute/coaching management system built with **MongoDB + Express + React (Vite) + Node.js**.
 
@@ -52,29 +52,6 @@ This repository contains:
 - Docker Desktop (for Docker deployment)
 
 ---
-
-## Environment Variables
-
-### Backend (`backend/.env`)
-Minimum required for auth + DB:
-- `MONGO_URI=...`
-- `JWT_SECRET=...`
-- `JWT_EXPIRES_IN=...` (example: `1d`)
-- `JWT_COOKIE_EXPIRES_IN=...` (days; used by backend logic)
-
-Optional / feature-specific:
-- `PORT=5000`
-- `NODE_ENV=development` or `production`
-- `CORS_ORIGIN=http://localhost:5173` (comma-separated allowed origins supported)
-
-Optional (results upload / email):
-- `CLOUDINARY_CLOUD_NAME=...`
-- `CLOUDINARY_API_KEY=...`
-- `CLOUDINARY_API_SECRET=...`
-- `GMAIL_USER=...`
-- `GMAIL_PASS=...`
-
-> Note: Some utilities include fallback defaults in code. For a real deployment, always set proper secrets in `.env`.
 
 ### Frontend (`frontend-new`)
 - The API base URL is read from:
