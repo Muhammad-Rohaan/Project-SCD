@@ -39,13 +39,14 @@ export const createAnnouncement = async (req, res) => {
         res.status(500).json({
             msg: "Error in creating an announcement",
             err: error
-        })
+        });
     }
 }
 
+
+//GET: all announcement
 export const getAnnouncements = async (req, res) => {
     try {
-
         const announcement = await AnnouncementModel.find({});
 
         res.json({
@@ -53,7 +54,24 @@ export const getAnnouncements = async (req, res) => {
         });
         
     } catch (error) {
+        res.status(500).json({
+            msg: "GET:: all announcement | Error in fetching announcement",
+            err: error
+        });
+    }
+}
+
+// GET:: Specific Class Announcement.
+export const getSpecificClassAnnouncement = async (req, res) => {
+    try {
+        // const 
+        const announcement = await AnnouncementModel.findOne({})
         
+    } catch (error) {
+        res.status(500).json({
+            msg: "GET:: Specific Class Announcement | Error in fetching announcement",
+            err: error
+        });
     }
 }
 

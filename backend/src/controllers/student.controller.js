@@ -6,7 +6,6 @@ import FeeModel from "../models/Fee.model.js";
 import NotesModel from "../models/Notes.model.js"
 
 
-
 export const getNotes = async (req, res) => {
     try {
         // FIX: Changed req.user_id to req.user._id to match your auth middleware

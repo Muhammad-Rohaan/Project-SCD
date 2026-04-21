@@ -24,7 +24,7 @@ export const collectFee = async (req, res) => {
         });
 
 
-
+        
         if (!student) {
             res.status(404).json({ message: "Student not found" });
             return;

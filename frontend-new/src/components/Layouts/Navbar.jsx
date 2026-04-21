@@ -19,7 +19,7 @@ const Navbar = () => {
             </button>
 
             {/* Page Title / Search Bar Yahan Aasakta Hai */}
-            <h2 className="text-xl font-extrabold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text
+            <h2 class="welcome-admin" className="text-xl font-extrabold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text
              text-transparent hidden sm:block">
                 Welcome, Admin!
             </h2>
