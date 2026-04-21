@@ -47,11 +47,12 @@ class StudentProvider with ChangeNotifier {
     try {
       final response = await _apiService.get(AppConstants.announcements);
       if (response.statusCode == 200) {
-        final List data = response.data;
-        _announcements = data.map((item) => AnnouncementModel.fromJson(item)).toList();
-        
-        // Save to offline cache
-        await _dbHelper.saveData('announcements', data);
+        final data = response.data;
+        if (data != null && data is List) {
+          _announcements = data.map((item) => AnnouncementModel.fromJson(item)).toList();
+          // Save to offline cache
+          await _dbHelper.saveData('announcements', data);
+        }
       }
     } catch (e) {
       _error = 'Failed to fetch announcements. Using offline data.';
@@ -69,8 +70,12 @@ class StudentProvider with ChangeNotifier {
     try {
       final response = await _apiService.get('/student/fees');
       if (response.statusCode == 200) {
-        final List<dynamic> data = response.data['fees'];
-        _fees = data.map((item) => FeeModel.fromJson(item)).toList();
+        final data = response.data['fees'];
+        if (data != null && data is List) {
+          _fees = data.map((item) => FeeModel.fromJson(item)).toList();
+        } else {
+          _fees = [];
+        }
       }
     } catch (e) {
       _error = 'Failed to fetch fees.';
@@ -88,8 +93,12 @@ class StudentProvider with ChangeNotifier {
     try {
       final response = await _apiService.get('/student/my-class-results');
       if (response.statusCode == 200) {
-        final List<dynamic> data = response.data['results'];
-        _results = data.map((item) => ResultModel.fromJson(item)).toList();
+        final data = response.data['results'];
+        if (data != null && data is List) {
+          _results = data.map((item) => ResultModel.fromJson(item)).toList();
+        } else {
+          _results = [];
+        }
       }
     } catch (e) {
       _error = 'Failed to fetch results.';
@@ -107,8 +116,12 @@ class StudentProvider with ChangeNotifier {
     try {
       final response = await _apiService.get('/student/fetchNotes');
       if (response.statusCode == 200) {
-        final List<dynamic> data = response.data['notes'];
-        _notes = data.map((item) => NoteModel.fromJson(item)).toList();
+        final data = response.data['notes'];
+        if (data != null && data is List) {
+          _notes = data.map((item) => NoteModel.fromJson(item)).toList();
+        } else {
+          _notes = [];
+        }
       }
     } catch (e) {
       _error = 'Failed to fetch notes.';

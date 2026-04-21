@@ -127,8 +127,12 @@ class ReceptionistProvider with ChangeNotifier {
     try {
       final response = await _apiService.get('/reception/az-students/fetch-all-students');
       if (response.statusCode == 200) {
-        final List data = response.data['data'];
-        _students = data.map((s) => StudentModel.fromJson(s)).toList();
+        final data = response.data['data'];
+        if (data != null && data is List) {
+          _students = data.map((s) => StudentModel.fromJson(s)).toList();
+        } else {
+          _students = [];
+        }
       }
     } catch (e) {
       _error = 'Failed to fetch students';

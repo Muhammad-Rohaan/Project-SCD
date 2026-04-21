@@ -64,9 +64,9 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
               const SizedBox(height: 8),
               SegmentedButton<String>(
                 segments: const [
-                  ButtonSegment(value: 'Present', label: Text('Present')),
-                  ButtonSegment(value: 'Absent', label: Text('Absent')),
-                  ButtonSegment(value: 'Late', label: Text('Late')),
+                  ButtonSegment(value: 'present', label: Text('Present')),
+                  ButtonSegment(value: 'absent', label: Text('Absent')),
+                  ButtonSegment(value: 'late', label: Text('Late')),
                 ],
                 selected: {_status},
                 onSelectionChanged: (Set<String> newSelection) {
