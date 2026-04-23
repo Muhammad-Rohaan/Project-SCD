@@ -63,8 +63,12 @@ class TeacherProvider with ChangeNotifier {
     try {
       final response = await _apiService.get('/teacher/students/$className');
       if (response.statusCode == 200) {
-        final List data = response.data['data'];
-        _students = data.map((s) => StudentModel.fromJson(s)).toList();
+        final data = response.data['data'];
+        if (data != null && data is List) {
+          _students = data.map((s) => StudentModel.fromJson(s)).toList();
+        } else {
+          _students = [];
+        }
       }
     } catch (e) {
       _error = 'Failed to fetch students';
@@ -120,8 +124,12 @@ class TeacherProvider with ChangeNotifier {
     try {
       final response = await _apiService.get('/teacher/all-results');
       if (response.statusCode == 200) {
-        final List<dynamic> data = response.data['results'];
-        _results = data.map((item) => ResultModel.fromJson(item)).toList();
+        final data = response.data['results'];
+        if (data != null && data is List) {
+          _results = data.map((item) => ResultModel.fromJson(item)).toList();
+        } else {
+          _results = [];
+        }
       }
     } catch (e) {
       _error = 'Failed to fetch results';

@@ -20,10 +20,9 @@ class _UploadNotesScreenState extends State<UploadNotesScreen> {
   File? _selectedFile;
 
   Future<void> _pickFile() async {
-    // Standard way to pick files in newer file_picker versions
-    FilePickerResult? result = await FilePicker.pickFiles();
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
 
-    if (result != null && result.files.single.path != null) {
+    if (result != null) {
       setState(() {
         _selectedFile = File(result.files.single.path!);
       });
