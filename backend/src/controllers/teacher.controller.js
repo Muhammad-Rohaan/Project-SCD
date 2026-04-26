@@ -151,6 +151,36 @@ export const uploadResultImage = async (req, res) => {
   }
 };
 
+export const deleteResultImage = async (req, res) => {
+  try {
+
+    // const curImg = await ResultImage.find(req.params.pubId);
+    const pubId = await decodeURIComponent(req.params.pubId);
+    const delImg = await ResultImage.findOneAndDelete({
+      publicId: pubId
+    });
+
+    if(!delImg) {
+      return res.status(404).json({
+        msg: "Not Found"
+      });
+    }
+
+    // Cloudinary se bhi del kardo:
+    await cloudinary.uploader.destroy(pubId);
+
+    res.json({
+      msg: "Deleted Result Image"
+    });
+
+  } catch (error) {
+    console.error("Delete Result Error:", error);
+    res.status(500).json({
+      msg: "Failed to delete result",
+      err: error.message
+    });
+  }
+}
 
 
 
