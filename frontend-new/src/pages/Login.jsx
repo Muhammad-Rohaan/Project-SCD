@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -7,7 +8,6 @@ const Login = () => {
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({ loginInput: '', password: '' });
-    const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
@@ -16,7 +16,7 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError('');
+        const toastId = toast.loading('Logging in...');
         setLoading(true);
 
         try {
@@ -24,6 +24,8 @@ const Login = () => {
             console.log("Login Result:", result);
 
             if (result.success) {
+                const displayName = result.user.fullName || result.user.name || 'User';
+                toast.success(`Welcome back, ${displayName}!`, { id: toastId });
                 const role = result.user.role;
                 switch (role) {
                     case 'admin':
@@ -42,11 +44,11 @@ const Login = () => {
                         navigate('/');
                 }
             } else {
-                setError(result.message || "Login failed");
+                toast.error(result.message || "Login failed", { id: toastId });
             }
         } catch (err) {
             console.error(err);
-            setError("Something went wrong");
+            toast.error("Something went wrong", { id: toastId });
         } finally {
             setLoading(false);
         }
@@ -66,14 +68,6 @@ const Login = () => {
                     <p className="mt-3 text-sm text-gray-300">Sign in to access admin dashboard</p>
                 </div>
 
-                {error && (
-                    <div className="p-4 text-sm text-red-300 bg-red-900/30 rounded-2xl border 
-                        border-red-500/40 backdrop-blur-sm"
-                    >
-                        {error}
-                    </div>
-                )}
-
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                     <div className="space-y-5">
                         <div>
@@ -92,6 +86,8 @@ const Login = () => {
                                 placeholder="admin@example.com"
                                 value={formData.loginInput}
                                 onChange={handleChange}
+                                aria-label="Email or ID"
+                                aria-required="true"
                             />
                         </div>
 
@@ -109,6 +105,8 @@ const Login = () => {
                                 focus:border-cyan-400 outline-none backdrop-blur-md transition-all"
                                 value={formData.password}
                                 onChange={handleChange}
+                                aria-label="Password"
+                                aria-required="true"
                             />
                         </div>
                     </div>
@@ -120,6 +118,7 @@ const Login = () => {
                         className="w-full py-4 px-6 text-lg font-semibold rounded-2xl text-white 
                         bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 
                         shadow-2xl hover:shadow-cyan-500/50 transition-all duration-300"
+                        aria-live="polite"
                     >
                         {loading ? 'Signing in…' : 'Sign In'}
                     </button>

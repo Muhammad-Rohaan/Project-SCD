@@ -1,4 +1,3 @@
-import React from 'react';
 import { NavLink } from 'react-router-dom';
 // Heroicons import karein (npm install @heroicons/react)
 import { HomeIcon, UsersIcon, AcademicCapIcon, BanknotesIcon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
@@ -44,13 +43,15 @@ const Sidebar = ({ role, isOpen, setIsOpen }) => {
                 <button 
                     onClick={() => setIsOpen(false)}
                     className="lg:hidden p-1 text-gray-400 hover:text-white transition-colors"
+                    aria-label="Close sidebar menu"
+                    aria-expanded={isOpen}
                 >
-                    <XMarkIcon className="w-6 h-6" />
+                    <XMarkIcon className="w-6 h-6" aria-hidden="true" />
                 </button>
             </div>
 
             {/* Navigation Links */}
-            <nav className='flex-1 p-4 space-y-3 overflow-y-auto'>
+            <nav className='flex-1 p-4 space-y-3 overflow-y-auto' aria-label="Main navigation">
                 {links.map((item) => (
                     <NavLink
                         key={item.name}
@@ -60,8 +61,9 @@ const Sidebar = ({ role, isOpen, setIsOpen }) => {
                             `${baseClasses} ${isActive ? activeClasses : inactiveClasses}`
                         }
                         end
+                        aria-label={`Navigate to ${item.name}`}
                     >
-                        <item.icon className='w-6 h-6 mr-3' />
+                        <item.icon className='w-6 h-6 mr-3' aria-hidden="true" />
                         <span className="text-sm font-medium">{item.name}</span>
                     </NavLink>
                 ))}
@@ -75,6 +77,7 @@ const Sidebar = ({ role, isOpen, setIsOpen }) => {
                     bg-gradient-to-r from-red-700 to-red-500 hover:from-red-800 
                     hover:to-red-600 transition-all duration-300 flex items-center justify-center 
                     shadow-lg hover:shadow-2xl transform hover:scale-105'
+                    aria-label="Log out"
                 >
                     <span className='text-sm font-medium'>Log Out</span>
                 </button>

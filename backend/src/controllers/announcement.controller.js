@@ -78,6 +78,8 @@ export const getSpecificClassAnnouncement = async (req, res) => {
 export const deleteAnnouncement = async (req, res) => {
     try {
         
+        const announcement = await AnnouncementModel.findByIdAndDelete()
+
     } catch (error) {
         
     }

@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
+import toast from 'react-hot-toast';
 import axiosInstance from '../../api/axios.js';
 
 const RegisterUser = ({ onClose, onSuccess }) => {
@@ -17,6 +19,7 @@ const RegisterUser = ({ onClose, onSuccess }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const toastId = toast.loading('Registering user...');
         setLoading(true);
         try {
             const res = await axiosInstance.post('/admin/register-user', {
@@ -25,29 +28,38 @@ const RegisterUser = ({ onClose, onSuccess }) => {
                 password: formData.password,
                 role: formData.role
             });
-            alert(res.data.message || 'User registered');
+            toast.success(res.data.message || 'User registered', { id: toastId });
             if (onSuccess) onSuccess(res.data);
             onClose();
         } catch (err) {
-            alert(err.response?.data?.message || 'Registration failed');
+            toast.error(err.response?.data?.message || 'Registration failed', { id: toastId });
         } finally {
             setLoading(false);
         }
     };
 
-    return (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
-            <div className="bg-indigo-950/90 backdrop-blur-xl rounded-3xl border border-cyan-400/40 p-8 w-full max-w-3xl my-8 shadow-2xl">
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent mb-8 text-center">
+    return createPortal(
+        <div
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[9999]"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-title"
+            onClick={onClose}
+        >
+            <div
+                className="bg-indigo-950/90 backdrop-blur-xl rounded-3xl border border-cyan-400/40 p-8 w-full max-w-3xl mx-4 my-8 shadow-2xl max-h-[90vh] overflow-y-auto"
+                onClick={e => e.stopPropagation()}
+            >
+                <h2 id="modal-title" className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent mb-8 text-center">
                     Register User
                 </h2>
 
                 <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <input name="fullName" type="text" required placeholder="Full Name" value={formData.fullName} onChange={handleChange} className="input-style" />
-                    <input name="email" type="email" required placeholder="Email" value={formData.email} onChange={handleChange} className="input-style" />
-                    <input name="password" type="password" required placeholder="Password" value={formData.password} onChange={handleChange} className="input-style" />
+                    <input name="fullName" type="text" required placeholder="Full Name" value={formData.fullName} onChange={handleChange} className="input-style" aria-label="Full Name" />
+                    <input name="email" type="email" required placeholder="Email" value={formData.email} onChange={handleChange} className="input-style" aria-label="Email Address" />
+                    <input name="password" type="password" required placeholder="Password" value={formData.password} onChange={handleChange} className="input-style" aria-label="Password" />
 
-                    <select name="role" value={formData.role} onChange={handleChange} className="input-style">
+                    <select name="role" value={formData.role} onChange={handleChange} className="input-style" aria-label="User Role">
                         <option value="admin">Admin</option>
                         <option value="receptionist">Receptionist</option>
                         <option value="teacher">Teacher</option>
@@ -64,7 +76,8 @@ const RegisterUser = ({ onClose, onSuccess }) => {
                     </div>
                 </form>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import axios from 'axios';
 
 const TeacherDashboard = () => {
@@ -23,9 +24,10 @@ const TeacherDashboard = () => {
     const handleUpload = async (e) => {
         e.preventDefault();
         if (!file || !formDataFields.title || !formDataFields.subject || !formDataFields.className) {
-            return alert("Please fill all fields and select a file!");
+            return toast.error("Please fill all fields and select a file!");
         }
 
+        const toastId = toast.loading('Uploading notes...');
         const formData = new FormData();
         formData.append('file', file); 
         formData.append('title', formDataFields.title);
@@ -48,54 +50,58 @@ const TeacherDashboard = () => {
             });
 
             setUploadStatus('Success! Notes uploaded.');
+            toast.success('Notes uploaded successfully!', { id: toastId });
+            setFile(null);
+            setFormDataFields({ title: '', subject: '', className: '' });
             console.log(res.data);
         } catch (err) {
             // FIX 3: Better error logging
             const errorMsg = err.response?.data?.message || 'Upload failed. Try again.';
             setUploadStatus(errorMsg);
+            toast.error(errorMsg, { id: toastId });
             console.error("Upload Error:", err.response);
         }
     };
 
     return (
-        <div className="space-y-8 p-6 max-w-4xl mx-auto">
+        <main className="space-y-8 p-6 max-w-4xl mx-auto" aria-label="Teacher Dashboard Overview">
             <h1 className="text-4xl font-extrabold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
                 Teacher Dashboard
             </h1>
 
             {/* Quick Actions (Unchanged) */}
-            <div className="bg-indigo-950/50 backdrop-blur-md rounded-2xl border border-cyan-400/30 p-8 shadow-2xl">
-                <h3 className="text-2xl font-semibold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent mb-8">Quick Actions</h3>
+            <section className="bg-indigo-950/50 backdrop-blur-md rounded-2xl border border-cyan-400/30 p-8 shadow-2xl" aria-labelledby="quick-actions-title">
+                <h3 id="quick-actions-title" className="text-2xl font-semibold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent mb-8">Quick Actions</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Link to="/teacher/results" className="py-6 px-8 rounded-2xl bg-gradient-to-r from-purple-600/70 to-cyan-600/70 hover:from-purple-600 hover:to-cyan-600 text-white font-bold text-lg transition shadow-lg text-center">View Results</Link>
-                    <Link to="/teacher/students" className="py-6 px-8 rounded-2xl bg-gradient-to-r from-cyan-600/70 to-purple-600/70 hover:from-cyan-600 hover:to-purple-600 text-white font-bold text-lg transition shadow-lg text-center">Find Students</Link>
+                    <Link to="/teacher/results" aria-label="View student results" className="py-6 px-8 rounded-2xl bg-gradient-to-r from-purple-600/70 to-cyan-600/70 hover:from-purple-600 hover:to-cyan-600 text-white font-bold text-lg transition shadow-lg text-center">View Results</Link>
+                    <Link to="/teacher/students" aria-label="Find students" className="py-6 px-8 rounded-2xl bg-gradient-to-r from-cyan-600/70 to-purple-600/70 hover:from-cyan-600 hover:to-purple-600 text-white font-bold text-lg transition shadow-lg text-center">Find Students</Link>
                 </div>
-            </div>
+            </section>
 
             {/* --- UPLOAD SECTION --- */}
-            <div className="bg-indigo-950/50 backdrop-blur-md rounded-2xl border border-purple-400/30 p-8 shadow-2xl">
-                <h3 className="text-2xl font-semibold text-purple-400 mb-6">Upload Notes</h3>
+            <section className="bg-indigo-950/50 backdrop-blur-md rounded-2xl border border-purple-400/30 p-8 shadow-2xl" aria-labelledby="upload-notes-title">
+                <h3 id="upload-notes-title" className="text-2xl font-semibold text-purple-400 mb-6">Upload Notes</h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    <input type="text" name="title" placeholder="Note Title" onChange={handleInputChange} className="bg-indigo-900/50 border border-purple-500/30 rounded-lg p-2 text-white outline-none" />
-                    <input type="text" name="subject" placeholder="Subject" onChange={handleInputChange} className="bg-indigo-900/50 border border-purple-500/30 rounded-lg p-2 text-white outline-none" />
-                    <input type="text" name="className" placeholder="Class (e.g. 10A)" onChange={handleInputChange} className="bg-indigo-900/50 border border-purple-500/30 rounded-lg p-2 text-white outline-none" />
+                    <input type="text" name="title" value={formDataFields.title} placeholder="Note Title" onChange={handleInputChange} aria-label='Note title' aria-required="true" className="bg-indigo-900/50 border border-purple-500/30 rounded-lg p-2 text-white outline-none" />
+                    <input type="text" name="subject" value={formDataFields.subject} placeholder="Subject" onChange={handleInputChange} aria-label='Subject' aria-required="true" className="bg-indigo-900/50 border border-purple-500/30 rounded-lg p-2 text-white outline-none" />
+                    <input type="text" name="className" value={formDataFields.className} placeholder="Class (e.g. 10A)" onChange={handleInputChange} aria-label='Class name' aria-required="true" className="bg-indigo-900/50 border border-purple-500/30 rounded-lg p-2 text-white outline-none" />
                 </div>
 
                 <div className="flex flex-col md:flex-row items-center gap-4">
-                    <input type="file" onChange={handleFileChange} className="block w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-cyan-600 file:text-white hover:file:bg-cyan-700 transition cursor-pointer" />
-                    <button onClick={handleUpload} className="w-full md:w-auto py-2 px-8 rounded-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold transition shadow-lg">
+                    <input type="file" onChange={handleFileChange} aria-label='Upload File' aria-required="true" className="block w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-cyan-600 file:text-white hover:file:bg-cyan-700 transition cursor-pointer" />
+                    <button type='button' onClick={handleUpload} aria-label='Upload notes' className="w-full md:w-auto py-2 px-8 rounded-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold transition shadow-lg">
                         Upload
                     </button>
                 </div>
 
                 {uploadStatus && (
-                    <p className={`mt-4 text-sm font-medium ${uploadStatus.includes('Success') ? 'text-green-400' : 'text-cyan-300'} animate-pulse`}>
+                    <p role="status" aria-live="polite" className={`mt-4 text-sm font-medium ${uploadStatus.includes('Success') ? 'text-green-400' : 'text-cyan-300'} animate-pulse`}>
                         {uploadStatus}
                     </p>
                 )}
-            </div>
-        </div>
+            </section>
+        </main>
     );
 };
 

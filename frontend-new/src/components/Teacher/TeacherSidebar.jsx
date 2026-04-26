@@ -1,5 +1,3 @@
-
-
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { HomeIcon, UsersIcon, PhotoIcon, XMarkIcon } from '@heroicons/react/24/outline';

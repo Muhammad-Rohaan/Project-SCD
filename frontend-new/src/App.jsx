@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import { useAuth } from './context/AuthContext.jsx';
 import Login from './pages/Login';
 import Unauthorized from './pages/Unauthorized.jsx';
@@ -28,7 +29,9 @@ import StudentDashboard from './components/Student/StudentDashboard.jsx';
 
 const App = () => {
   return (
-    <Routes>
+    <>
+      <Toaster position="top-right" reverseOrder={false} />
+      <Routes>
       {/* Public Routes */}
       <Route path='/login' element={<Login />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
@@ -108,6 +111,7 @@ const App = () => {
       {/* Koi unknown route hoga to login par bhej dey ga */}
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
+    </>
   );
 };
 
