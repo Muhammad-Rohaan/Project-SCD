@@ -1,6 +1,7 @@
 import { useAuth } from '../../context/AuthContext';
 import { BellIcon, UserCircleIcon, Bars3Icon, PowerIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
+import AnnouncementBell from './AnnouncementBell.jsx';
 
 const Navbar = ({ onMenuClick, isSidebarOpen }) => {
     // AuthContext se current user aur logout function use karein
@@ -44,12 +45,7 @@ const Navbar = ({ onMenuClick, isSidebarOpen }) => {
             <div className="flex items-center space-x-4" role="toolbar" aria-label="Quick actions">
 
                 {/* Notifications */}
-                <button 
-                    className="p-2 text-cyan-400 hover:text-purple-400 hover:bg-indigo-800/50 rounded-full transition"
-                    aria-label="View notifications"
-                >
-                    <BellIcon className="w-6 h-6" aria-hidden="true" />
-                </button>
+                <AnnouncementBell />
 
                 {/* User Profile / Dropdown */}
                 <div className="flex items-center space-x-2 border-l border-indigo-700/50 pl-4" aria-label={`Logged in as ${userName}`}>

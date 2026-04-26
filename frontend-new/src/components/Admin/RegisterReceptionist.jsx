@@ -1,6 +1,5 @@
-// src/components/Admin/RegisterReceptionistModal.jsx
-
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import toast from 'react-hot-toast';
 import axiosInstance from '../../api/axios.js';
 
@@ -42,7 +41,6 @@ const RegisterReceptionist = ({ onClose, receptionist, onSuccess }) => {
             };
 
             const response = await axiosInstance.post('/admin/az-reception/register-receptionist', dataToSend);
-
             toast.success(response.data.message || "Receptionist registered successfully!", { id: toastId });
             onClose();
             if (onSuccess) onSuccess();
@@ -56,39 +54,45 @@ const RegisterReceptionist = ({ onClose, receptionist, onSuccess }) => {
         }
     };
 
-    const handleCancel = () => {
-        onClose();
-    };
-
-    return (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-            <div className="bg-indigo-950/90 backdrop-blur-xl rounded-3xl border border-cyan-400/40 p-8 w-full max-w-3xl my-8 shadow-2xl max-h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-cyan-500/50 scrollbar-track-transparent">
+    return createPortal(
+        <div
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[9999]"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-title"
+            onClick={onClose}
+        >
+            <div
+                className="bg-indigo-950/90 backdrop-blur-xl rounded-3xl border border-cyan-400/40 p-8 w-full max-w-3xl mx-4 my-8 shadow-2xl max-h-[90vh] overflow-y-auto"
+                onClick={e => e.stopPropagation()}
+            >
                 <h2 id="modal-title" className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent mb-8 text-center">
                     Register New Receptionist
                 </h2>
 
                 <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <input name="fullName" type="text" required placeholder="Full Name" value={formData.fullName} onChange={handleChange} className="input-style" aria-label="Full Name" aria-required="true" />
-                    <input name="email" type="email" required placeholder="Email" value={formData.email} onChange={handleChange} className="input-style" aria-label="Email Address" aria-required="true" />
+                    <input name="fullName" type="text" required placeholder="Full Name" value={formData.fullName} onChange={handleChange} className="input-style" aria-label="Full Name" />
+                    <input name="email" type="email" required placeholder="Email" value={formData.email} onChange={handleChange} className="input-style" aria-label="Email Address" />
                     <input name="password" type="password" placeholder="Password" value={formData.password} onChange={handleChange} className="input-style" aria-label="Password" />
-                    <input name="receptionRegId" type="text" required placeholder="Reg ID (e.g. USMN456)" value={formData.receptionRegId} onChange={handleChange} className="input-style" aria-label="Registration ID" aria-required="true" />
-                    <input name="cnic" type="text" required placeholder="CNIC (xxxxx-xxxxxxx-x)" value={formData.cnic} onChange={handleChange} className="input-style" aria-label="CNIC Number" aria-required="true" />
-                    <input name="salary" type="number" required placeholder="Salary" value={formData.salary} onChange={handleChange} className="input-style" aria-label="Monthly Salary" aria-required="true" />
-                    <input name="joiningDate" type="date" required value={formData.joiningDate} onChange={handleChange} className="input-style" aria-label="Joining Date" aria-required="true" />
-                    <input name="contact" type="text" required placeholder="Contact" value={formData.contact} onChange={handleChange} className="input-style" aria-label="Contact Number" aria-required="true" />
-                    <input name="address" type="text" required placeholder="Address" value={formData.address} onChange={handleChange} className="input-style" aria-label="Home Address" aria-required="true" />
+                    <input name="receptionRegId" type="text" required placeholder="Reg ID (e.g. USMN456)" value={formData.receptionRegId} onChange={handleChange} className="input-style" aria-label="Registration ID" />
+                    <input name="cnic" type="text" required placeholder="CNIC (xxxxx-xxxxxxx-x)" value={formData.cnic} onChange={handleChange} className="input-style" aria-label="CNIC Number" />
+                    <input name="salary" type="number" required placeholder="Salary" value={formData.salary} onChange={handleChange} className="input-style" aria-label="Monthly Salary" />
+                    <input name="joiningDate" type="date" required value={formData.joiningDate} onChange={handleChange} className="input-style" aria-label="Joining Date" />
+                    <input name="contact" type="text" required placeholder="Contact" value={formData.contact} onChange={handleChange} className="input-style" aria-label="Contact Number" />
+                    <input name="address" type="text" required placeholder="Address" value={formData.address} onChange={handleChange} className="input-style" aria-label="Home Address" />
 
                     <div className="md:col-span-2 flex gap-4 pt-6">
-                        <button type="submit" disabled={loading} className="flex-1 py-4 bg-gradient-to-r from-purple-600 to-cyan-600 rounded-xl text-white font-bold hover:shadow-lg transition" aria-label={loading ? "Registering..." : "Register Receptionist"}>
+                        <button type="submit" disabled={loading} className="flex-1 py-4 bg-gradient-to-r from-purple-600 to-cyan-600 rounded-xl text-white font-bold hover:shadow-lg transition">
                             {loading ? 'Registering...' : 'Register Receptionist'}
                         </button>
-                        <button type="button" onClick={handleCancel} className="flex-1 py-4 bg-gray-700/50 rounded-xl text-white hover:bg-gray-600/50 transition" aria-label="Cancel registration">
+                        <button type="button" onClick={onClose} className="flex-1 py-4 bg-gray-700/50 rounded-xl text-white hover:bg-gray-600/50 transition">
                             Cancel
                         </button>
                     </div>
                 </form>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };
 

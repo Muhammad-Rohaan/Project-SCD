@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { BellIcon, UserCircleIcon, PowerIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import ReceptionSidebar from '../../components/Reception/ReceptionSidebar.jsx';
+import AnnouncementBell from './AnnouncementBell.jsx';
 
 const ReceptionLayout = () => {
     const { auth, logoutUser } = useAuth();
@@ -49,12 +50,7 @@ const ReceptionLayout = () => {
                     {/* Right Side Icons and User Dropdown */}
                     <div className="flex items-center space-x-2 md:space-x-4" role="toolbar" aria-label="Quick actions">
                         {/* Notifications */}
-                        <button 
-                            className="p-2 text-cyan-400 hover:text-purple-400 hover:bg-indigo-800/50 rounded-full transition hidden sm:block"
-                            aria-label="View notifications"
-                        >
-                            <BellIcon className="w-6 h-6" aria-hidden="true" />
-                        </button>
+                        <AnnouncementBell />
 
                         {/* User Profile */}
                         <div className="flex items-center space-x-2 border-l border-indigo-700/50 pl-2 md:pl-4" aria-label={`Logged in as ${userName}`}>

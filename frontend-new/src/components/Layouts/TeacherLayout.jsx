@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { BellIcon, UserCircleIcon, PowerIcon, Bars3Icon } from '@heroicons/react/24/outline';
 import TeacherSidebar from '../Teacher/TeacherSidebar.jsx';
+import AnnouncementBell from './AnnouncementBell.jsx';
 
 const TeacherLayout = () => {
     const { auth, logoutUser } = useAuth();
@@ -45,12 +46,8 @@ const TeacherLayout = () => {
                     </div>
 
                     <div className="flex items-center space-x-4" role="toolbar" aria-label="Quick actions">
-                        <button 
-                            className="p-2 text-cyan-400 hover:text-purple-400 hover:bg-indigo-800/50 rounded-full transition"
-                            aria-label="View notifications"
-                        >
-                            <BellIcon className="w-6 h-6" aria-hidden="true" />
-                        </button>
+                        {/* Notifications */}
+                        <AnnouncementBell />
 
                         <div className="flex items-center space-x-2 border-l border-indigo-700/50 pl-4" aria-label={`Logged in as ${userName}`}>
                             <UserCircleIcon className="w-8 h-8 text-cyan-400" aria-hidden="true" />
