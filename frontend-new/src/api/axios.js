@@ -11,5 +11,12 @@ const axiosInstance = axios.create({
     headers: { 'Content-Type': 'application/json' },
 });
 
+export const aiAPI = axios.create({
+    baseURL: "http://localhost:8000/api",
+    // withCredentials: true,
+    headers: { "Content-Type": "application/json" },
+});
+
+
 export default axiosInstance;
 // Yey allow kar raha hai frontend ko backend sey baat karanay mai.
