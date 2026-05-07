@@ -1,10 +1,11 @@
-# Institute Resource Planning (MERN) — AZ Coaching Center
+# Institute Resource Planning (MERN) — AZ Coaching Center | Version 1.0
 
 A role-based institute/coaching management system built with **MongoDB + Express + React (Vite) + Node.js**.
 
 This repository contains:
 - `backend/` → Express API + MongoDB (Mongoose)
 - `frontend-new/` → React (Vite) role-based portals (Admin/Receptionist/Teacher/Student)
+- `MobileApp/irp_mobile_app` → Flutter Mobile App with all portals (Newly added)
 - `docker-compose.yml` → Local Docker deployment (Mongo + Backend + Frontend)
 
 ---

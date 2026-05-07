@@ -9,6 +9,8 @@ const StudentLayout = () => {
     const { auth, logoutUser } = useAuth();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const userName = auth.user?.fullName || auth.user?.name || 'Student';
+    // const stdClass = auth.user?.className || 'StudentCls';
+
 
     const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
