@@ -20,6 +20,6 @@ router.get('/fetchNotes', getNotes);
 
 router.get('/my-class-results', getMyClassResults);
 
-router.get('/announcement', getAnnouncements)
+router.get('/announcement/:className', getAnnouncements)
 
 export default router;

@@ -47,12 +47,20 @@ export const createAnnouncement = async (req, res) => {
 //GET: all announcement
 export const getAnnouncements = async (req, res) => {
     try {
-        const announcement = await AnnouncementModel.find({});
 
-        res.json({
-            announcement
+        const announcement = await AnnouncementModel.find({
+            "target": "all"
         });
-        
+
+        const myAnnouncement = await AnnouncementModel.find({
+            className: req.params.className
+        });
+
+        res.status(200).json({
+            announcement,
+            myAnnouncement
+        });
+
     } catch (error) {
         res.status(500).json({
             msg: "GET:: all announcement | Error in fetching announcement",
@@ -62,25 +70,24 @@ export const getAnnouncements = async (req, res) => {
 }
 
 // GET:: Specific Class Announcement.
-export const getSpecificClassAnnouncement = async (req, res) => {
-    try {
-        // const 
-        const announcement = await AnnouncementModel.findOne({})
-        
-    } catch (error) {
-        res.status(500).json({
-            msg: "GET:: Specific Class Announcement | Error in fetching announcement",
-            err: error
-        });
-    }
-}
+// export const getSpecificClassAnnouncement = async (req, res) => {
+//     try {
+
+
+//     } catch (error) {
+//         res.status(500).json({
+//             msg: "GET:: Specific Class Announcement | Error in fetching announcement",
+//             err: error
+//         });
+//     }
+// }
 
 export const deleteAnnouncement = async (req, res) => {
     try {
-        
+
         const announcement = await AnnouncementModel.findByIdAndDelete()
 
     } catch (error) {
-        
+
     }
 }

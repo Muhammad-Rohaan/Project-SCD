@@ -3,6 +3,40 @@ import { createPortal } from 'react-dom';
 import { BellIcon } from '@heroicons/react/24/outline';
 import axiosInstance from '../../api/axios.js';
 
+
+// FIX THIS ACCORDING TO BACKEND | May - 8
+/*
+{
+  "announcement": [
+    {
+      "_id": "69ee75838a7fed605cbbbea4",
+      "title": "Off Today",
+      "message": "due to rain all classes today has been cancelled",
+      "target": "all",
+      "className": "N/A",
+      "createdBy": "Abbas",
+      "createdAt": "2026-04-26T20:28:51.266Z",
+      "updatedAt": "2026-04-26T20:28:51.266Z",
+      "__v": 0
+    }
+  ],
+  "myAnnouncement": [
+    {
+      "_id": "69f90cbcfb003ecece1275c5",
+      "title": "War",
+      "message": "online class",
+      "target": "specific-class",
+      "className": "9",
+      "createdBy": "Abbas",
+      "createdAt": "2026-05-04T21:16:44.892Z",
+      "updatedAt": "2026-05-04T21:16:44.892Z",
+      "__v": 0
+    }
+  ]
+}
+*/
+
+
 const formatDate = (iso) =>
     new Date(iso).toLocaleDateString('en-PK', { day: 'numeric', month: 'short', year: 'numeric' });
 
