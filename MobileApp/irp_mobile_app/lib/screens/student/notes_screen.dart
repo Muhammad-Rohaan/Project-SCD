@@ -1,11 +1,10 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-// import 'package:url_launcher/url_launcher.dart';
-import '../../providers/student_provider.dart';
-
+import 'package:url_launcher/url_launcher.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../providers/student_provider.dart';
+import '../../constants/app_colors.dart';
+import '../../widgets/gradient_text.dart';
 
 class NotesScreen extends StatefulWidget {
   const NotesScreen({super.key});
@@ -22,35 +21,69 @@ class _NotesScreenState extends State<NotesScreen> {
     Future.microtask(() => studentProvider.fetchNotes());
   }
 
+  Future<void> _launchUrl(String url) async {
+    final uri = Uri.parse(url);
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not open file'), backgroundColor: AppColors.danger),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final studentProvider = Provider.of<StudentProvider>(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A), // Slate 900
-      appBar: AppBar(
-        title: Text(
-          'Study Notes',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: AppColors.backgroundGradient,
         ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        foregroundColor: Colors.white,
-      ),
-      body: RefreshIndicator(
-        onRefresh: () => studentProvider.fetchNotes(),
-        child: studentProvider.isLoading && studentProvider.notes.isEmpty
-            ? const Center(child: CircularProgressIndicator())
-            : studentProvider.notes.isEmpty
-                ? _buildEmptyState()
-                : ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    itemCount: studentProvider.notes.length,
-                    itemBuilder: (context, index) {
-                      final note = studentProvider.notes[index];
-                      return _buildNoteCard(note);
-                    },
-                  ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    const SizedBox(width: 8),
+                    GradientText(
+                      'Study Notes',
+                      gradient: AppColors.textGradient,
+                      style: GoogleFonts.poppins(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: () => studentProvider.fetchNotes(),
+                  child: studentProvider.isLoading && studentProvider.notes.isEmpty
+                      ? const Center(child: CircularProgressIndicator(color: AppColors.accent))
+                      : studentProvider.notes.isEmpty
+                          ? _buildEmptyState()
+                          : ListView.builder(
+                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+                              itemCount: studentProvider.notes.length,
+                              itemBuilder: (context, index) {
+                                final note = studentProvider.notes[index];
+                                return _buildNoteCard(note);
+                              },
+                            ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -80,40 +113,58 @@ class _NotesScreenState extends State<NotesScreen> {
 
   Widget _buildNoteCard(dynamic note) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 20),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white10),
+        color: AppColors.cardBg,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.indigoAccent.withOpacity(0.3)),
       ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-        leading: Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: const Color(0xFF818CF8).withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => _launchUrl(note.fileUrl),
+          borderRadius: BorderRadius.circular(24),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.indigoAccent.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Icon(Icons.picture_as_pdf_rounded, color: Colors.indigoAccent, size: 28),
+                ),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        note.title,
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        note.subject,
+                        style: GoogleFonts.poppins(
+                          color: Colors.white38,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.open_in_new_rounded, color: Colors.white24, size: 20),
+              ],
+            ),
           ),
-          child: const Icon(Icons.picture_as_pdf_rounded, color: Color(0xFF818CF8)),
         ),
-        title: Text(
-          note.title,
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-            fontSize: 15,
-          ),
-        ),
-        subtitle: Text(
-          note.description,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: GoogleFonts.poppins(color: Colors.white38, fontSize: 12),
-        ),
-        trailing: const Icon(Icons.download_for_offline_rounded, color: Colors.white24),
-        onTap: () {
-          // Implement download/view logic
-        },
       ),
     );
   }

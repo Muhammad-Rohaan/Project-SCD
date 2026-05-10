@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../providers/receptionist_provider.dart';
 import '../../widgets/custom_text_field.dart';
+import '../../constants/app_colors.dart';
+import '../../widgets/gradient_text.dart';
 
 class RegisterStudentScreen extends StatefulWidget {
   const RegisterStudentScreen({super.key});
@@ -52,12 +55,12 @@ class _RegisterStudentScreenState extends State<RegisterStudentScreen> {
 
       if (success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Student registered successfully!')),
+          const SnackBar(content: Text('Student registered successfully!'), backgroundColor: AppColors.success),
         );
         Navigator.pop(context);
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(receptionistProvider.error ?? 'Registration failed')),
+          SnackBar(content: Text(receptionistProvider.error ?? 'Registration failed'), backgroundColor: AppColors.danger),
         );
       }
     }
@@ -68,130 +71,195 @@ class _RegisterStudentScreenState extends State<RegisterStudentScreen> {
     final receptionistProvider = Provider.of<ReceptionistProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Register Student')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: AppColors.backgroundGradient,
+        ),
+        child: SafeArea(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              CustomTextField(
-                controller: _fullNameController,
-                label: 'Full Name',
-                prefixIcon: Icons.person,
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Required' : null,
+              Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    const SizedBox(width: 8),
+                    GradientText(
+                      'Register Student',
+                      gradient: AppColors.textGradient,
+                      style: GoogleFonts.poppins(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: 12),
-              CustomTextField(
-                controller: _emailController,
-                label: 'Email',
-                prefixIcon: Icons.email,
-                keyboardType: TextInputType.emailAddress,
-                validator: (value) =>
-                    value == null || !value.contains('@') ? 'Invalid email' : null,
-              ),
-              const SizedBox(height: 12),
-              CustomTextField(
-                controller: _passwordController,
-                label: 'Password',
-                prefixIcon: Icons.lock,
-                isPassword: true,
-                validator: (value) =>
-                    value == null || value.length < 6 ? 'Too short' : null,
-              ),
-              const SizedBox(height: 12),
-              CustomTextField(
-                controller: _rollNoController,
-                label: 'Roll No (e.g. 11A-04)',
-                prefixIcon: Icons.badge,
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Required' : null,
-              ),
-              const SizedBox(height: 12),
-              CustomTextField(
-                controller: _fatherNameController,
-                label: 'Father Name',
-                prefixIcon: Icons.person_outline,
-              ),
-              const SizedBox(height: 12),
-              CustomTextField(
-                controller: _fatherPhoneController,
-                label: 'Father Phone',
-                prefixIcon: Icons.phone_android,
-                keyboardType: TextInputType.phone,
-              ),
-              const SizedBox(height: 12),
-              CustomTextField(
-                controller: _contactController,
-                label: 'Student Contact',
-                prefixIcon: Icons.phone,
-                keyboardType: TextInputType.phone,
-              ),
-              const SizedBox(height: 12),
-              CustomTextField(
-                controller: _addressController,
-                label: 'Address',
-                prefixIcon: Icons.home,
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Required' : null,
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: CustomTextField(
-                      controller: _ageController,
-                      label: 'Age',
-                      prefixIcon: Icons.calendar_today,
-                      keyboardType: TextInputType.number,
-                      validator: (value) =>
-                          value == null || int.tryParse(value) == null
-                              ? 'Invalid'
-                              : null,
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        CustomTextField(
+                          controller: _fullNameController,
+                          label: 'Full Name',
+                          prefixIcon: Icons.person_rounded,
+                          validator: (value) =>
+                              value == null || value.isEmpty ? 'Required' : null,
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          controller: _emailController,
+                          label: 'Email Address',
+                          prefixIcon: Icons.email_rounded,
+                          keyboardType: TextInputType.emailAddress,
+                          validator: (value) =>
+                              value == null || !value.contains('@') ? 'Invalid email' : null,
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          controller: _passwordController,
+                          label: 'Password',
+                          prefixIcon: Icons.lock_rounded,
+                          isPassword: true,
+                          validator: (value) =>
+                              value == null || value.length < 6 ? 'Too short' : null,
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          controller: _rollNoController,
+                          label: 'Roll No (e.g. 11A-04)',
+                          prefixIcon: Icons.badge_rounded,
+                          validator: (value) =>
+                              value == null || value.isEmpty ? 'Required' : null,
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          controller: _fatherNameController,
+                          label: 'Father Name',
+                          prefixIcon: Icons.person_outline_rounded,
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          controller: _fatherPhoneController,
+                          label: 'Father Phone',
+                          prefixIcon: Icons.phone_android_rounded,
+                          keyboardType: TextInputType.phone,
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          controller: _contactController,
+                          label: 'Student Contact',
+                          prefixIcon: Icons.phone_rounded,
+                          keyboardType: TextInputType.phone,
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          controller: _addressController,
+                          label: 'Address',
+                          prefixIcon: Icons.home_rounded,
+                          validator: (value) =>
+                              value == null || value.isEmpty ? 'Required' : null,
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: CustomTextField(
+                                controller: _ageController,
+                                label: 'Age',
+                                prefixIcon: Icons.calendar_today_rounded,
+                                keyboardType: TextInputType.number,
+                                validator: (value) =>
+                                    value == null || int.tryParse(value) == null
+                                        ? 'Invalid'
+                                        : null,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: CustomTextField(
+                                controller: _classController,
+                                label: 'Class (e.g. 11)',
+                                prefixIcon: Icons.class_rounded,
+                                validator: (value) =>
+                                    value == null || value.isEmpty ? 'Required' : null,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        _buildDropdown(),
+                        const SizedBox(height: 40),
+                        Container(
+                          width: double.infinity,
+                          height: 56,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16),
+                            gradient: AppColors.buttonGradient,
+                          ),
+                          child: ElevatedButton(
+                            onPressed: receptionistProvider.isLoading ? null : _handleRegister,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              shadowColor: Colors.transparent,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
+                            child: receptionistProvider.isLoading
+                                ? const CircularProgressIndicator(color: Colors.white)
+                                : const Text(
+                                    'Register Student',
+                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white),
+                                  ),
+                          ),
+                        ),
+                        const SizedBox(height: 40),
+                      ],
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: CustomTextField(
-                      controller: _classController,
-                      label: 'Class (e.g. 11)',
-                      prefixIcon: Icons.class_,
-                      validator: (value) =>
-                          value == null || value.isEmpty ? 'Required' : null,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              DropdownButtonFormField<String>(
-                initialValue: _selectedField,
-                decoration: const InputDecoration(
-                  labelText: 'Field/Department',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.school),
                 ),
-                items: _fields
-                    .map((f) => DropdownMenuItem(
-                          value: f['value'],
-                          child: Text(f['label']!),
-                        ))
-                    .toList(),
-                onChanged: (val) => setState(() => _selectedField = val!),
-              ),
-              const SizedBox(height: 32),
-              ElevatedButton(
-                onPressed: receptionistProvider.isLoading ? null : _handleRegister,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: receptionistProvider.isLoading
-                    ? const CircularProgressIndicator()
-                    : const Text('Register Student'),
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDropdown() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.accent.withOpacity(0.2)),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButtonFormField<String>(
+          value: _selectedField,
+          dropdownColor: AppColors.background,
+          style: GoogleFonts.poppins(color: Colors.white),
+          decoration: InputDecoration(
+            labelText: 'Field/Department',
+            labelStyle: const TextStyle(color: Colors.white38),
+            prefixIcon: Icon(Icons.school_rounded, color: AppColors.accent.withOpacity(0.5)),
+            border: InputBorder.none,
+          ),
+          items: _fields
+              .map((f) => DropdownMenuItem(
+                    value: f['value'],
+                    child: Text(f['label']!),
+                  ))
+              .toList(),
+          onChanged: (val) => setState(() => _selectedField = val!),
         ),
       ),
     );

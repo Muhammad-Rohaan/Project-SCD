@@ -78,18 +78,26 @@ class StudentProvider with ChangeNotifier {
     _error = null;
     notifyListeners();
 
+    // Load from cache
+    final cachedData = await _dbHelper.getData('fees');
+    if (cachedData != null) {
+      _fees = (cachedData as List).map((item) => FeeModel.fromJson(item)).toList();
+      notifyListeners();
+    }
+
     try {
       final response = await _apiService.get('/student/fees');
       if (response.statusCode == 200) {
         final data = response.data['fees'];
         if (data != null && data is List) {
           _fees = data.map((item) => FeeModel.fromJson(item)).toList();
+          await _dbHelper.saveData('fees', data);
         } else {
           _fees = [];
         }
       }
     } catch (e) {
-      _error = 'Failed to fetch fees.';
+      _error = 'Failed to fetch fees. Using offline data.';
     }
 
     _isLoading = false;
@@ -101,18 +109,26 @@ class StudentProvider with ChangeNotifier {
     _error = null;
     notifyListeners();
 
+    // Load from cache
+    final cachedData = await _dbHelper.getData('results');
+    if (cachedData != null) {
+      _results = (cachedData as List).map((item) => ResultModel.fromJson(item)).toList();
+      notifyListeners();
+    }
+
     try {
       final response = await _apiService.get('/student/my-class-results');
       if (response.statusCode == 200) {
         final data = response.data['results'];
         if (data != null && data is List) {
           _results = data.map((item) => ResultModel.fromJson(item)).toList();
+          await _dbHelper.saveData('results', data);
         } else {
           _results = [];
         }
       }
     } catch (e) {
-      _error = 'Failed to fetch results.';
+      _error = 'Failed to fetch results. Using offline data.';
     }
 
     _isLoading = false;
@@ -124,18 +140,26 @@ class StudentProvider with ChangeNotifier {
     _error = null;
     notifyListeners();
 
+    // Load from cache
+    final cachedData = await _dbHelper.getData('notes');
+    if (cachedData != null) {
+      _notes = (cachedData as List).map((item) => NoteModel.fromJson(item)).toList();
+      notifyListeners();
+    }
+
     try {
       final response = await _apiService.get('/student/fetchNotes');
       if (response.statusCode == 200) {
         final data = response.data['notes'];
         if (data != null && data is List) {
           _notes = data.map((item) => NoteModel.fromJson(item)).toList();
+          await _dbHelper.saveData('notes', data);
         } else {
           _notes = [];
         }
       }
     } catch (e) {
-      _error = 'Failed to fetch notes.';
+      _error = 'Failed to fetch notes. Using offline data.';
     }
 
     _isLoading = false;
@@ -165,13 +189,21 @@ class StudentProvider with ChangeNotifier {
     _error = null;
     notifyListeners();
 
+    // Load from cache
+    final cachedData = await _dbHelper.getData('student_profile');
+    if (cachedData != null) {
+      _profile = cachedData;
+      notifyListeners();
+    }
+
     try {
       final response = await _apiService.get('/student/profile');
       if (response.statusCode == 200) {
         _profile = response.data;
+        await _dbHelper.saveData('student_profile', response.data);
       }
     } catch (e) {
-      _error = 'Failed to fetch profile.';
+      _error = 'Failed to fetch profile. Using offline data.';
     }
 
     _isLoading = false;

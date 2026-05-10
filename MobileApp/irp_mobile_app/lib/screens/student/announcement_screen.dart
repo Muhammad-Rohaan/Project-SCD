@@ -5,6 +5,8 @@ import 'package:intl/intl.dart';
 import '../../providers/student_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../models/announcement_model.dart';
+import '../../constants/app_colors.dart';
+import '../../widgets/gradient_text.dart';
 
 class AnnouncementScreen extends StatefulWidget {
   const AnnouncementScreen({super.key});
@@ -36,33 +38,55 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
   @override
   Widget build(BuildContext context) {
     final studentProvider = Provider.of<StudentProvider>(context);
-    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A), // Slate 900
-      appBar: AppBar(
-        title: Text(
-          'Announcements',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 20),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: AppColors.backgroundGradient,
         ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        foregroundColor: Colors.white,
-      ),
-      body: RefreshIndicator(
-        onRefresh: () async => _refreshData(),
-        child: studentProvider.isLoading && studentProvider.announcements.isEmpty
-            ? const Center(child: CircularProgressIndicator())
-            : studentProvider.announcements.isEmpty
-                ? _buildEmptyState()
-                : ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    itemCount: studentProvider.announcements.length,
-                    itemBuilder: (context, index) {
-                      final announcement = studentProvider.announcements[index];
-                      return _buildAnnouncementCard(announcement, theme);
-                    },
-                  ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    const SizedBox(width: 8),
+                    GradientText(
+                      'Announcements',
+                      gradient: AppColors.textGradient,
+                      style: GoogleFonts.poppins(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: () async => _refreshData(),
+                  child: studentProvider.isLoading && studentProvider.announcements.isEmpty
+                      ? const Center(child: CircularProgressIndicator())
+                      : studentProvider.announcements.isEmpty
+                          ? _buildEmptyState()
+                          : ListView.builder(
+                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+                              itemCount: studentProvider.announcements.length,
+                              itemBuilder: (context, index) {
+                                final announcement = studentProvider.announcements[index];
+                                return _buildAnnouncementCard(announcement);
+                              },
+                            ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -90,18 +114,18 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
     );
   }
 
-  Widget _buildAnnouncementCard(AnnouncementModel announcement, ThemeData theme) {
+  Widget _buildAnnouncementCard(AnnouncementModel announcement) {
     final isGlobal = announcement.target == 'all';
 
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: AppColors.cardBg,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: isGlobal
-              ? const Color(0xFF22D3EE).withOpacity(0.3) // Cyan
-              : const Color(0xFFA855F7).withOpacity(0.3), // Purple
+              ? AppColors.accent.withOpacity(0.3)
+              : AppColors.primary.withOpacity(0.3),
         ),
       ),
       child: ClipRRect(
@@ -119,15 +143,15 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: isGlobal
-                        ? [const Color(0xFF22D3EE), const Color(0xFF06B6D4)]
-                        : [const Color(0xFFA855F7), const Color(0xFF8B5CF6)],
+                        ? [AppColors.accent, AppColors.accent.withOpacity(0.5)]
+                        : [AppColors.primary, AppColors.primary.withOpacity(0.5)],
                   ),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -149,12 +173,10 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
-                          color: (isGlobal ? const Color(0xFF22D3EE) : const Color(0xFFA855F7))
-                              .withOpacity(0.1),
+                          color: (isGlobal ? AppColors.accent : AppColors.primary).withOpacity(0.1),
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
-                            color: (isGlobal ? const Color(0xFF22D3EE) : const Color(0xFFA855F7))
-                                .withOpacity(0.2),
+                            color: (isGlobal ? AppColors.accent : AppColors.primary).withOpacity(0.2),
                           ),
                         ),
                         child: Text(
@@ -162,7 +184,7 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
                           style: GoogleFonts.poppins(
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
-                            color: isGlobal ? const Color(0xFF22D3EE) : const Color(0xFFA855F7),
+                            color: isGlobal ? AppColors.accent : AppColors.primary,
                           ),
                         ),
                       ),
@@ -183,7 +205,7 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.person_outline, size: 14, color: Colors.white38),
+                          const Icon(Icons.person_outline, size: 14, color: Colors.white38),
                           const SizedBox(width: 4),
                           Text(
                             announcement.createdBy,
@@ -193,7 +215,7 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
                       ),
                       Row(
                         children: [
-                          Icon(Icons.access_time, size: 14, color: Colors.white38),
+                          const Icon(Icons.access_time, size: 14, color: Colors.white38),
                           const SizedBox(width: 4),
                           Text(
                             DateFormat('MMM dd, yyyy').format(announcement.createdAt),

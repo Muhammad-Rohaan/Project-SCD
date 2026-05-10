@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../api/api_service.dart';
 import '../../models/quiz_model.dart';
 import '../../providers/student_provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../constants/app_colors.dart';
+import '../../widgets/gradient_text.dart';
 
 class GenerateQuizScreen extends StatefulWidget {
   const GenerateQuizScreen({super.key});
@@ -30,7 +33,7 @@ class _GenerateQuizScreenState extends State<GenerateQuizScreen> {
     final topic = _topicController.text.trim();
     if (topic.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a topic')),
+        const SnackBar(content: Text('Please enter a topic'), backgroundColor: AppColors.danger),
       );
       return;
     }
@@ -59,7 +62,7 @@ class _GenerateQuizScreenState extends State<GenerateQuizScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error generating quiz: $e')),
+        SnackBar(content: Text('Error generating quiz: $e'), backgroundColor: AppColors.danger),
       );
     } finally {
       if (mounted) {
@@ -104,36 +107,71 @@ class _GenerateQuizScreenState extends State<GenerateQuizScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A), // slate-900
-      appBar: AppBar(
-        title: const Text('AI Quiz Generator'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: AppColors.backgroundGradient,
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    const SizedBox(width: 8),
+                    GradientText(
+                      'AI Quiz Generator',
+                      gradient: AppColors.textGradient,
+                      style: GoogleFonts.poppins(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: _isLoading
+                    ? const Center(child: CircularProgressIndicator(color: AppColors.accent))
+                    : _quizData == null
+                        ? _buildSetupView()
+                        : _showResults
+                            ? _buildResultsView()
+                            : _buildQuizView(),
+              ),
+            ],
+          ),
+        ),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Colors.cyan))
-          : _quizData == null
-              ? _buildSetupView()
-              : _showResults
-                  ? _buildResultsView()
-                  : _buildQuizView(),
     );
   }
 
   Widget _buildSetupView() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24.0),
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Center(
-            child: Icon(Icons.psychology, size: 80, color: Colors.cyan),
+          Center(
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppColors.accent.withOpacity(0.1),
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.accent.withOpacity(0.2)),
+              ),
+              child: const Icon(Icons.psychology_rounded, size: 64, color: AppColors.accent),
+            ),
           ),
-          const SizedBox(height: 24),
-          const Text(
+          const SizedBox(height: 32),
+          Text(
             'Generate a Quiz with AI',
-            style: TextStyle(
-              fontSize: 28,
+            style: GoogleFonts.poppins(
+              fontSize: 24,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
@@ -141,29 +179,29 @@ class _GenerateQuizScreenState extends State<GenerateQuizScreen> {
           const SizedBox(height: 8),
           Text(
             'Enter a topic and let our AI create a custom quiz for you.',
-            style: TextStyle(color: Colors.grey[400], fontSize: 16),
+            style: GoogleFonts.poppins(color: Colors.white60, fontSize: 14),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 40),
           _buildLabel('Topic'),
           TextField(
             controller: _topicController,
-            style: const TextStyle(color: Colors.white),
+            style: GoogleFonts.poppins(color: Colors.white),
             decoration: InputDecoration(
-              hintText: 'e.g. Flutter Development, World War II, etc.',
-              hintStyle: TextStyle(color: Colors.grey[600]),
+              hintText: 'e.g. Flutter Development, Science, etc.',
+              hintStyle: const TextStyle(color: Colors.white24),
               filled: true,
               fillColor: Colors.white.withOpacity(0.05),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide(color: Colors.cyan.withOpacity(0.3)),
+                borderSide: BorderSide(color: AppColors.accent.withOpacity(0.3)),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide(color: Colors.cyan.withOpacity(0.1)),
+                borderSide: BorderSide(color: AppColors.accent.withOpacity(0.2)),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
-                borderSide: const BorderSide(color: Colors.cyan),
+                borderSide: const BorderSide(color: AppColors.accent),
               ),
             ),
           ),
@@ -176,17 +214,17 @@ class _GenerateQuizScreenState extends State<GenerateQuizScreen> {
                   children: [
                     _buildLabel('Difficulty'),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.05),
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.cyan.withOpacity(0.1)),
+                        border: Border.all(color: AppColors.accent.withOpacity(0.2)),
                       ),
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<String>(
                           value: _difficulty,
-                          dropdownColor: const Color(0xFF1E293B),
-                          style: const TextStyle(color: Colors.white),
+                          dropdownColor: AppColors.background,
+                          style: GoogleFonts.poppins(color: Colors.white),
                           isExpanded: true,
                           items: _difficulties.map((String value) {
                             return DropdownMenuItem<String>(
@@ -210,22 +248,22 @@ class _GenerateQuizScreenState extends State<GenerateQuizScreen> {
                   children: [
                     _buildLabel('Questions'),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.05),
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.cyan.withOpacity(0.1)),
+                        border: Border.all(color: AppColors.accent.withOpacity(0.2)),
                       ),
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<int>(
                           value: _count,
-                          dropdownColor: const Color(0xFF1E293B),
-                          style: const TextStyle(color: Colors.white),
+                          dropdownColor: AppColors.background,
+                          style: GoogleFonts.poppins(color: Colors.white),
                           isExpanded: true,
                           items: _counts.map((int value) {
                             return DropdownMenuItem<int>(
                               value: value,
-                              child: Text('$value Questions'),
+                              child: Text(value.toString()),
                             );
                           }).toList(),
                           onChanged: (value) {
@@ -239,31 +277,37 @@ class _GenerateQuizScreenState extends State<GenerateQuizScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 40),
-          SizedBox(
+          const SizedBox(height: 48),
+          Container(
             width: double.infinity,
             height: 56,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              gradient: AppColors.buttonGradient,
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.accent.withOpacity(0.3),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
             child: ElevatedButton(
               onPressed: _handleGenerateQuiz,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.cyan,
-                foregroundColor: Colors.black,
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
-                elevation: 8,
-                shadowColor: Colors.cyan.withOpacity(0.5),
               ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.bolt),
-                  SizedBox(width: 8),
-                  Text(
-                    'Generate Quiz',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                ],
+              child: Text(
+                'Generate Quiz',
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
             ),
           ),
@@ -274,13 +318,13 @@ class _GenerateQuizScreenState extends State<GenerateQuizScreen> {
 
   Widget _buildLabel(String text) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0, left: 4),
+      padding: const EdgeInsets.only(left: 4, bottom: 8),
       child: Text(
-        text,
-        style: const TextStyle(
-          color: Colors.cyan,
+        text.toUpperCase(),
+        style: GoogleFonts.poppins(
+          color: Colors.white38,
+          fontSize: 12,
           fontWeight: FontWeight.bold,
-          fontSize: 14,
           letterSpacing: 1.2,
         ),
       ),
@@ -288,7 +332,9 @@ class _GenerateQuizScreenState extends State<GenerateQuizScreen> {
   }
 
   Widget _buildQuizView() {
-    final currentQuiz = _quizData!.questions[_currentQuestionIndex];
+    if (_quizData == null) return const SizedBox.shrink();
+    final question = _quizData!.questions[_currentQuestionIndex];
+
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: Column(
@@ -297,167 +343,144 @@ class _GenerateQuizScreenState extends State<GenerateQuizScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      _quizData!.topic,
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.cyan,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Text(
-                      'Question ${_currentQuestionIndex + 1} of ${_quizData!.questions.length}',
-                      style: TextStyle(color: Colors.grey[400]),
-                    ),
-                  ],
-                ),
-              ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: Colors.purple.withOpacity(0.2),
+                  color: AppColors.accent.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.purple.withOpacity(0.3)),
+                  border: Border.all(color: AppColors.accent.withOpacity(0.2)),
                 ),
                 child: Text(
-                  _quizData!.difficulty.toUpperCase(),
-                  style: const TextStyle(
-                    color: Colors.purpleAccent,
+                  'Question ${_currentQuestionIndex + 1} of ${_quizData!.questions.length}',
+                  style: GoogleFonts.poppins(
+                    color: AppColors.accent,
+                    fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+              ),
+              Text(
+                _quizData!.topic,
+                style: GoogleFonts.poppins(color: Colors.white38, fontSize: 12),
               ),
             ],
           ),
           const SizedBox(height: 32),
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.05),
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: Colors.indigo.withOpacity(0.3)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  currentQuiz.question,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    height: 1.5,
-                  ),
-                ),
-                const SizedBox(height: 32),
-                ...currentQuiz.options.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final option = entry.value;
-                  final isSelected = _selectedAnswers[_currentQuestionIndex] == index;
-
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 12.0),
-                    child: InkWell(
-                      onTap: () {
-                        setState(() {
-                          _selectedAnswers[_currentQuestionIndex] = index;
-                        });
-                      },
-                      borderRadius: BorderRadius.circular(16),
-                      child: Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? Colors.cyan.withOpacity(0.2)
-                              : Colors.indigo.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: isSelected
-                                ? Colors.cyan
-                                : Colors.indigo.withOpacity(0.3),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 32,
-                              height: 32,
-                              decoration: BoxDecoration(
-                                color: isSelected ? Colors.cyan : Colors.indigo.shade900,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  String.fromCharCode(65 + index),
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: isSelected ? Colors.black : Colors.cyan,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Text(
-                                option,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                }),
-              ],
+          Text(
+            question.question,
+            style: GoogleFonts.poppins(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              height: 1.4,
             ),
           ),
-          const Spacer(),
+          const SizedBox(height: 32),
+          Expanded(
+            child: ListView.builder(
+              itemCount: question.options.length,
+              itemBuilder: (context, index) {
+                final isSelected = _selectedAnswers[_currentQuestionIndex] == index;
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedAnswers[_currentQuestionIndex] = index;
+                    });
+                  },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    margin: const EdgeInsets.only(bottom: 16),
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: isSelected ? AppColors.primary.withOpacity(0.2) : AppColors.cardBg,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: isSelected ? AppColors.primary : AppColors.accent.withOpacity(0.1),
+                        width: isSelected ? 2 : 1,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 28,
+                          height: 28,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: isSelected ? Colors.white : Colors.white24,
+                              width: 2,
+                            ),
+                            color: isSelected ? AppColors.primary : Colors.transparent,
+                          ),
+                          child: Center(
+                            child: Text(
+                              String.fromCharCode(65 + index),
+                              style: TextStyle(
+                                color: isSelected ? Colors.white : Colors.white24,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Text(
+                            question.options[index],
+                            style: GoogleFonts.poppins(
+                              color: isSelected ? Colors.white : Colors.white70,
+                              fontSize: 16,
+                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 24),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               if (_currentQuestionIndex > 0)
                 TextButton(
                   onPressed: () {
-                    setState(() {
-                      _currentQuestionIndex--;
-                    });
+                    setState(() => _currentQuestionIndex--);
                   },
-                  child: const Text('PREVIOUS', style: TextStyle(color: Colors.cyan)),
+                  child: const Text('PREVIOUS', style: TextStyle(color: Colors.white38)),
                 )
               else
-                const SizedBox(),
-              ElevatedButton(
-                onPressed: () {
-                  if (_currentQuestionIndex < _quizData!.questions.length - 1) {
-                    setState(() {
-                      _currentQuestionIndex++;
-                    });
-                  } else {
-                    _submitQuiz();
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.cyan,
-                  foregroundColor: Colors.black,
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                const SizedBox.shrink(),
+              const Spacer(),
+              if (_currentQuestionIndex < _quizData!.questions.length - 1)
+                ElevatedButton(
+                  onPressed: _selectedAnswers.containsKey(_currentQuestionIndex)
+                      ? () => setState(() => _currentQuestionIndex++)
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.accent,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  ),
+                  child: const Text('NEXT', style: TextStyle(fontWeight: FontWeight.bold)),
+                )
+              else
+                ElevatedButton(
+                  onPressed: _selectedAnswers.containsKey(_currentQuestionIndex)
+                      ? _submitQuiz
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  ),
+                  child: const Text('SUBMIT', style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
-                child: Text(
-                  _currentQuestionIndex < _quizData!.questions.length - 1
-                      ? 'NEXT'
-                      : 'FINISH',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
             ],
           ),
         ],
@@ -467,72 +490,74 @@ class _GenerateQuizScreenState extends State<GenerateQuizScreen> {
 
   Widget _buildResultsView() {
     final percentage = (_score / _quizData!.questions.length) * 100;
+    final isPassed = percentage >= 60;
+
     return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.stars, size: 100, color: Colors.amber),
-            const SizedBox(height: 24),
-            const Text(
-              'Quiz Completed!',
-              style: TextStyle(
-                fontSize: 32,
+            Container(
+              padding: const EdgeInsets.all(32),
+              decoration: BoxDecoration(
+                color: (isPassed ? AppColors.success : AppColors.danger).withOpacity(0.1),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: (isPassed ? AppColors.success : AppColors.danger).withOpacity(0.2),
+                ),
+              ),
+              child: Icon(
+                isPassed ? Icons.emoji_events_rounded : Icons.sentiment_dissatisfied_rounded,
+                size: 80,
+                color: isPassed ? AppColors.success : AppColors.danger,
+              ),
+            ),
+            const SizedBox(height: 32),
+            Text(
+              isPassed ? 'Congratulations!' : 'Keep Practicing!',
+              style: GoogleFonts.poppins(
+                fontSize: 28,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
             Text(
-              'You scored',
-              style: TextStyle(fontSize: 20, color: Colors.grey[400]),
-            ),
-            Text(
-              '$_score / ${_quizData!.questions.length}',
-              style: const TextStyle(
-                fontSize: 64,
-                fontWeight: FontWeight.w900,
-                color: Colors.cyan,
-              ),
-            ),
-            Text(
-              '${percentage.toStringAsFixed(1)}%',
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.purpleAccent,
-              ),
+              'You scored $_score out of ${_quizData!.questions.length}',
+              style: GoogleFonts.poppins(color: Colors.white60, fontSize: 18),
             ),
             const SizedBox(height: 48),
-            SizedBox(
+            Container(
               width: double.infinity,
               height: 56,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                gradient: AppColors.buttonGradient,
+              ),
               child: ElevatedButton(
                 onPressed: () {
                   setState(() {
                     _quizData = null;
-                    _topicController.clear();
                   });
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.cyan,
-                  foregroundColor: Colors.black,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                 ),
                 child: const Text(
-                  'Try Another Topic',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  'TRY ANOTHER TOPIC',
+                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
                 ),
               ),
             ),
             const SizedBox(height: 16),
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text(
-                'Back to Dashboard',
-                style: TextStyle(color: Colors.grey),
-              ),
+              child: const Text('BACK TO DASHBOARD', style: TextStyle(color: Colors.white38)),
             ),
           ],
         ),

@@ -3,6 +3,7 @@ import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:path_provider/path_provider.dart';
 import '../constants/app_constants.dart';
+import 'interceptors.dart';
 
 class ApiService {
   static final ApiService _instance = ApiService._internal();
@@ -18,21 +19,25 @@ class ApiService {
   ApiService._internal() {
     _dio = Dio(BaseOptions(
       baseUrl: AppConstants.baseUrl,
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 10),
+      connectTimeout: const Duration(seconds: 15),
+      receiveTimeout: const Duration(seconds: 15),
       headers: {
         'Content-Type': 'application/json',
       },
     ));
 
+    _dio.interceptors.add(RetryInterceptor(dio: _dio));
+
     _aiDio = Dio(BaseOptions(
-      baseUrl: "http://10.0.2.2:8000/api", // Updated for Android Emulator access to AI service
-      connectTimeout: const Duration(seconds: 30), // AI might take longer
-      receiveTimeout: const Duration(seconds: 30),
+      baseUrl: AppConstants.aiBaseUrl,
+      connectTimeout: const Duration(seconds: 60), // AI might take longer
+      receiveTimeout: const Duration(seconds: 60),
       headers: {
         'Content-Type': 'application/json',
       },
     ));
+
+    _aiDio.interceptors.add(RetryInterceptor(dio: _aiDio));
   }
 
   Future<void> init() async {

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../providers/auth_provider.dart';
-// import '../../widgets/custom_text_field.dart';
+import '../../constants/app_colors.dart';
+import '../../widgets/gradient_text.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -40,7 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(authProvider.error ?? 'Login failed'),
-            backgroundColor: Colors.redAccent,
+            backgroundColor: AppColors.danger,
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -51,24 +52,16 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
-    final theme = Theme.of(context);
 
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              const Color(0xFF0F172A), // Slate 900
-              const Color(0xFF1E1B4B), // Indigo 950
-            ],
-          ),
+          gradient: AppColors.backgroundGradient,
         ),
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 32.0),
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -87,48 +80,22 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                       child: Column(
                         children: [
-                          Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.primary.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(24),
-                              border: Border.all(
-                                color: theme.colorScheme.primary.withOpacity(0.2),
-                              ),
-                            ),
-                            child: Icon(
-                              Icons.auto_stories_rounded,
-                              size: 80,
-                              color: theme.colorScheme.primary,
+                          GradientText(
+                            'AZ Coaching',
+                            gradient: AppColors.textGradient,
+                            style: GoogleFonts.poppins(
+                              fontSize: 40,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: -1,
                             ),
                           ),
-                          const SizedBox(height: 24),
-                          RichText(
-                            textAlign: TextAlign.center,
-                            text: TextSpan(
-                              style: GoogleFonts.poppins(
-                                fontSize: 32,
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: -1,
-                                color: Colors.white,
-                              ),
-                              children: [
-                                const TextSpan(text: 'Edu'),
-                                TextSpan(
-                                  text: 'Stream',
-                                  style: TextStyle(color: theme.colorScheme.primary),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 12),
                           Text(
-                            'Academic Excellence 2026',
+                            'Sign in to access your dashboard',
                             style: GoogleFonts.poppins(
                               color: Colors.white70,
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
-                              letterSpacing: 1.2,
                             ),
                           ),
                         ],
@@ -136,115 +103,117 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 48),
 
-                    // Login Type Toggle
+                    // Glassmorphism Card
                     Container(
-                      padding: const EdgeInsets.all(4),
+                      padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.white10),
+                        color: AppColors.cardBg,
+                        borderRadius: BorderRadius.circular(32),
+                        border: Border.all(
+                          color: AppColors.cyan400.withOpacity(0.2),
+                        ),
                       ),
-                      child: Row(
+                      child: Column(
                         children: [
-                          Expanded(
-                            child: _buildTypeButton(true, 'Email'),
-                          ),
-                          Expanded(
-                            child: _buildTypeButton(false, 'ID / Roll No'),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-
-                    // Input Fields
-                    AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 300),
-                      child: _isEmailLogin
-                          ? _buildTextField(
-                              key: const ValueKey('email'),
-                              controller: _emailController,
-                              hint: 'Email Address',
-                              icon: Icons.alternate_email_rounded,
-                              type: TextInputType.emailAddress,
-                              validator: (v) => v!.isEmpty ? 'Required' : null,
-                            )
-                          : _buildTextField(
-                              key: const ValueKey('id'),
-                              controller: _identifierController,
-                              hint: 'ID / Roll Number',
-                              icon: Icons.badge_outlined,
-                              validator: (v) => v!.isEmpty ? 'Required' : null,
+                          // Login Type Toggle
+                          Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.05),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(color: Colors.white10),
                             ),
-                    ),
-                    const SizedBox(height: 20),
-                    _buildTextField(
-                      controller: _passwordController,
-                      hint: 'Password',
-                      icon: Icons.lock_outline_rounded,
-                      isPassword: true,
-                      obscureText: _obscurePassword,
-                      onToggleVisibility: () =>
-                          setState(() => _obscurePassword = !_obscurePassword),
-                      validator: (v) => v!.isEmpty ? 'Required' : null,
-                    ),
-
-                    const SizedBox(height: 40),
-
-                    // Login Button
-                    Container(
-                      height: 56,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        gradient: LinearGradient(
-                          colors: [
-                            theme.colorScheme.primary,
-                            theme.colorScheme.secondary,
-                          ],
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: theme.colorScheme.primary.withOpacity(0.3),
-                            blurRadius: 12,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: ElevatedButton(
-                        onPressed: authProvider.isLoading ? null : _handleLogin,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          shadowColor: Colors.transparent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        child: authProvider.isLoading
-                            ? const SizedBox(
-                                height: 24,
-                                width: 24,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2.5,
-                                  color: Colors.white,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: _buildTypeButton(true, 'Email'),
                                 ),
-                              )
-                            : Text(
-                                'Launch Portal',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                                Expanded(
+                                  child: _buildTypeButton(false, 'ID / Roll No'),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 32),
+
+                          // Input Fields
+                          AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 300),
+                            child: _isEmailLogin
+                                ? _buildTextField(
+                                    key: const ValueKey('email'),
+                                    controller: _emailController,
+                                    hint: 'Email Address',
+                                    icon: Icons.alternate_email_rounded,
+                                    type: TextInputType.emailAddress,
+                                    validator: (v) => v!.isEmpty ? 'Required' : null,
+                                  )
+                                : _buildTextField(
+                                    key: const ValueKey('id'),
+                                    controller: _identifierController,
+                                    hint: 'ID / Roll Number',
+                                    icon: Icons.badge_outlined,
+                                    validator: (v) => v!.isEmpty ? 'Required' : null,
+                                  ),
+                          ),
+                          const SizedBox(height: 20),
+                          _buildTextField(
+                            controller: _passwordController,
+                            hint: 'Password',
+                            icon: Icons.lock_outline_rounded,
+                            isPassword: true,
+                            obscureText: _obscurePassword,
+                            onToggleVisibility: () =>
+                                setState(() => _obscurePassword = !_obscurePassword),
+                            validator: (v) => v!.isEmpty ? 'Required' : null,
+                          ),
+
+                          const SizedBox(height: 40),
+
+                          // Login Button
+                          Container(
+                            width: double.infinity,
+                            height: 56,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              gradient: AppColors.buttonGradient,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.accent.withOpacity(0.3),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: ElevatedButton(
+                              onPressed: authProvider.isLoading ? null : _handleLogin,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                shadowColor: Colors.transparent,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
                                 ),
                               ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
-                      'Trusted by 1,200+ global campuses',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
-                        color: Colors.white38,
-                        fontSize: 12,
+                              child: authProvider.isLoading
+                                  ? const SizedBox(
+                                      height: 24,
+                                      width: 24,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2.5,
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                  : Text(
+                                      'Sign In',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -265,7 +234,7 @@ class _LoginScreenState extends State<LoginScreen> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: active ? Theme.of(context).colorScheme.primary : Colors.transparent,
+          color: active ? AppColors.primary : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Text(
@@ -302,33 +271,34 @@ class _LoginScreenState extends State<LoginScreen> {
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: const TextStyle(color: Colors.white38),
-        prefixIcon: Icon(icon, color: Colors.white54, size: 20),
+        prefixIcon: Icon(icon, color: AppColors.cyan400.withOpacity(0.5)),
         suffixIcon: isPassword
             ? IconButton(
                 icon: Icon(
                   obscureText ? Icons.visibility_off : Icons.visibility,
-                  color: Colors.white54,
-                  size: 20,
+                  color: Colors.white38,
                 ),
                 onPressed: onToggleVisibility,
               )
             : null,
         filled: true,
         fillColor: Colors.white.withOpacity(0.05),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide.none,
+          borderSide: BorderSide(color: AppColors.cyan400.withOpacity(0.3)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Colors.white10),
+          borderSide: BorderSide(color: AppColors.cyan400.withOpacity(0.2)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Theme.of(context).colorScheme.primary.withOpacity(0.5)),
+          borderSide: const BorderSide(color: AppColors.cyan400),
         ),
-        errorStyle: const TextStyle(color: Colors.redAccent),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: AppColors.danger),
+        ),
       ),
     );
   }

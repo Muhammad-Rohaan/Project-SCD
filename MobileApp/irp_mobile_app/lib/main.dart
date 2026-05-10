@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'api/api_service.dart';
+import 'constants/app_colors.dart';
 import 'providers/auth_provider.dart';
 import 'providers/student_provider.dart';
 import 'providers/teacher_provider.dart';
@@ -44,9 +45,16 @@ class MyApp extends StatelessWidget {
       title: 'AZ School Management',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: AppColors.background,
+        colorScheme: ColorScheme.dark(
+          primary: AppColors.primary,
+          secondary: AppColors.accent,
+          surface: AppColors.background,
+          error: AppColors.danger,
+        ),
         useMaterial3: true,
-        textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme),
+        textTheme: GoogleFonts.poppinsTextTheme(ThemeData.dark().textTheme),
       ),
       home: const AuthWrapper(),
     );

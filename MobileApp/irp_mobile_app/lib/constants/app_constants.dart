@@ -1,7 +1,19 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart';
+
 class AppConstants {
-  // static const String baseUrl = 'http://10.0.2.2:5000/api'; // For Android Emulator
-  static const String baseUrl = 'http://localhost:5000/api'; // For Web/iOS
-  // static const String baseUrl = 'http://192.168.1.3:5000/api'; // For Physical Device
+  // Use 10.0.2.2 for Android Emulator, localhost for iOS/Web
+  static String get baseUrl {
+    if (kIsWeb) return 'http://localhost:5000/api';
+    if (Platform.isAndroid) return 'http://10.0.2.2:5000/api';
+    return 'http://localhost:5000/api';
+  }
+
+  static String get aiBaseUrl {
+    if (kIsWeb) return 'http://localhost:8000/api';
+    if (Platform.isAndroid) return 'http://10.0.2.2:8000/api';
+    return 'http://localhost:8000/api';
+  }
 
   // API Endpoints
   static const String login = '/auth/login';
