@@ -114,8 +114,18 @@ const AnnouncementPage = () => {
     const fetchAnnouncements = useCallback(async () => {
         setLoading(true);
         try {
-            const res = await axiosInstance.get('/announcement');
-            setAnnouncements(res.data.announcement || []);
+            // Using 'all' as a default parameter to match the backend's /:className route
+            const res = await axiosInstance.get('/announcement/all');
+            
+            const globalAnn = res.data.announcement || [];
+            const classAnn = res.data.myAnnouncement || [];
+            
+            // Combine both global and specific class announcements for the admin view
+            const combined = [...globalAnn, ...classAnn].sort((a, b) => 
+                new Date(b.createdAt) - new Date(a.createdAt)
+            );
+            
+            setAnnouncements(combined);
         } catch (err) {
             toast.error('Failed to load announcements.');
             console.error(err);

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
-import { BellIcon, UserCircleIcon, PowerIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { UserCircleIcon, PowerIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import ReceptionSidebar from '../../components/Reception/ReceptionSidebar.jsx';
 import AnnouncementBell from './AnnouncementBell.jsx';
 

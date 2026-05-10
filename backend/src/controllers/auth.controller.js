@@ -184,6 +184,9 @@ export const login = async (req, res) => {
                 } else if (user.role === 'teacher') {
                     // If the user is a teacher, we need to fetch their full profile
                     profile = await TeacherProfile.findOne({ userId: user._id });
+                } else if (user.role === 'student') {
+                    // If the user is a student, we need to fetch their full profile
+                    profile = await StudentProfile.findOne({ userId: user._id });
                 }
             }
         }

@@ -11,8 +11,7 @@ import {
 const router = express.Router();
 
 router.post('/create-new-announcement', protect, authorize('admin', 'teacher', 'receptionist'), createAnnouncement);
-router.get('/:className', protect, getAnnouncements); // This is actually in student routes.
-// router.delete('/:id', protect, authorize('admin'), deleteAnnouncement);
-// router.get('/:className', protect, getSpecificClassAnnouncement);
+router.get('/:className', protect, getAnnouncements);
+router.delete('/:id', protect, authorize('admin', 'teacher', 'receptionist'), deleteAnnouncement);
 
 export default router;

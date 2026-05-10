@@ -1,6 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { useAuth } from './context/AuthContext.jsx';
 import Login from './pages/Login';
 import Unauthorized from './pages/Unauthorized.jsx';
 import SetupFirstAdmin from './pages/SetupFirstAdmin.jsx';
@@ -27,6 +26,7 @@ import TeacherStudentsPage from './components/Teacher/TeacherStudentsPage.jsx';
 import TeacherResultsPage from './components/Teacher/TeacherResultsPage.jsx';
 import StudentLayout from './components/Layouts/StudentLayout.jsx';
 import StudentDashboard from './components/Student/StudentDashboard.jsx';
+import LandingPage from './pages/LandingPage.jsx';
 
 const App = () => {
   return (
@@ -34,6 +34,7 @@ const App = () => {
       <Toaster position="top-right" reverseOrder={false} />
       <Routes>
         {/* Public Routes */}
+        <Route path="/" element={<LandingPage />} />
         <Route path='/login' element={<Login />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
         <Route path="/setup-first-admin" element={<SetupFirstAdmin />} />
@@ -108,42 +109,11 @@ const App = () => {
           <Route path="*" element={<Navigate to="dashboard" replace />} />
         </Route>
 
-        {/* Root Route - Agar logged in hai to dashboard, warna login */}
-        <Route path="/" element={<RootRedirect />} />
-
         {/* Koi unknown route hoga to login par bhej dey ga */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </>
   );
-};
-
-
-// Helper Component for Root Redirect
-const RootRedirect = () => {
-  const { auth } = useAuth();
-
-  if (auth.loading) {
-    return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center text-white">
-        Loading...
-      </div>
-    );
-  }
-
-  if (auth.user) {
-    if (auth.user.role === 'admin') {
-      return <Navigate to="/admin/dashboard" replace />;
-    } else if (auth.user.role === 'receptionist') {
-      return <Navigate to="/reception/dashboard" replace />;
-    } else if (auth.user.role === 'teacher') {
-      return <Navigate to="/teacher/dashboard" replace />;
-    } else if (auth.user.role === 'student') {
-      return <Navigate to="/student/dashboard" replace />;
-    }
-  }
-
-  return <Navigate to="/login" replace />;
 };
 
 export default App;

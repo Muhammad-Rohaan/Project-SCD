@@ -40,7 +40,7 @@ import axiosInstance from '../../api/axios.js';
 const formatDate = (iso) =>
     new Date(iso).toLocaleDateString('en-PK', { day: 'numeric', month: 'short', year: 'numeric' });
 
-const AnnouncementBell = () => {
+const AnnouncementBell = ({ classNameProp }) => {
     const [open, setOpen] = useState(false);
     const [announcements, setAnnouncements] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -53,10 +53,30 @@ const AnnouncementBell = () => {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const res = await axiosInstance.get('/announcement');
-                const data = res.data.announcement || [];
-                setAnnouncements(data);
-                setUnread(data.length);
+                // Unified endpoint for everyone: /announcement/:className
+                // If classNameProp is "N/A" or missing, we use "all"
+                const param = (classNameProp && classNameProp !== 'N/A') ? classNameProp : 'all';
+                const endpoint = `/announcement/${param}`;
+                
+                const res = await axiosInstance.get(endpoint);
+                
+                // Backend returns { announcement: [], myAnnouncement: [] }
+                const globalData = Array.isArray(res.data.announcement) ? res.data.announcement : [];
+                const classData = Array.isArray(res.data.myAnnouncement) ? res.data.myAnnouncement : [];
+                
+                // Filter out any duplicates and sort by date
+                const combined = [...globalData, ...classData]
+                    .filter((ann, index, self) => 
+                        ann && ann._id && index === self.findIndex((t) => t._id?.toString() === ann._id?.toString())
+                    )
+                    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+                setAnnouncements(combined);
+
+                // Calculate unread: filter out IDs already in localStorage
+                const readIds = JSON.parse(localStorage.getItem('readAnnouncements') || '[]');
+                const unreadCount = combined.filter(ann => ann._id && !readIds.includes(ann._id.toString())).length;
+                setUnread(unreadCount);
             } catch (err) {
                 console.error('Bell fetch error:', err);
             } finally {
@@ -64,7 +84,7 @@ const AnnouncementBell = () => {
             }
         };
         fetchData();
-    }, []);
+    }, [classNameProp]);
 
     /* ── Close on outside click ── */
     useEffect(() => {
@@ -84,9 +104,17 @@ const AnnouncementBell = () => {
                 top: rect.bottom + 8,
                 right: window.innerWidth - rect.right,
             });
+
+            // Mark all currently loaded announcements as read when opening
+            if (announcements.length > 0) {
+                const currentIds = announcements.map(ann => ann._id?.toString()).filter(Boolean);
+                const readIds = JSON.parse(localStorage.getItem('readAnnouncements') || '[]');
+                const updatedReadIds = [...new Set([...readIds, ...currentIds])].slice(-100);
+                localStorage.setItem('readAnnouncements', JSON.stringify(updatedReadIds));
+                setUnread(0);
+            }
         }
         setOpen(prev => !prev);
-        setUnread(0);
     };
 
     const dropdown = (

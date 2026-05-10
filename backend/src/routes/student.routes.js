@@ -1,7 +1,6 @@
 import express from 'express';
 import { protect, authorize } from '../middleware/auth.middleware.js';
 import { getFeeStatus, getMyClassResults, getNotes } from '../controllers/student.controller.js';
-import { getAnnouncements } from '../controllers/announcement.controller.js';
 
 // Import your student controllers here
 // Example: import { getMyProfile, getMyAttendance, getMyResults } from '../controllers/student.controller.js';
@@ -19,7 +18,5 @@ router.get('/fees', getFeeStatus);
 router.get('/fetchNotes', getNotes);
 
 router.get('/my-class-results', getMyClassResults);
-
-router.get('/announcement/:className', getAnnouncements)
 
 export default router;
