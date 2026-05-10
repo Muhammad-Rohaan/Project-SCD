@@ -6,7 +6,6 @@ import 'teacher_students_screen.dart';
 import 'upload_notes_screen.dart';
 import 'teacher_results_screen.dart';
 import '../student/announcement_screen.dart';
-import '../common/mobile_features_screen.dart';
 
 class TeacherDashboard extends StatelessWidget {
   const TeacherDashboard({super.key});
@@ -108,20 +107,6 @@ class TeacherDashboard extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder: (context) => const AnnouncementScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                  _buildDashboardCard(
-                    context,
-                    'Mobile Features',
-                    Icons.phone_android,
-                    Colors.blueGrey,
-                    () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const MobileFeaturesScreen(),
                         ),
                       );
                     },

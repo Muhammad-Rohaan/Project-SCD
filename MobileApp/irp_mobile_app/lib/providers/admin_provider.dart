@@ -217,4 +217,38 @@ class AdminProvider with ChangeNotifier {
     notifyListeners();
     return false;
   }
+
+  Future<bool> postAnnouncement({
+    required String title,
+    required String message,
+    required String target,
+    required String className,
+    required String createdBy,
+  }) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final response = await _apiService.post('/announcement/create-new-announcement', data: {
+        'title': title,
+        'message': message,
+        'target': target,
+        'className': className,
+        'createdBy': createdBy,
+      });
+
+      if (response.statusCode == 200) {
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      }
+    } catch (e) {
+      _error = 'Failed to post announcement.';
+    }
+
+    _isLoading = false;
+    notifyListeners();
+    return false;
+  }
 }

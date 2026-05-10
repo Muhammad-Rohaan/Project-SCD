@@ -6,7 +6,7 @@ import 'register_student_screen.dart';
 import 'collect_fees_screen.dart';
 import 'student_list_screen.dart';
 import '../student/announcement_screen.dart';
-import '../common/mobile_features_screen.dart';
+// import '../common/mobile_features_screen.dart';
 
 class ReceptionistDashboard extends StatelessWidget {
   const ReceptionistDashboard({super.key});
@@ -108,20 +108,6 @@ class ReceptionistDashboard extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder: (context) => const AnnouncementScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                  _buildDashboardCard(
-                    context,
-                    'Mobile Features',
-                    Icons.phone_android,
-                    Colors.blueGrey,
-                    () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const MobileFeaturesScreen(),
                         ),
                       );
                     },

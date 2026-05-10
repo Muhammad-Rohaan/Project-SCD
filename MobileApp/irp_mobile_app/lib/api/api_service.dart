@@ -9,6 +9,8 @@ class ApiService {
   late Dio _dio;
   late PersistCookieJar _cookieJar;
 
+  late Dio _aiDio;
+
   factory ApiService() {
     return _instance;
   }
@@ -22,6 +24,15 @@ class ApiService {
         'Content-Type': 'application/json',
       },
     ));
+
+    _aiDio = Dio(BaseOptions(
+      baseUrl: "http://10.0.2.2:8000/api", // Updated for Android Emulator access to AI service
+      connectTimeout: const Duration(seconds: 30), // AI might take longer
+      receiveTimeout: const Duration(seconds: 30),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    ));
   }
 
   Future<void> init() async {
@@ -29,9 +40,11 @@ class ApiService {
     final String cookiePath = '${appDocDir.path}/.cookies/';
     _cookieJar = PersistCookieJar(storage: FileStorage(cookiePath));
     _dio.interceptors.add(CookieManager(_cookieJar));
+    // AI service usually doesn't need session cookies but we can add if needed
   }
 
   Dio get dio => _dio;
+  Dio get aiDio => _aiDio;
   PersistCookieJar get cookieJar => _cookieJar;
 
   // Generic GET request

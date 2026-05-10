@@ -30,7 +30,7 @@ class StudentProvider with ChangeNotifier {
   final ApiService _apiService = ApiService();
   final DatabaseHelper _dbHelper = DatabaseHelper();
 
-  Future<void> fetchAnnouncements() async {
+  Future<void> fetchAnnouncements([String? className]) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -45,13 +45,24 @@ class StudentProvider with ChangeNotifier {
     }
 
     try {
-      final response = await _apiService.get(AppConstants.announcements);
+      // Use the unified endpoint /announcement/:className
+      final param = (className != null && className != 'N/A') ? className : 'all';
+      final response = await _apiService.get('${AppConstants.announcements}/$param');
+      
       if (response.statusCode == 200) {
         final data = response.data;
-        if (data != null && data is List) {
-          _announcements = data.map((item) => AnnouncementModel.fromJson(item)).toList();
+        if (data != null) {
+          final List<dynamic> globalAnn = data['announcement'] ?? [];
+          final List<dynamic> classAnn = data['myAnnouncement'] ?? [];
+          
+          final combinedData = [...globalAnn, ...classAnn];
+          
+          _announcements = combinedData
+              .map((item) => AnnouncementModel.fromJson(item))
+              .toList();
+          
           // Save to offline cache
-          await _dbHelper.saveData('announcements', data);
+          await _dbHelper.saveData('announcements', combinedData);
         }
       }
     } catch (e) {
@@ -165,5 +176,28 @@ class StudentProvider with ChangeNotifier {
 
     _isLoading = false;
     notifyListeners();
+  }
+
+  Future<bool> saveQuizResult({
+    required String topic,
+    required int score,
+    required int total,
+    required String difficulty,
+    required String userId,
+  }) async {
+    try {
+      // Assuming you have a backend endpoint for saving quiz results
+      final response = await _apiService.post('/quizzes/results', data: {
+        'topic': topic,
+        'score': score,
+        'total': total,
+        'difficulty': difficulty,
+        'userId': userId,
+      });
+      return response.statusCode == 200 || response.statusCode == 201;
+    } catch (e) {
+      debugPrint('Error saving quiz result: $e');
+      return false;
+    }
   }
 }

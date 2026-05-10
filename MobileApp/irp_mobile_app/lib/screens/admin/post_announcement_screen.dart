@@ -18,7 +18,7 @@ class _PostAnnouncementScreenState extends State<PostAnnouncementScreen> {
   final _classNameController = TextEditingController();
   String _selectedTarget = 'all';
 
-  final List<String> _targets = ['all', 'students', 'teachers'];
+  final List<String> _targets = ['all', 'specific-class'];
 
   void _handlePost() async {
     if (_formKey.currentState!.validate()) {
@@ -26,10 +26,10 @@ class _PostAnnouncementScreenState extends State<PostAnnouncementScreen> {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       
       final success = await adminProvider.postAnnouncement(
-        title: _titleController.text,
-        message: _messageController.text,
+        title: _titleController.text.trim(),
+        message: _messageController.text.trim(),
         target: _selectedTarget,
-        className: _classNameController.text,
+        className: _selectedTarget == 'all' ? 'N/A' : _classNameController.text.trim(),
         createdBy: authProvider.user?.fullName ?? 'Admin',
       );
 
@@ -79,22 +79,26 @@ class _PostAnnouncementScreenState extends State<PostAnnouncementScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
-              CustomTextField(
-                controller: _classNameController,
-                label: 'Class Name (e.g. 10th A, or All)',
-                prefixIcon: Icons.class_,
-                validator: (value) {
-                  if (value == null || value.isEmpty) return 'Class name is required';
-                  return null;
-                },
-              ),
+              if (_selectedTarget == 'specific-class') ...[
+                const SizedBox(height: 16),
+                CustomTextField(
+                  controller: _classNameController,
+                  label: 'Class Name (e.g. 10th A)',
+                  prefixIcon: Icons.class_,
+                  validator: (value) {
+                    if (_selectedTarget == 'specific-class' && (value == null || value.isEmpty)) {
+                      return 'Class name is required for specific class';
+                    }
+                    return null;
+                  },
+                ),
+              ],
               const SizedBox(height: 24),
               const Text('Target Audience',
                   style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
-                initialValue: _selectedTarget,
+                value: _selectedTarget,
                 items: _targets.map((target) => DropdownMenuItem(
                           value: target,
                           child: Text(target.toUpperCase()),
