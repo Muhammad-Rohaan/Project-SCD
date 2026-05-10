@@ -1,7 +1,7 @@
 class AppConstants {
   // static const String baseUrl = 'http://10.0.2.2:5000/api'; // For Android Emulator
-  // static const String baseUrl = 'http://localhost:5000/api'; // For Web/iOS
-  static const String baseUrl = 'http://192.168.1.3:5000/api'; // For Physical Device
+  static const String baseUrl = 'http://localhost:5000/api'; // For Web/iOS
+  // static const String baseUrl = 'http://192.168.1.3:5000/api'; // For Physical Device
 
   // API Endpoints
   static const String login = '/auth/login';
