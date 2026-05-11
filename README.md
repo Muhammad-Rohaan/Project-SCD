@@ -86,26 +86,6 @@ Frontend starts on:
 
 ---
 
-## First-Time Admin Setup This is IMPORTANT! to create the first admin/ Owner either directly in DB or By using Postman.
-
-The backend exposes a one-time setup endpoint:
-- `POST /api/setup/register-first-admin`
-<!-- 
-Frontend page:
-- `http://localhost:5173/setup-first-admin` -->
-
-How it works:
-- If **no admin exists**, it creates the first admin.
-- If an admin already exists, it returns **403**.
-
-If you want a fresh setup again (new database):
-- Stop containers and remove DB volume:
-  ```bash
-  docker compose down -v
-  ```
-
-> Security note: after creating the first admin, you should remove/disable this route in production.
-
 ---
 
 ## Docker Deployment (Mongo + Backend + Frontend)
