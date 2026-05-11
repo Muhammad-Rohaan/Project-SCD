@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
+import '../student/pdf_viewer_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../providers/student_provider.dart';
 import '../../constants/app_colors.dart';
@@ -21,16 +21,15 @@ class _NotesScreenState extends State<NotesScreen> {
     Future.microtask(() => studentProvider.fetchNotes());
   }
 
-  Future<void> _launchUrl(String url) async {
-    final uri = Uri.parse(url);
-    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not open file'), backgroundColor: AppColors.danger),
-        );
-      }
-    }
-  }
+  // Replace with this:
+void _openPdf(String url, String title) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => PdfViewerScreen(pdfUrl: url, title: title),
+    ),
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +121,7 @@ class _NotesScreenState extends State<NotesScreen> {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () => _launchUrl(note.fileUrl),
+          onTap: () => _openPdf(note.fileUrl, note.title),
           borderRadius: BorderRadius.circular(24),
           child: Padding(
             padding: const EdgeInsets.all(20),

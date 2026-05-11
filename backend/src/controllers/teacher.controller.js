@@ -62,7 +62,8 @@ export const uploadNotes = async (req, res) => {
     // We use resource_type: "auto" so Cloudinary accepts PDFs/Raw files
     const result = await cloudinary.uploader.upload(tempFilePath, {
       folder: "class_notes",
-      resource_type: "auto", 
+      resource_type: "raw",
+      access_mode: "public",
       public_id: `${subject}_${title.replace(/\s+/g, '_')}_${Date.now()}`
     });
 
@@ -167,7 +168,7 @@ export const deleteResultImage = async (req, res) => {
     }
 
     // Cloudinary se bhi del kardo:
-    await cloudinary.uploader.destroy(pubId);
+    await cloudinary.uploader.destroy(pubId, { resource_type: 'raw' });
 
     res.json({
       msg: "Deleted Result Image"
