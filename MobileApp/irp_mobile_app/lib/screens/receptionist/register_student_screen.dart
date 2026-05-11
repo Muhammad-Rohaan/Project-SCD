@@ -35,13 +35,35 @@ class _RegisterStudentScreenState extends State<RegisterStudentScreen> {
     {'value': 'arts', 'label': 'Arts'},
   ];
 
+  // Inside _RegisterStudentScreenState
+
   void _handleRegister() async {
     if (_formKey.currentState!.validate()) {
-      final receptionistProvider =
-          Provider.of<ReceptionistProvider>(context, listen: false);
+      String email = _emailController.text.trim();
+
+      // Auto-generate temporary email if field is empty
+      if (email.isEmpty) {
+        final timestamp = DateTime.now().second;
+        email = 'temp$timestamp@az.pk';
+
+        // Optional: Show user what email was generated
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Generated temporary email: $email'),
+            backgroundColor: AppColors.accent,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+
+      final receptionistProvider = Provider.of<ReceptionistProvider>(
+        context,
+        listen: false,
+      );
+
       final success = await receptionistProvider.registerStudent(
         fullName: _fullNameController.text,
-        email: _emailController.text,
+        email: email, // ← Use the (possibly generated) email
         password: _passwordController.text,
         rollNo: _rollNoController.text,
         fatherName: _fatherNameController.text,
@@ -55,12 +77,18 @@ class _RegisterStudentScreenState extends State<RegisterStudentScreen> {
 
       if (success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Student registered successfully!'), backgroundColor: AppColors.success),
+          const SnackBar(
+            content: Text('Student registered successfully!'),
+            backgroundColor: AppColors.success,
+          ),
         );
         Navigator.pop(context);
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(receptionistProvider.error ?? 'Registration failed'), backgroundColor: AppColors.danger),
+          SnackBar(
+            content: Text(receptionistProvider.error ?? 'Registration failed'),
+            backgroundColor: AppColors.danger,
+          ),
         );
       }
     }
@@ -72,9 +100,7 @@ class _RegisterStudentScreenState extends State<RegisterStudentScreen> {
 
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: AppColors.backgroundGradient,
-        ),
+        decoration: BoxDecoration(gradient: AppColors.backgroundGradient),
         child: SafeArea(
           child: Column(
             children: [
@@ -83,7 +109,10 @@ class _RegisterStudentScreenState extends State<RegisterStudentScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+                      icon: const Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        color: Colors.white,
+                      ),
                       onPressed: () => Navigator.pop(context),
                     ),
                     const SizedBox(width: 8),
@@ -110,17 +139,17 @@ class _RegisterStudentScreenState extends State<RegisterStudentScreen> {
                           controller: _fullNameController,
                           label: 'Full Name',
                           prefixIcon: Icons.person_rounded,
-                          validator: (value) =>
-                              value == null || value.isEmpty ? 'Required' : null,
+                          validator: (value) => value == null || value.isEmpty
+                              ? 'Required'
+                              : null,
                         ),
                         const SizedBox(height: 16),
                         CustomTextField(
                           controller: _emailController,
-                          label: 'Email Address',
+                          label: 'Email Address (Optional)',
                           prefixIcon: Icons.email_rounded,
                           keyboardType: TextInputType.emailAddress,
-                          validator: (value) =>
-                              value == null || !value.contains('@') ? 'Invalid email' : null,
+                          validator: (value) => null, // ← Allow empty
                         ),
                         const SizedBox(height: 16),
                         CustomTextField(
@@ -129,15 +158,18 @@ class _RegisterStudentScreenState extends State<RegisterStudentScreen> {
                           prefixIcon: Icons.lock_rounded,
                           isPassword: true,
                           validator: (value) =>
-                              value == null || value.length < 6 ? 'Too short' : null,
+                              value == null || value.length < 6
+                              ? 'Too short'
+                              : null,
                         ),
                         const SizedBox(height: 16),
                         CustomTextField(
                           controller: _rollNoController,
-                          label: 'Roll No (e.g. 11A-04)',
+                          label: 'Roll No (e.g. 11-04)',
                           prefixIcon: Icons.badge_rounded,
-                          validator: (value) =>
-                              value == null || value.isEmpty ? 'Required' : null,
+                          validator: (value) => value == null || value.isEmpty
+                              ? 'Required'
+                              : null,
                         ),
                         const SizedBox(height: 16),
                         CustomTextField(
@@ -164,8 +196,9 @@ class _RegisterStudentScreenState extends State<RegisterStudentScreen> {
                           controller: _addressController,
                           label: 'Address',
                           prefixIcon: Icons.home_rounded,
-                          validator: (value) =>
-                              value == null || value.isEmpty ? 'Required' : null,
+                          validator: (value) => value == null || value.isEmpty
+                              ? 'Required'
+                              : null,
                         ),
                         const SizedBox(height: 16),
                         Row(
@@ -178,8 +211,8 @@ class _RegisterStudentScreenState extends State<RegisterStudentScreen> {
                                 keyboardType: TextInputType.number,
                                 validator: (value) =>
                                     value == null || int.tryParse(value) == null
-                                        ? 'Invalid'
-                                        : null,
+                                    ? 'Invalid'
+                                    : null,
                               ),
                             ),
                             const SizedBox(width: 16),
@@ -189,7 +222,9 @@ class _RegisterStudentScreenState extends State<RegisterStudentScreen> {
                                 label: 'Class (e.g. 11)',
                                 prefixIcon: Icons.class_rounded,
                                 validator: (value) =>
-                                    value == null || value.isEmpty ? 'Required' : null,
+                                    value == null || value.isEmpty
+                                    ? 'Required'
+                                    : null,
                               ),
                             ),
                           ],
@@ -205,7 +240,9 @@ class _RegisterStudentScreenState extends State<RegisterStudentScreen> {
                             gradient: AppColors.buttonGradient,
                           ),
                           child: ElevatedButton(
-                            onPressed: receptionistProvider.isLoading ? null : _handleRegister,
+                            onPressed: receptionistProvider.isLoading
+                                ? null
+                                : _handleRegister,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.transparent,
                               shadowColor: Colors.transparent,
@@ -214,10 +251,16 @@ class _RegisterStudentScreenState extends State<RegisterStudentScreen> {
                               ),
                             ),
                             child: receptionistProvider.isLoading
-                                ? const CircularProgressIndicator(color: Colors.white)
+                                ? const CircularProgressIndicator(
+                                    color: Colors.white,
+                                  )
                                 : const Text(
                                     'Register Student',
-                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                    ),
                                   ),
                           ),
                         ),
@@ -250,14 +293,19 @@ class _RegisterStudentScreenState extends State<RegisterStudentScreen> {
           decoration: InputDecoration(
             labelText: 'Field/Department',
             labelStyle: const TextStyle(color: Colors.white38),
-            prefixIcon: Icon(Icons.school_rounded, color: AppColors.accent.withOpacity(0.5)),
+            prefixIcon: Icon(
+              Icons.school_rounded,
+              color: AppColors.accent.withOpacity(0.5),
+            ),
             border: InputBorder.none,
           ),
           items: _fields
-              .map((f) => DropdownMenuItem(
-                    value: f['value'],
-                    child: Text(f['label']!),
-                  ))
+              .map(
+                (f) => DropdownMenuItem(
+                  value: f['value'],
+                  child: Text(f['label']!),
+                ),
+              )
               .toList(),
           onChanged: (val) => setState(() => _selectedField = val!),
         ),

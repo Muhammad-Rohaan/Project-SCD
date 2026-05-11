@@ -25,6 +25,7 @@ class _GenerateQuizScreenState extends State<GenerateQuizScreen> {
   Map<int, int> _selectedAnswers = {};
   bool _showResults = false;
   int _score = 0;
+  final Set<int> _expandedExplanations = {};
 
   final List<String> _difficulties = ['easy', 'medium', 'hard'];
   final List<int> _counts = [5, 10, 15, 20];
@@ -492,75 +493,178 @@ class _GenerateQuizScreenState extends State<GenerateQuizScreen> {
     final percentage = (_score / _quizData!.questions.length) * 100;
     final isPassed = percentage >= 60;
 
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(32),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(32),
+            decoration: BoxDecoration(
+              color: (isPassed ? AppColors.success : AppColors.danger).withOpacity(0.1),
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: (isPassed ? AppColors.success : AppColors.danger).withOpacity(0.2),
+              ),
+            ),
+            child: Icon(
+              isPassed ? Icons.emoji_events_rounded : Icons.sentiment_dissatisfied_rounded,
+              size: 80,
+              color: isPassed ? AppColors.success : AppColors.danger,
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            isPassed ? 'Congratulations!' : 'Keep Practicing!',
+            style: GoogleFonts.poppins(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'You scored $_score out of ${_quizData!.questions.length}',
+            style: GoogleFonts.poppins(color: Colors.white60, fontSize: 18),
+          ),
+          const SizedBox(height: 32),
+          
+          // Questions Summary
+          ...List.generate(_quizData!.questions.length, (index) {
+            final question = _quizData!.questions[index];
+            final selectedIdx = _selectedAnswers[index];
+            final isCorrect = selectedIdx == question.correctAnswer;
+            final isExpanded = _expandedExplanations.contains(index);
+
+            return Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: (isPassed ? AppColors.success : AppColors.danger).withOpacity(0.1),
-                shape: BoxShape.circle,
+                color: AppColors.cardBg,
+                borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: (isPassed ? AppColors.success : AppColors.danger).withOpacity(0.2),
+                  color: (isCorrect ? AppColors.success : AppColors.danger).withOpacity(0.2),
                 ),
               ),
-              child: Icon(
-                isPassed ? Icons.emoji_events_rounded : Icons.sentiment_dissatisfied_rounded,
-                size: 80,
-                color: isPassed ? AppColors.success : AppColors.danger,
-              ),
-            ),
-            const SizedBox(height: 32),
-            Text(
-              isPassed ? 'Congratulations!' : 'Keep Practicing!',
-              style: GoogleFonts.poppins(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'You scored $_score out of ${_quizData!.questions.length}',
-              style: GoogleFonts.poppins(color: Colors.white60, fontSize: 18),
-            ),
-            const SizedBox(height: 48),
-            Container(
-              width: double.infinity,
-              height: 56,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                gradient: AppColors.buttonGradient,
-              ),
-              child: ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _quizData = null;
-                  });
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  shadowColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Q${index + 1}: ',
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          question.question,
+                          style: GoogleFonts.poppins(color: Colors.white),
+                        ),
+                      ),
+                      Icon(
+                        isCorrect ? Icons.check_circle_rounded : Icons.cancel_rounded,
+                        color: isCorrect ? AppColors.success : AppColors.danger,
+                        size: 20,
+                      ),
+                    ],
                   ),
-                ),
-                child: const Text(
-                  'TRY ANOTHER TOPIC',
-                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Correct: ${question.options[question.correctAnswer]}',
+                    style: GoogleFonts.poppins(color: AppColors.success, fontSize: 13),
+                  ),
+                  if (!isCorrect)
+                    Text(
+                      'Yours: ${selectedIdx != null ? question.options[selectedIdx] : "Not Answered"}',
+                      style: GoogleFonts.poppins(color: AppColors.danger, fontSize: 13),
+                    ),
+                  
+                  if (question.explanation != null && question.explanation!.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          if (isExpanded) {
+                            _expandedExplanations.remove(index);
+                          } else {
+                            _expandedExplanations.add(index);
+                          }
+                        });
+                      },
+                      child: Row(
+                        children: [
+                          Text(
+                            isExpanded ? 'Hide Explanation' : 'Show Explanation',
+                            style: GoogleFonts.poppins(
+                              color: AppColors.accent,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Icon(
+                            isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                            color: AppColors.accent,
+                            size: 16,
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (isExpanded)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text(
+                          question.explanation!,
+                          style: GoogleFonts.poppins(
+                            color: Colors.white70,
+                            fontSize: 13,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ),
+                  ],
+                ],
+              ),
+            );
+          }),
+
+          const SizedBox(height: 32),
+          Container(
+            width: double.infinity,
+            height: 56,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              gradient: AppColors.buttonGradient,
+            ),
+            child: ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _quizData = null;
+                  _expandedExplanations.clear();
+                });
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
                 ),
               ),
+              child: const Text(
+                'TRY ANOTHER TOPIC',
+                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+              ),
             ),
-            const SizedBox(height: 16),
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('BACK TO DASHBOARD', style: TextStyle(color: Colors.white38)),
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 16),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('BACK TO DASHBOARD', style: TextStyle(color: Colors.white38)),
+          ),
+          const SizedBox(height: 24),
+        ],
       ),
     );
   }

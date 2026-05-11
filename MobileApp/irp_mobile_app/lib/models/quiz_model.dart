@@ -24,11 +24,13 @@ class QuizQuestion {
   final String question;
   final List<String> options;
   final int correctAnswer;
+  final String? explanation;
 
   QuizQuestion({
     required this.question,
     required this.options,
     required this.correctAnswer,
+    this.explanation,
   });
 
   factory QuizQuestion.fromJson(Map<String, dynamic> json) {
@@ -36,6 +38,7 @@ class QuizQuestion {
       question: json['question'] ?? '',
       options: List<String>.from(json['options'] ?? []),
       correctAnswer: json['correctAnswer'] ?? 0,
+      explanation: json['explanation'],
     );
   }
 }

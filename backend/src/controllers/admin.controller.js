@@ -387,7 +387,6 @@ export const deleteTeacherById = async (req, res) => {
     }
 }
 
-
 export const getAllStds = async (req, res) => {
     try {
 
@@ -399,8 +398,6 @@ export const getAllStds = async (req, res) => {
             getStds
         })
 
-
-        
     } catch (error) {
         res.status(500).json({
             msg: "Error in finding students in admin",

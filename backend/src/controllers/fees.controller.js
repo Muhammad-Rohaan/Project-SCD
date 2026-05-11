@@ -73,6 +73,9 @@ export const collectFee = async (req, res) => {
             fees
         });
 
+        // SEND EMAIL: may be in V2 IDK
+         
+
     } catch (error) {
         console.error("Collect Fee Error:", error);
         if (error.code === 11000) {

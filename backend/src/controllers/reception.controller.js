@@ -27,7 +27,7 @@ export const registerStudent = async (req, res) => {
 
         newUser = await register(null, null, { fullName, email, password, role: 'student' });
 
-
+//"className-getTotalStudent() + 1"
         // Step 2: Create StudentProfile
         await StudentProfile.create([{
             userId: newUser._id,
