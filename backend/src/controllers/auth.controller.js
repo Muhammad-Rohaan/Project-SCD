@@ -217,12 +217,12 @@ export const login = async (req, res) => {
         // 2. Response: Token ko Cookie mein daalo aur User ka data JSON body mein bhejo
         res.status(200).cookie('token', token, options).json({
             message: 'Login successful',
-            // YEH OBJECT FRONTEND KO ZAROORI HAI:
             user: {
                 id: user._id,
                 name: user.fullName,
+                email: user.email,
                 role: user.role,
-                profileType: profileType, // 'student' ya 'teacher' ya 'admin' etc.
+                profileType: profileType,
                 profile: profile
             }
         });

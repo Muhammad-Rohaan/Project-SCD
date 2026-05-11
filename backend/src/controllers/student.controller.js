@@ -24,6 +24,7 @@ export const getNotes = async (req, res) => {
                 _id: file._id,
                 title: file.title,
                 subject: file.subject,
+                className: file.className,
                 fileUrl: file.fileUrl,
                 createdAt: file.createdAt
             }))
@@ -53,6 +54,7 @@ export const getMyClassResults = async (req, res) => {
             totalResults: results.length,
             results: results.map(result => ({
                 testName: result.testName,
+                className: result.className,
                 imageUrl: result.imageUrl
             }))
 

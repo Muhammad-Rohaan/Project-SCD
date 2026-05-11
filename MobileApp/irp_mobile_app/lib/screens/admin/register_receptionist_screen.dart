@@ -73,12 +73,14 @@ class _RegisterReceptionistScreenState extends State<RegisterReceptionistScreen>
                       onPressed: () => Navigator.pop(context),
                     ),
                     const SizedBox(width: 8),
-                    GradientText(
-                      'Register Receptionist',
-                      gradient: AppColors.textGradient,
-                      style: GoogleFonts.poppins(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w900,
+                    Expanded(
+                      child: GradientText(
+                        'Register Receptionist',
+                        gradient: AppColors.textGradient,
+                        style: GoogleFonts.poppins(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w900,
+                        ),
                       ),
                     ),
                   ],

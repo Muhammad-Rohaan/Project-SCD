@@ -181,7 +181,7 @@ class AdminProvider with ChangeNotifier {
     try {
       final response = await _apiService.get('/admin/az-teachers/fetch-all-teachers');
       if (response.statusCode == 200) {
-        _teachers = response.data['data'] ?? [];
+        _teachers = response.data['teachers'] ?? [];
       }
     } catch (e) {
       _error = 'Failed to fetch teachers';
@@ -199,7 +199,7 @@ class AdminProvider with ChangeNotifier {
     try {
       final response = await _apiService.get('/admin/az-reception/fetch-all-receptionists');
       if (response.statusCode == 200) {
-        _receptionists = response.data['data'] ?? [];
+        _receptionists = response.data['receptionists'] ?? [];
       }
     } catch (e) {
       _error = 'Failed to fetch receptionists';
