@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 
 class AppConstants {
-  static const String  _laptopIP = '192.168.1.3'; // Physical Device // this should be the deployment server
+  static const String  _laptopIP = '192.168.1.113'; // Physical Device // this should be the deployment server
   // Use 10.0.2.2 for Android Emulator, localhost for iOS/Web
   static String get baseUrl {
     if (kIsWeb) return 'http://localhost:5000/api';

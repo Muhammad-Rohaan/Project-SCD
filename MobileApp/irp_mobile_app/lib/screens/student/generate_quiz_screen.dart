@@ -30,6 +30,12 @@ class _GenerateQuizScreenState extends State<GenerateQuizScreen> {
   final List<String> _difficulties = ['easy', 'medium', 'hard'];
   final List<int> _counts = [5, 10, 15, 20];
 
+  @override
+  void dispose() {
+    _topicController.dispose();
+    super.dispose();
+  }
+
   Future<void> _handleGenerateQuiz() async {
     final topic = _topicController.text.trim();
     if (topic.isEmpty) {
@@ -39,9 +45,7 @@ class _GenerateQuizScreenState extends State<GenerateQuizScreen> {
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() => _isLoading = true);
 
     try {
       final response = await ApiService().aiDio.post('/quizzes/generate', data: {
@@ -66,11 +70,7 @@ class _GenerateQuizScreenState extends State<GenerateQuizScreen> {
         SnackBar(content: Text('Error generating quiz: $e'), backgroundColor: AppColors.danger),
       );
     } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -83,7 +83,6 @@ class _GenerateQuizScreenState extends State<GenerateQuizScreen> {
         }
       }
 
-      if (!mounted) return;
       final studentProvider = Provider.of<StudentProvider>(context, listen: false);
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
@@ -97,7 +96,7 @@ class _GenerateQuizScreenState extends State<GenerateQuizScreen> {
         );
       }
     }
-    
+
     if (!mounted) return;
     setState(() {
       _score = totalScore;
@@ -109,14 +108,13 @@ class _GenerateQuizScreenState extends State<GenerateQuizScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: AppColors.backgroundGradient,
-        ),
+        decoration: BoxDecoration(gradient: AppColors.backgroundGradient),
         child: SafeArea(
           child: Column(
             children: [
+              // Header
               Padding(
-                padding: const EdgeInsets.all(24.0),
+                padding: const EdgeInsets.all(20.0),
                 child: Row(
                   children: [
                     IconButton(
@@ -127,14 +125,13 @@ class _GenerateQuizScreenState extends State<GenerateQuizScreen> {
                     GradientText(
                       'AI Quiz Generator',
                       gradient: AppColors.textGradient,
-                      style: GoogleFonts.poppins(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w900,
-                      ),
+                      style: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.w900),
                     ),
                   ],
                 ),
               ),
+
+              // Main Content
               Expanded(
                 child: _isLoading
                     ? const Center(child: CircularProgressIndicator(color: AppColors.accent))
@@ -157,6 +154,8 @@ class _GenerateQuizScreenState extends State<GenerateQuizScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(height: 20),
+
           Center(
             child: Container(
               padding: const EdgeInsets.all(20),
@@ -168,21 +167,20 @@ class _GenerateQuizScreenState extends State<GenerateQuizScreen> {
               child: const Icon(Icons.psychology_rounded, size: 64, color: AppColors.accent),
             ),
           ),
+
           const SizedBox(height: 32),
           Text(
             'Generate a Quiz with AI',
-            style: GoogleFonts.poppins(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+            style: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           const SizedBox(height: 8),
           Text(
             'Enter a topic and let our AI create a custom quiz for you.',
             style: GoogleFonts.poppins(color: Colors.white60, fontSize: 14),
           ),
+
           const SizedBox(height: 40),
+
           _buildLabel('Topic'),
           TextField(
             controller: _topicController,
@@ -192,10 +190,7 @@ class _GenerateQuizScreenState extends State<GenerateQuizScreen> {
               hintStyle: const TextStyle(color: Colors.white24),
               filled: true,
               fillColor: Colors.white.withOpacity(0.05),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide(color: AppColors.accent.withOpacity(0.3)),
-              ),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide(color: AppColors.accent.withOpacity(0.2)),
@@ -206,114 +201,81 @@ class _GenerateQuizScreenState extends State<GenerateQuizScreen> {
               ),
             ),
           ),
+
           const SizedBox(height: 24),
+
           Row(
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildLabel('Difficulty'),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: AppColors.accent.withOpacity(0.2)),
-                      ),
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton<String>(
-                          value: _difficulty,
-                          dropdownColor: AppColors.background,
-                          style: GoogleFonts.poppins(color: Colors.white),
-                          isExpanded: true,
-                          items: _difficulties.map((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value.toUpperCase()),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            if (value != null) setState(() => _difficulty = value);
-                          },
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              Expanded(child: _buildDropdown('Difficulty', _difficulty, _difficulties, (val) {
+                if (val != null) setState(() => _difficulty = val);
+              })),
               const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildLabel('Questions'),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: AppColors.accent.withOpacity(0.2)),
-                      ),
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton<int>(
-                          value: _count,
-                          dropdownColor: AppColors.background,
-                          style: GoogleFonts.poppins(color: Colors.white),
-                          isExpanded: true,
-                          items: _counts.map((int value) {
-                            return DropdownMenuItem<int>(
-                              value: value,
-                              child: Text(value.toString()),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            if (value != null) setState(() => _count = value);
-                          },
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              Expanded(child: _buildDropdown('Questions', _count.toString(), _counts.map((e) => e.toString()).toList(), (val) {
+                if (val != null) setState(() => _count = int.parse(val));
+              })),
             ],
           ),
+
           const SizedBox(height: 48),
+
+          // Generate Button
           Container(
             width: double.infinity,
             height: 56,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
               gradient: AppColors.buttonGradient,
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.accent.withOpacity(0.3),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+              boxShadow: [BoxShadow(color: AppColors.accent.withOpacity(0.3), blurRadius: 12, offset: const Offset(0, 4))],
             ),
             child: ElevatedButton(
               onPressed: _handleGenerateQuiz,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.transparent,
                 shadowColor: Colors.transparent,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               ),
               child: Text(
                 'Generate Quiz',
-                style: GoogleFonts.poppins(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+                style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
               ),
             ),
           ),
+
+          const SizedBox(height: 32), // Extra space at bottom
         ],
       ),
+    );
+  }
+
+  Widget _buildDropdown<T>(String label, T value, List<T> items, ValueChanged<T?> onChanged) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildLabel(label),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.accent.withOpacity(0.2)),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<T>(
+              value: value,
+              dropdownColor: AppColors.background,
+              style: GoogleFonts.poppins(color: Colors.white),
+              isExpanded: true,
+              items: items.map((T value) {
+                return DropdownMenuItem<T>(
+                  value: value,
+                  child: Text(value.toString().toUpperCase()),
+                );
+              }).toList(),
+              onChanged: onChanged,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -322,15 +284,13 @@ class _GenerateQuizScreenState extends State<GenerateQuizScreen> {
       padding: const EdgeInsets.only(left: 4, bottom: 8),
       child: Text(
         text.toUpperCase(),
-        style: GoogleFonts.poppins(
-          color: Colors.white38,
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-          letterSpacing: 1.2,
-        ),
+        style: GoogleFonts.poppins(color: Colors.white38, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.2),
       ),
     );
   }
+
+  // Keep your existing _buildQuizView() and _buildResultsView() as they already use Expanded properly.
+  // Only minor improvement: Add more padding control if needed.
 
   Widget _buildQuizView() {
     if (_quizData == null) return const SizedBox.shrink();
@@ -353,41 +313,32 @@ class _GenerateQuizScreenState extends State<GenerateQuizScreen> {
                 ),
                 child: Text(
                   'Question ${_currentQuestionIndex + 1} of ${_quizData!.questions.length}',
-                  style: GoogleFonts.poppins(
-                    color: AppColors.accent,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: GoogleFonts.poppins(color: AppColors.accent, fontSize: 12, fontWeight: FontWeight.bold),
                 ),
               ),
-              Text(
-                _quizData!.topic,
-                style: GoogleFonts.poppins(color: Colors.white38, fontSize: 12),
+              Flexible(
+                child: Text(
+                  _quizData!.topic,
+                  style: GoogleFonts.poppins(color: Colors.white38, fontSize: 12),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 24),
           Text(
             question.question,
-            style: GoogleFonts.poppins(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              height: 1.4,
-            ),
+            style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white, height: 1.4),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 24),
+
           Expanded(
             child: ListView.builder(
               itemCount: question.options.length,
               itemBuilder: (context, index) {
                 final isSelected = _selectedAnswers[_currentQuestionIndex] == index;
                 return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _selectedAnswers[_currentQuestionIndex] = index;
-                    });
-                  },
+                  onTap: () => setState(() => _selectedAnswers[_currentQuestionIndex] = index),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
                     margin: const EdgeInsets.only(bottom: 16),
@@ -407,20 +358,13 @@ class _GenerateQuizScreenState extends State<GenerateQuizScreen> {
                           height: 28,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            border: Border.all(
-                              color: isSelected ? Colors.white : Colors.white24,
-                              width: 2,
-                            ),
+                            border: Border.all(color: isSelected ? Colors.white : Colors.white24, width: 2),
                             color: isSelected ? AppColors.primary : Colors.transparent,
                           ),
                           child: Center(
                             child: Text(
                               String.fromCharCode(65 + index),
-                              style: TextStyle(
-                                color: isSelected ? Colors.white : Colors.white24,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
+                              style: TextStyle(color: isSelected ? Colors.white : Colors.white24, fontWeight: FontWeight.bold),
                             ),
                           ),
                         ),
@@ -442,15 +386,14 @@ class _GenerateQuizScreenState extends State<GenerateQuizScreen> {
               },
             ),
           ),
-          const SizedBox(height: 24),
+
+          const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               if (_currentQuestionIndex > 0)
                 TextButton(
-                  onPressed: () {
-                    setState(() => _currentQuestionIndex--);
-                  },
+                  onPressed: () => setState(() => _currentQuestionIndex--),
                   child: const Text('PREVIOUS', style: TextStyle(color: Colors.white38)),
                 )
               else
@@ -463,7 +406,6 @@ class _GenerateQuizScreenState extends State<GenerateQuizScreen> {
                       : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.accent,
-                    foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                   ),
@@ -471,12 +413,9 @@ class _GenerateQuizScreenState extends State<GenerateQuizScreen> {
                 )
               else
                 ElevatedButton(
-                  onPressed: _selectedAnswers.containsKey(_currentQuestionIndex)
-                      ? _submitQuiz
-                      : null,
+                  onPressed: _selectedAnswers.containsKey(_currentQuestionIndex) ? _submitQuiz : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                   ),
