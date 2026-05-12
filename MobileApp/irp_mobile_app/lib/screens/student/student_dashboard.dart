@@ -10,7 +10,9 @@ import 'student_results_screen.dart';
 import 'notes_screen.dart';
 import 'student_profile_screen.dart';
 import '../student/generate_quiz_screen.dart';
+import '../auth/change_password_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class StudentDashboard extends StatefulWidget {
   const StudentDashboard({super.key});
@@ -44,23 +46,25 @@ class _StudentDashboardState extends State<StudentDashboard> {
             slivers: [
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.all(24.0),
+                  padding: EdgeInsets.all(24.0.r),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          GradientText(
-                            'Student Portal',
-                            gradient: AppColors.textGradient,
-                            style: GoogleFonts.poppins(
-                              fontSize: 32,
-                              fontWeight: FontWeight.w900,
+                          Expanded(
+                            child: GradientText(
+                              'Student Portal',
+                              gradient: AppColors.textGradient,
+                              style: GoogleFonts.poppins(
+                                fontSize: 32.sp,
+                                fontWeight: FontWeight.w900,
+                              ),
                             ),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.power_settings_new, color: AppColors.danger),
+                            icon: Icon(Icons.power_settings_new, color: AppColors.danger, size: 24.sp),
                             onPressed: () => authProvider.logout(),
                           ),
                         ],
@@ -69,14 +73,14 @@ class _StudentDashboardState extends State<StudentDashboard> {
                         'Welcome back, ${user?.fullName ?? 'Student'}',
                         style: GoogleFonts.poppins(
                           color: Colors.white70,
-                          fontSize: 16,
+                          fontSize: 16.sp,
                         ),
                       ),
-                      const SizedBox(height: 32),
+                      SizedBox(height: 32.h),
                       
                       // AI MCQs Banner
                       Container(
-                        padding: const EdgeInsets.all(24),
+                        padding: EdgeInsets.all(24.r),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
@@ -84,7 +88,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
                               AppColors.primary.withOpacity(0.1),
                             ],
                           ),
-                          borderRadius: BorderRadius.circular(30),
+                          borderRadius: BorderRadius.circular(30.r),
                           border: Border.all(
                             color: AppColors.accent.withOpacity(0.2),
                           ),
@@ -99,16 +103,16 @@ class _StudentDashboardState extends State<StudentDashboard> {
                                     'AI MCQs Generator',
                                     style: GoogleFonts.poppins(
                                       color: AppColors.accent,
-                                      fontSize: 20,
+                                      fontSize: 20.sp,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  const SizedBox(height: 4),
-                                  const Text(
+                                  SizedBox(height: 4.h),
+                                  Text(
                                     'Practice smarter with AI-generated quizzes.',
-                                    style: TextStyle(color: Colors.white60, fontSize: 13),
+                                    style: TextStyle(color: Colors.white60, fontSize: 13.sp),
                                   ),
-                                  const SizedBox(height: 16),
+                                  SizedBox(height: 16.h),
                                   ElevatedButton(
                                     onPressed: () => Navigator.push(
                                       context,
@@ -118,10 +122,11 @@ class _StudentDashboardState extends State<StudentDashboard> {
                                       backgroundColor: AppColors.primary,
                                       foregroundColor: Colors.white,
                                       shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
+                                        borderRadius: BorderRadius.circular(12.r),
                                       ),
+                                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                                     ),
-                                    child: const Text('🚀 Start Quiz'),
+                                    child: Text('🚀 Start Quiz', style: TextStyle(fontSize: 14.sp)),
                                   ),
                                 ],
                               ),
@@ -129,15 +134,15 @@ class _StudentDashboardState extends State<StudentDashboard> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 32),
+                      SizedBox(height: 32.h),
                       
                       // Profile Card
                       Container(
                         width: double.infinity,
-                        padding: const EdgeInsets.all(24),
+                        padding: EdgeInsets.all(24.r),
                         decoration: BoxDecoration(
                           color: AppColors.cardBg,
-                          borderRadius: BorderRadius.circular(24),
+                          borderRadius: BorderRadius.circular(24.r),
                           border: Border.all(
                             color: AppColors.accent.withOpacity(0.3),
                           ),
@@ -149,26 +154,26 @@ class _StudentDashboardState extends State<StudentDashboard> {
                               'Your Profile',
                               style: GoogleFonts.poppins(
                                 color: AppColors.accent,
-                                fontSize: 18,
+                                fontSize: 18.sp,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const Divider(color: Colors.white10, height: 24),
+                            Divider(color: Colors.white10, height: 24.h),
                             _buildProfileItem('Full Name', user?.fullName ?? 'N/A'),
-                            const SizedBox(height: 16),
+                            SizedBox(height: 16.h),
                             _buildProfileItem('Email Address', user?.email ?? 'N/A'),
-                            const SizedBox(height: 16),
+                            SizedBox(height: 16.h),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
                               decoration: BoxDecoration(
                                 color: AppColors.accent.withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(20),
+                                borderRadius: BorderRadius.circular(20.r),
                               ),
                               child: Text(
                                 user?.role?.toUpperCase() ?? 'STUDENT',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: AppColors.accent,
-                                  fontSize: 10,
+                                  fontSize: 10.sp,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -176,19 +181,19 @@ class _StudentDashboardState extends State<StudentDashboard> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 32),
+                      SizedBox(height: 32.h),
                     ],
                   ),
                 ),
               ),
               SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+                padding: EdgeInsets.symmetric(horizontal: 24.w),
                 sliver: SliverGrid(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    childAspectRatio: 1.1,
+                    crossAxisSpacing: 16.w,
+                    mainAxisSpacing: 16.h,
+                    childAspectRatio: 1.0,
                   ),
                   delegate: SliverChildListDelegate([
                     _buildActionCard(
@@ -219,6 +224,13 @@ class _StudentDashboardState extends State<StudentDashboard> {
                       Colors.indigoAccent,
                       () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NotesScreen())),
                     ),
+                    _buildActionCard(
+                      context,
+                      'Password',
+                      Icons.lock_reset_rounded,
+                      Colors.pinkAccent,
+                      () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ChangePasswordScreen())),
+                    ),
                   ]),
                 ),
               ),
@@ -236,19 +248,19 @@ class _StudentDashboardState extends State<StudentDashboard> {
       children: [
         Text(
           label.toUpperCase(),
-          style: const TextStyle(
+          style: TextStyle(
             color: Colors.white38,
-            fontSize: 10,
+            fontSize: 10.sp,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.2,
           ),
         ),
-        const SizedBox(height: 4),
+        SizedBox(height: 4.h),
         Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             color: Colors.white,
-            fontSize: 16,
+            fontSize: 16.sp,
           ),
         ),
       ],
@@ -265,35 +277,39 @@ class _StudentDashboardState extends State<StudentDashboard> {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.cardBg,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(24.r),
         border: Border.all(color: color.withOpacity(0.3)),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(24.r),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16.r),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: EdgeInsets.all(12.r),
                   decoration: BoxDecoration(
                     color: color.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(icon, color: color, size: 32),
+                  child: Icon(icon, color: color, size: 32.sp),
                 ),
-                const SizedBox(height: 12),
-                Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
+                SizedBox(height: 12.h),
+                Flexible(
+                  child: Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],

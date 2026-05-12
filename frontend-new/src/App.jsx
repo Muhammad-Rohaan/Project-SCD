@@ -27,6 +27,7 @@ import TeacherResultsPage from './components/Teacher/TeacherResultsPage.jsx';
 import StudentLayout from './components/Layouts/StudentLayout.jsx';
 import StudentDashboard from './components/Student/StudentDashboard.jsx';
 import LandingPage from './pages/LandingPage.jsx';
+import ChangePassword from './pages/ChangePassword.jsx';
 
 const App = () => {
   return (
@@ -91,6 +92,7 @@ const App = () => {
           <Route path="dashboard" element={<TeacherDashboard />} />
           <Route path="students" element={<TeacherStudentsPage />} />
           <Route path="results" element={<TeacherResultsPage />} />
+          <Route path="change-password" element={<ChangePassword />} />
           <Route path="*" element={<Navigate to="dashboard" replace />} />
         </Route>
 
@@ -106,6 +108,7 @@ const App = () => {
           <Route path="dashboard" element={<StudentDashboard />} />
           {/* AI MCQs Route */}
           <Route path="ai-mcqs" element={<GenerateQuiz />} />
+          <Route path="change-password" element={<ChangePassword />} />
           <Route path="*" element={<Navigate to="dashboard" replace />} />
         </Route>
 

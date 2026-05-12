@@ -11,6 +11,7 @@ import 'receptionist_list_screen.dart';
 import '../student/announcement_screen.dart';
 import 'post_announcement_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -44,23 +45,25 @@ class _AdminDashboardState extends State<AdminDashboard> {
             slivers: [
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.all(24.0),
+                  padding: EdgeInsets.all(24.0.r),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          GradientText(
-                            'Admin Portal',
-                            gradient: AppColors.textGradient,
-                            style: GoogleFonts.poppins(
-                              fontSize: 32,
-                              fontWeight: FontWeight.w900,
+                          Expanded(
+                            child: GradientText(
+                              'Admin Portal',
+                              gradient: AppColors.textGradient,
+                              style: GoogleFonts.poppins(
+                                fontSize: 32.sp,
+                                fontWeight: FontWeight.w900,
+                              ),
                             ),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.power_settings_new, color: AppColors.danger),
+                            icon: Icon(Icons.power_settings_new, color: AppColors.danger, size: 24.sp),
                             onPressed: () => authProvider.logout(),
                           ),
                         ],
@@ -69,10 +72,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         'Welcome back, ${user?.fullName ?? 'Admin'}',
                         style: GoogleFonts.poppins(
                           color: Colors.white70,
-                          fontSize: 16,
+                          fontSize: 16.sp,
                         ),
                       ),
-                      const SizedBox(height: 32),
+                      SizedBox(height: 32.h),
 
                       // Stats Grid
                       Row(
@@ -85,7 +88,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                               const [Color(0xFF6366F1), Color(0xFF4F46E5)],
                             ),
                           ),
-                          const SizedBox(width: 12),
+                          SizedBox(width: 12.w),
                           Expanded(
                             child: _buildStatCard(
                               'Teachers',
@@ -96,7 +99,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12.h),
                       _buildStatCard(
                         'Active Announcements',
                         adminProvider.stats['announcements'].toString(),
@@ -104,29 +107,29 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         const [Color(0xFFEC4899), Color(0xFFDB2777)],
                         isFullWidth: true,
                       ),
-                      const SizedBox(height: 32),
+                      SizedBox(height: 32.h),
 
                       Text(
                         'Quick Actions',
                         style: GoogleFonts.poppins(
                           color: Colors.white,
-                          fontSize: 20,
+                          fontSize: 20.sp,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16.h),
                     ],
                   ),
                 ),
               ),
               SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+                padding: EdgeInsets.symmetric(horizontal: 24.w),
                 sliver: SliverGrid(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    childAspectRatio: 1.1,
+                    crossAxisSpacing: 16.w,
+                    mainAxisSpacing: 16.h,
+                    childAspectRatio: 1.0,
                   ),
                   delegate: SliverChildListDelegate([
                     _buildActionCard(
@@ -178,19 +181,19 @@ class _AdminDashboardState extends State<AdminDashboard> {
   Widget _buildStatCard(String label, String value, IconData icon, List<Color> colors, {bool isFullWidth = false}) {
     return Container(
       width: isFullWidth ? double.infinity : null,
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20.r),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [colors[0].withOpacity(0.8), colors[1].withOpacity(0.9)],
         ),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(24.r),
         boxShadow: [
           BoxShadow(
             color: colors[0].withOpacity(0.3),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            blurRadius: 10.r,
+            offset: Offset(0, 4.h),
           ),
         ],
       ),
@@ -202,22 +205,22 @@ class _AdminDashboardState extends State<AdminDashboard> {
             children: [
               Text(
                 label,
-                style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold),
+                style: TextStyle(color: Colors.white70, fontSize: 12.sp, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 4),
+              SizedBox(height: 4.h),
               Text(
                 value,
-                style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w900),
+                style: TextStyle(color: Colors.white, fontSize: 28.sp, fontWeight: FontWeight.w900),
               ),
             ],
           ),
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: EdgeInsets.all(10.r),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.2),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: Colors.white, size: 24),
+            child: Icon(icon, color: Colors.white, size: 24.sp),
           ),
         ],
       ),
@@ -234,35 +237,39 @@ class _AdminDashboardState extends State<AdminDashboard> {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.cardBg,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(24.r),
         border: Border.all(color: color.withOpacity(0.3)),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(24.r),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16.r),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: EdgeInsets.all(12.r),
                   decoration: BoxDecoration(
                     color: color.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(icon, color: color, size: 32),
+                  child: Icon(icon, color: color, size: 32.sp),
                 ),
-                const SizedBox(height: 12),
-                Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
+                SizedBox(height: 12.h),
+                Flexible(
+                  child: Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],

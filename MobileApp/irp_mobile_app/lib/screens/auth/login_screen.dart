@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../providers/auth_provider.dart';
 import '../../constants/app_colors.dart';
 import '../../widgets/gradient_text.dart';
@@ -61,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              padding: EdgeInsets.symmetric(horizontal: 24.0.w),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -84,31 +85,31 @@ class _LoginScreenState extends State<LoginScreen> {
                             'AZ Coaching',
                             gradient: AppColors.textGradient,
                             style: GoogleFonts.poppins(
-                              fontSize: 40,
+                              fontSize: 40.sp,
                               fontWeight: FontWeight.w900,
                               letterSpacing: -1,
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          SizedBox(height: 12.h),
                           Text(
                             'Sign in to access your dashboard',
                             style: GoogleFonts.poppins(
                               color: Colors.white70,
-                              fontSize: 14,
+                              fontSize: 14.sp,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 48),
+                    SizedBox(height: 48.h),
 
                     // Glassmorphism Card
                     Container(
-                      padding: const EdgeInsets.all(24),
+                      padding: EdgeInsets.all(24.r),
                       decoration: BoxDecoration(
                         color: AppColors.cardBg,
-                        borderRadius: BorderRadius.circular(32),
+                        borderRadius: BorderRadius.circular(32.r),
                         border: Border.all(
                           color: AppColors.cyan400.withOpacity(0.2),
                         ),
@@ -117,10 +118,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           // Login Type Toggle
                           Container(
-                            padding: const EdgeInsets.all(4),
+                            padding: EdgeInsets.all(4.r),
                             decoration: BoxDecoration(
                               color: Colors.white.withOpacity(0.05),
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(16.r),
                               border: Border.all(color: Colors.white10),
                             ),
                             child: Row(
@@ -134,7 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ],
                             ),
                           ),
-                          const SizedBox(height: 32),
+                          SizedBox(height: 32.h),
 
                           // Input Fields
                           AnimatedSwitcher(
@@ -156,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     validator: (v) => v!.isEmpty ? 'Required' : null,
                                   ),
                           ),
-                          const SizedBox(height: 20),
+                          SizedBox(height: 20.h),
                           _buildTextField(
                             controller: _passwordController,
                             hint: 'Password',
@@ -168,20 +169,20 @@ class _LoginScreenState extends State<LoginScreen> {
                             validator: (v) => v!.isEmpty ? 'Required' : null,
                           ),
 
-                          const SizedBox(height: 40),
+                          SizedBox(height: 40.h),
 
                           // Login Button
                           Container(
                             width: double.infinity,
-                            height: 56,
+                            height: 56.h,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(16.r),
                               gradient: AppColors.buttonGradient,
                               boxShadow: [
                                 BoxShadow(
                                   color: AppColors.accent.withOpacity(0.3),
-                                  blurRadius: 12,
-                                  offset: const Offset(0, 4),
+                                  blurRadius: 12.r,
+                                  offset: Offset(0, 4.h),
                                 ),
                               ],
                             ),
@@ -191,14 +192,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                 backgroundColor: Colors.transparent,
                                 shadowColor: Colors.transparent,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
+                                  borderRadius: BorderRadius.circular(16.r),
                                 ),
                               ),
                               child: authProvider.isLoading
-                                  ? const SizedBox(
-                                      height: 24,
-                                      width: 24,
-                                      child: CircularProgressIndicator(
+                                  ? SizedBox(
+                                      height: 24.h,
+                                      width: 24.w,
+                                      child: const CircularProgressIndicator(
                                         strokeWidth: 2.5,
                                         color: Colors.white,
                                       ),
@@ -206,7 +207,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   : Text(
                                       'Sign In',
                                       style: GoogleFonts.poppins(
-                                        fontSize: 18,
+                                        fontSize: 18.sp,
                                         fontWeight: FontWeight.bold,
                                         color: Colors.white,
                                       ),
@@ -232,10 +233,10 @@ class _LoginScreenState extends State<LoginScreen> {
       onTap: () => setState(() => _isEmailLogin = value),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        padding: EdgeInsets.symmetric(vertical: 12.h),
         decoration: BoxDecoration(
           color: active ? AppColors.primary : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
         ),
         child: Text(
           label,
@@ -243,7 +244,7 @@ class _LoginScreenState extends State<LoginScreen> {
           style: GoogleFonts.poppins(
             color: active ? Colors.white : Colors.white60,
             fontWeight: active ? FontWeight.bold : FontWeight.normal,
-            fontSize: 14,
+            fontSize: 14.sp,
           ),
         ),
       ),
@@ -267,7 +268,7 @@ class _LoginScreenState extends State<LoginScreen> {
       obscureText: obscureText,
       keyboardType: type,
       validator: validator,
-      style: GoogleFonts.poppins(color: Colors.white, fontSize: 15),
+      style: GoogleFonts.poppins(color: Colors.white, fontSize: 15.sp),
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: const TextStyle(color: Colors.white38),
@@ -284,21 +285,26 @@ class _LoginScreenState extends State<LoginScreen> {
         filled: true,
         fillColor: Colors.white.withOpacity(0.05),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.r),
           borderSide: BorderSide(color: AppColors.cyan400.withOpacity(0.3)),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.r),
           borderSide: BorderSide(color: AppColors.cyan400.withOpacity(0.2)),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.r),
           borderSide: const BorderSide(color: AppColors.cyan400),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.r),
           borderSide: const BorderSide(color: AppColors.danger),
         ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16.r),
+          borderSide: const BorderSide(color: AppColors.danger, width: 2),
+        ),
+        contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
       ),
     );
   }

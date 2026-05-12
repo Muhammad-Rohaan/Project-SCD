@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { HomeIcon, UsersIcon, PhotoIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { HomeIcon, UsersIcon, PhotoIcon, XMarkIcon, KeyIcon } from '@heroicons/react/24/outline';
 
 const TeacherSidebar = ({ isOpen, setIsOpen }) => {
     return (
@@ -57,6 +57,19 @@ const TeacherSidebar = ({ isOpen, setIsOpen }) => {
                 >
                     <PhotoIcon className="w-6 h-6 mr-4" />
                     Results
+                </NavLink>
+
+                <NavLink
+                    to="/teacher/change-password"
+                    onClick={() => setIsOpen(false)}
+                    className={({ isActive }) =>
+                        `flex items-center p-4 rounded-xl transition-all ${isActive
+                            ? 'bg-gradient-to-r from-purple-600 to-cyan-600 shadow-lg shadow-cyan-500/30'
+                            : 'hover:bg-indigo-800/60'}`
+                    }
+                >
+                    <KeyIcon className="w-6 h-6 mr-4" />
+                    Password
                 </NavLink>
             </nav>
         </div>

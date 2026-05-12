@@ -9,6 +9,7 @@ import 'collect_fees_screen.dart';
 import 'student_list_screen.dart';
 import '../student/announcement_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ReceptionistDashboard extends StatelessWidget {
   const ReceptionistDashboard({super.key});
@@ -28,23 +29,25 @@ class ReceptionistDashboard extends StatelessWidget {
             slivers: [
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.all(24.0),
+                  padding: EdgeInsets.all(24.0.r),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          GradientText(
-                            'Reception Portal',
-                            gradient: AppColors.textGradient,
-                            style: GoogleFonts.poppins(
-                              fontSize: 32,
-                              fontWeight: FontWeight.w900,
+                          Expanded(
+                            child: GradientText(
+                              'Reception Portal',
+                              gradient: AppColors.textGradient,
+                              style: GoogleFonts.poppins(
+                                fontSize: 32.sp,
+                                fontWeight: FontWeight.w900,
+                              ),
                             ),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.power_settings_new, color: AppColors.danger),
+                            icon: Icon(Icons.power_settings_new, color: AppColors.danger, size: 24.sp),
                             onPressed: () => authProvider.logout(),
                           ),
                         ],
@@ -53,22 +56,22 @@ class ReceptionistDashboard extends StatelessWidget {
                         'Welcome back, ${user?.fullName ?? 'Receptionist'}',
                         style: GoogleFonts.poppins(
                           color: Colors.white70,
-                          fontSize: 16,
+                          fontSize: 16.sp,
                         ),
                       ),
-                      const SizedBox(height: 32),
+                      SizedBox(height: 32.h),
                     ],
                   ),
                 ),
               ),
               SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+                padding: EdgeInsets.symmetric(horizontal: 24.w),
                 sliver: SliverGrid(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    childAspectRatio: 1.1,
+                    crossAxisSpacing: 16.w,
+                    mainAxisSpacing: 16.h,
+                    childAspectRatio: 1.0,
                   ),
                   delegate: SliverChildListDelegate([
                     _buildActionCard(
@@ -127,35 +130,39 @@ class ReceptionistDashboard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.cardBg,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(24.r),
         border: Border.all(color: color.withOpacity(0.3)),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(24.r),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16.r),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: EdgeInsets.all(12.r),
                   decoration: BoxDecoration(
                     color: color.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(icon, color: color, size: 32),
+                  child: Icon(icon, color: color, size: 32.sp),
                 ),
-                const SizedBox(height: 12),
-                Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
+                SizedBox(height: 12.h),
+                Flexible(
+                  child: Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
