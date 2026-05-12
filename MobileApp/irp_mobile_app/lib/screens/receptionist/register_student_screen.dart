@@ -18,7 +18,7 @@ class _RegisterStudentScreenState extends State<RegisterStudentScreen> {
   final _fullNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _rollNoController = TextEditingController();
+  // final _rollNoController = TextEditingController();
   final _fatherNameController = TextEditingController();
   final _fatherPhoneController = TextEditingController();
   final _contactController = TextEditingController();
@@ -65,7 +65,7 @@ class _RegisterStudentScreenState extends State<RegisterStudentScreen> {
         fullName: _fullNameController.text,
         email: email, // ← Use the (possibly generated) email
         password: _passwordController.text,
-        rollNo: _rollNoController.text,
+        // rollNo: _rollNoController.text,
         fatherName: _fatherNameController.text,
         fatherPhone: _fatherPhoneController.text,
         contact: _contactController.text,
@@ -162,15 +162,7 @@ class _RegisterStudentScreenState extends State<RegisterStudentScreen> {
                               ? 'Too short'
                               : null,
                         ),
-                        const SizedBox(height: 16),
-                        CustomTextField(
-                          controller: _rollNoController,
-                          label: 'Roll No (e.g. 11-04)',
-                          prefixIcon: Icons.badge_rounded,
-                          validator: (value) => value == null || value.isEmpty
-                              ? 'Required'
-                              : null,
-                        ),
+                        
                         const SizedBox(height: 16),
                         CustomTextField(
                           controller: _fatherNameController,

@@ -245,6 +245,63 @@ export const login = async (req, res) => {
     }
 }
 
+
+// ====================== CHANGE PASSWORD (While Logged In) ======================
+export const changePassword = async (req, res) => {
+    const { oldPassword, newPassword } = req.body;
+
+    // Validation
+    if (!oldPassword || !newPassword) {
+        return res.status(400).json({ 
+            message: "Please provide both oldPassword and newPassword" 
+        });
+    }
+
+    if (newPassword.length < 6) {
+        return res.status(400).json({ 
+            message: "New password must be at least 6 characters long" 
+        });
+    }
+
+    try {
+        // req.user is coming from protect middleware
+        const user = await UserModel.findById(req.user._id).select('+password');
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Only allow Students and Teachers to change password via this route
+        if (!['student', 'teacher'].includes(user.role)) {
+            return res.status(403).json({ 
+                message: "Only students and teachers are allowed to change password" 
+            });
+        }
+
+        // Check if old password is correct
+        const isMatch = await bcrypt.compare(oldPassword, user.password);
+        if (!isMatch) {
+            return res.status(401).json({ message: "Old password is incorrect" });
+        }
+
+        // Hash new password
+        const encryptedPassword = await bcrypt.hash(newPassword, 10);
+
+        user.password = encryptedPassword;
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Password changed successfully. Please login again with new password."
+        });
+
+    } catch (error) {
+        console.error("Change Password Error:", error);
+        res.status(500).json({ message: "Failed to change password" });
+    }
+};
+
+
 // LOGOUT
 
 export const logout = async (req, res) => {
