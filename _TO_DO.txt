@@ -1,0 +1,22 @@
+_TO_DO_
+
+1. Admin approval before deleting any student from the reception desk.
+2. 
+
+
+
+
+
+
+SOME OTHER:
+you are a senior software engineer and you have to help me solve this problem:
+
+me ik Institute management system bana raha hon java spring boot me also following microservice architecture, is system me Admin, reception, teachers, students, parents portal honge or JWT RBAC ke through access kie jaeyn ge. isme abhi tk mene RBAC/ Authentication ki ik microservice complete banali ha but the main problem that i am facing and I am struggling with is that.
+
+if there are microservices than there is also an API gateway to handle all other modules but I have AuthService running on port: 8081 and admin module/ Project which is independent and running on port: 8080. I also have integrated api-gateway with maven package (Eureka).
+
+- I am confusing here that all the request will hit to api gateway, and in api gateway there are all the modules registerd, AuthService, AdminService etc, after the api gateway it should arrive at AuthService always because it has to decide weather the user is authenticated and authorized for the specific resourse.
+
+so how the flow will work as an industry or product level?
+
+Explain in detail.  
