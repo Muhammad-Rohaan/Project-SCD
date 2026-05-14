@@ -11,7 +11,7 @@ const RegisterStudent = ({ onClose, onSuccess }) => {
         fullName: '',
         email: '',
         password: '',
-        rollNo: '',
+        // rollNo: '',
         fatherName: '',
         fatherPhone: '',
         contact: '',
@@ -35,7 +35,7 @@ const RegisterStudent = ({ onClose, onSuccess }) => {
                 fullName: formData.fullName.trim(),
                 email: formData.email.trim(),
                 password: formData.password,
-                rollNo: formData.rollNo.trim(),
+                // rollNo: formData.rollNo.trim(),
                 fatherName: formData.fatherName.trim() || 'N/A',
                 fatherPhone: formData.fatherPhone.trim(),
                 contact: formData.contact.trim(),
@@ -57,7 +57,7 @@ const RegisterStudent = ({ onClose, onSuccess }) => {
             setLoading(false);
         }
     };
-
+ // <input name="rollNo" type="text" required placeholder="Roll No (e.g. 11A-04)" value={formData.rollNo} onChange={handleChange} className="input-style" aria-label="Roll Number" aria-required="true" />
     return (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50" role="dialog" aria-modal="true" aria-labelledby="modal-title">
             <div className="bg-indigo-950/90 backdrop-blur-xl rounded-3xl border border-cyan-400/40 p-8 w-full max-w-4xl my-8 shadow-2xl max-h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-cyan-500/50 scrollbar-track-transparent">
@@ -69,7 +69,8 @@ const RegisterStudent = ({ onClose, onSuccess }) => {
                     <input name="fullName" type="text" required placeholder="Full Name" value={formData.fullName} onChange={handleChange} className="input-style" aria-label="Full Name" aria-required="true" />
                     <input name="email" type="email" required placeholder="Email" value={formData.email} onChange={handleChange} className="input-style" aria-label="Email Address" aria-required="true" />
                     <input name="password" type="password" required placeholder="Password" value={formData.password} onChange={handleChange} className="input-style" aria-label="Password" aria-required="true" />
-                    <input name="rollNo" type="text" required placeholder="Roll No (e.g. 11A-04)" value={formData.rollNo} onChange={handleChange} className="input-style" aria-label="Roll Number" aria-required="true" />
+                    {/*<input name="rollNo" type="text" required placeholder="Roll No (e.g. 11A-04)" value={formData.rollNo} onChange={handleChange} className="input-style" aria-label="Roll Number" aria-required="true" />*/}
+
                     <input name="fatherName" type="text" placeholder="Father Name" value={formData.fatherName} onChange={handleChange} className="input-style" aria-label="Father Name" />
                     <input name="fatherPhone" type="text" placeholder="Father Phone" value={formData.fatherPhone} onChange={handleChange} className="input-style" aria-label="Father Phone Number" />
                     <input name="contact" type="text" placeholder="Student Contact" value={formData.contact} onChange={handleChange} className="input-style" aria-label="Student Contact Number" />

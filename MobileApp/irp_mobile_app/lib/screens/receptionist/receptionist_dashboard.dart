@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../constants/app_colors.dart';
+import '../../widgets/gradient_text.dart';
 import 'mark_attendance_screen.dart';
 import 'register_student_screen.dart';
 import 'collect_fees_screen.dart';
 import 'student_list_screen.dart';
 import '../student/announcement_screen.dart';
-import '../common/mobile_features_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ReceptionistDashboard extends StatelessWidget {
   const ReceptionistDashboard({super.key});
@@ -17,151 +20,154 @@ class ReceptionistDashboard extends StatelessWidget {
     final user = authProvider.user;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Receptionist Portal'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => authProvider.logout(),
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Welcome, ${user?.fullName}',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: 24),
-            Expanded(
-              child: GridView.count(
-                crossAxisCount: 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                children: [
-                  _buildDashboardCard(
-                    context,
-                    'Register Student',
-                    Icons.person_add,
-                    Colors.blue,
-                    () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const RegisterStudentScreen(),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: AppColors.backgroundGradient,
+        ),
+        child: SafeArea(
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.all(24.0.r),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: GradientText(
+                              'Reception Portal',
+                              gradient: AppColors.textGradient,
+                              style: GoogleFonts.poppins(
+                                fontSize: 32.sp,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.power_settings_new, color: AppColors.danger, size: 24.sp),
+                            onPressed: () => authProvider.logout(),
+                          ),
+                        ],
+                      ),
+                      Text(
+                        'Welcome back, ${user?.fullName ?? 'Receptionist'}',
+                        style: GoogleFonts.poppins(
+                          color: Colors.white70,
+                          fontSize: 16.sp,
                         ),
-                      );
-                    },
+                      ),
+                      SizedBox(height: 32.h),
+                    ],
                   ),
-                  _buildDashboardCard(
-                    context,
-                    'Collect Fees',
-                    Icons.payments,
-                    Colors.green,
-                    () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const CollectFeesScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                  _buildDashboardCard(
-                    context,
-                    'Mark Attendance',
-                    Icons.how_to_reg,
-                    Colors.orange,
-                    () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const MarkAttendanceScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                  _buildDashboardCard(
-                    context,
-                    'All Students',
-                    Icons.group,
-                    Colors.purple,
-                    () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const StudentListScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                  _buildDashboardCard(
-                    context,
-                    'Announcements',
-                    Icons.campaign,
-                    Colors.orange,
-                    () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AnnouncementScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                  _buildDashboardCard(
-                    context,
-                    'Mobile Features',
-                    Icons.phone_android,
-                    Colors.blueGrey,
-                    () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const MobileFeaturesScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                ],
+                ),
               ),
-            ),
-          ],
+              SliverPadding(
+                padding: EdgeInsets.symmetric(horizontal: 24.w),
+                sliver: SliverGrid(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 16.w,
+                    mainAxisSpacing: 16.h,
+                    childAspectRatio: 1.0,
+                  ),
+                  delegate: SliverChildListDelegate([
+                    _buildActionCard(
+                      context,
+                      'Register Student',
+                      Icons.person_add_rounded,
+                      const Color(0xFF3B82F6),
+                      () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RegisterStudentScreen())),
+                    ),
+                    _buildActionCard(
+                      context,
+                      'Collect Fees',
+                      Icons.payments_rounded,
+                      const Color(0xFF10B981),
+                      () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CollectFeesScreen())),
+                    ),
+                    _buildActionCard(
+                      context,
+                      'Mark Attendance',
+                      Icons.how_to_reg_rounded,
+                      const Color(0xFFF59E0B),
+                      () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MarkAttendanceScreen())),
+                    ),
+                    _buildActionCard(
+                      context,
+                      'All Students',
+                      Icons.group_rounded,
+                      const Color(0xFF6366F1),
+                      () => Navigator.push(context, MaterialPageRoute(builder: (_) => const StudentListScreen())),
+                    ),
+                    _buildActionCard(
+                      context,
+                      'Announcements',
+                      Icons.campaign_rounded,
+                      const Color(0xFFA855F7),
+                      () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AnnouncementScreen())),
+                    ),
+                  ]),
+                ),
+              ),
+              const SliverToBoxAdapter(child: SizedBox(height: 32)),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildDashboardCard(
+  Widget _buildActionCard(
     BuildContext context,
     String title,
     IconData icon,
     Color color,
     VoidCallback onTap,
   ) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 48, color: color),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.cardBg,
+        borderRadius: BorderRadius.circular(24.r),
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(24.r),
+          child: Padding(
+            padding: EdgeInsets.all(16.r),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: EdgeInsets.all(12.r),
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(icon, color: color, size: 32.sp),
+                ),
+                SizedBox(height: 12.h),
+                Flexible(
+                  child: Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

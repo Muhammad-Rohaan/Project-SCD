@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../providers/auth_provider.dart';
-import '../../widgets/custom_text_field.dart';
+import '../../constants/app_colors.dart';
+import '../../widgets/gradient_text.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -16,6 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _identifierController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isEmailLogin = true;
+  bool _obscurePassword = true;
 
   @override
   void dispose() {
@@ -29,14 +33,18 @@ class _LoginScreenState extends State<LoginScreen> {
     if (_formKey.currentState!.validate()) {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       final success = await authProvider.login(
-        _isEmailLogin ? _emailController.text : null,
-        !_isEmailLogin ? _identifierController.text : null,
+        _isEmailLogin ? _emailController.text.trim() : null,
+        !_isEmailLogin ? _identifierController.text.trim() : null,
         _passwordController.text,
       );
 
       if (!success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(authProvider.error ?? 'Login failed')),
+          SnackBar(
+            content: Text(authProvider.error ?? 'Login failed'),
+            backgroundColor: AppColors.danger,
+            behavior: SnackBarBehavior.floating,
+          ),
         );
       }
     }
@@ -47,101 +55,256 @@ class _LoginScreenState extends State<LoginScreen> {
     final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: 60),
-                Icon(
-                  Icons.school_rounded,
-                  size: 100,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'AZ School',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.primary,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: AppColors.backgroundGradient,
+        ),
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: 24.0.w),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Logo Section
+                    TweenAnimationBuilder<double>(
+                      duration: const Duration(milliseconds: 800),
+                      tween: Tween(begin: 0, end: 1),
+                      builder: (context, value, child) {
+                        return Transform.scale(
+                          scale: value,
+                          child: Opacity(opacity: value, child: child),
+                        );
+                      },
+                      child: Column(
+                        children: [
+                          GradientText(
+                            'AZ Coaching',
+                            gradient: AppColors.textGradient,
+                            style: GoogleFonts.poppins(
+                              fontSize: 40.sp,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: -1,
+                            ),
+                          ),
+                          SizedBox(height: 12.h),
+                          Text(
+                            'Sign in to access your dashboard',
+                            style: GoogleFonts.poppins(
+                              color: Colors.white70,
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Management System',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                const SizedBox(height: 48),
-                SegmentedButton<bool>(
-                  segments: const [
-                    ButtonSegment(value: true, label: Text('Email')),
-                    ButtonSegment(value: false, label: Text('ID / Roll No')),
-                  ],
-                  selected: {_isEmailLogin},
-                  onSelectionChanged: (Set<bool> newSelection) {
-                    setState(() {
-                      _isEmailLogin = newSelection.first;
-                    });
-                  },
-                ),
-                const SizedBox(height: 24),
-                if (_isEmailLogin)
-                  CustomTextField(
-                    controller: _emailController,
-                    label: 'Email Address',
-                    prefixIcon: Icons.email_outlined,
-                    keyboardType: TextInputType.emailAddress,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) return 'Email is required';
-                      if (!value.contains('@')) return 'Enter a valid email';
-                      return null;
-                    },
-                  )
-                else
-                  CustomTextField(
-                    controller: _identifierController,
-                    label: 'ID / Roll Number',
-                    prefixIcon: Icons.badge_outlined,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) return 'ID is required';
-                      return null;
-                    },
-                  ),
-                const SizedBox(height: 16),
-                CustomTextField(
-                  controller: _passwordController,
-                  label: 'Password',
-                  prefixIcon: Icons.lock_outline,
-                  isPassword: true,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) return 'Password is required';
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 32),
-                ElevatedButton(
-                  onPressed: authProvider.isLoading ? null : _handleLogin,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
                     ),
-                  ),
-                  child: authProvider.isLoading
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text('Login', style: TextStyle(fontSize: 18)),
+                    SizedBox(height: 48.h),
+
+                    // Glassmorphism Card
+                    Container(
+                      padding: EdgeInsets.all(24.r),
+                      decoration: BoxDecoration(
+                        color: AppColors.cardBg,
+                        borderRadius: BorderRadius.circular(32.r),
+                        border: Border.all(
+                          color: AppColors.cyan400.withOpacity(0.2),
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          // Login Type Toggle
+                          Container(
+                            padding: EdgeInsets.all(4.r),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.05),
+                              borderRadius: BorderRadius.circular(16.r),
+                              border: Border.all(color: Colors.white10),
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: _buildTypeButton(true, 'Email'),
+                                ),
+                                Expanded(
+                                  child: _buildTypeButton(false, 'ID / Roll No'),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 32.h),
+
+                          // Input Fields
+                          AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 300),
+                            child: _isEmailLogin
+                                ? _buildTextField(
+                                    key: const ValueKey('email'),
+                                    controller: _emailController,
+                                    hint: 'Email Address',
+                                    icon: Icons.alternate_email_rounded,
+                                    type: TextInputType.emailAddress,
+                                    validator: (v) => v!.isEmpty ? 'Required' : null,
+                                  )
+                                : _buildTextField(
+                                    key: const ValueKey('id'),
+                                    controller: _identifierController,
+                                    hint: 'ID / Roll Number',
+                                    icon: Icons.badge_outlined,
+                                    validator: (v) => v!.isEmpty ? 'Required' : null,
+                                  ),
+                          ),
+                          SizedBox(height: 20.h),
+                          _buildTextField(
+                            controller: _passwordController,
+                            hint: 'Password',
+                            icon: Icons.lock_outline_rounded,
+                            isPassword: true,
+                            obscureText: _obscurePassword,
+                            onToggleVisibility: () =>
+                                setState(() => _obscurePassword = !_obscurePassword),
+                            validator: (v) => v!.isEmpty ? 'Required' : null,
+                          ),
+
+                          SizedBox(height: 40.h),
+
+                          // Login Button
+                          Container(
+                            width: double.infinity,
+                            height: 56.h,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16.r),
+                              gradient: AppColors.buttonGradient,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.accent.withOpacity(0.3),
+                                  blurRadius: 12.r,
+                                  offset: Offset(0, 4.h),
+                                ),
+                              ],
+                            ),
+                            child: ElevatedButton(
+                              onPressed: authProvider.isLoading ? null : _handleLogin,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                shadowColor: Colors.transparent,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16.r),
+                                ),
+                              ),
+                              child: authProvider.isLoading
+                                  ? SizedBox(
+                                      height: 24.h,
+                                      width: 24.w,
+                                      child: const CircularProgressIndicator(
+                                        strokeWidth: 2.5,
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                  : Text(
+                                      'Sign In',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 18.sp,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildTypeButton(bool value, String label) {
+    final active = _isEmailLogin == value;
+    return GestureDetector(
+      onTap: () => setState(() => _isEmailLogin = value),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: EdgeInsets.symmetric(vertical: 12.h),
+        decoration: BoxDecoration(
+          color: active ? AppColors.primary : Colors.transparent,
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+        child: Text(
+          label,
+          textAlign: TextAlign.center,
+          style: GoogleFonts.poppins(
+            color: active ? Colors.white : Colors.white60,
+            fontWeight: active ? FontWeight.bold : FontWeight.normal,
+            fontSize: 14.sp,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    Key? key,
+    required TextEditingController controller,
+    required String hint,
+    required IconData icon,
+    bool isPassword = false,
+    bool obscureText = false,
+    VoidCallback? onToggleVisibility,
+    TextInputType type = TextInputType.text,
+    String? Function(String?)? validator,
+  }) {
+    return TextFormField(
+      key: key,
+      controller: controller,
+      obscureText: obscureText,
+      keyboardType: type,
+      validator: validator,
+      style: GoogleFonts.poppins(color: Colors.white, fontSize: 15.sp),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: const TextStyle(color: Colors.white38),
+        prefixIcon: Icon(icon, color: AppColors.cyan400.withOpacity(0.5)),
+        suffixIcon: isPassword
+            ? IconButton(
+                icon: Icon(
+                  obscureText ? Icons.visibility_off : Icons.visibility,
+                  color: Colors.white38,
+                ),
+                onPressed: onToggleVisibility,
+              )
+            : null,
+        filled: true,
+        fillColor: Colors.white.withOpacity(0.05),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16.r),
+          borderSide: BorderSide(color: AppColors.cyan400.withOpacity(0.3)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16.r),
+          borderSide: BorderSide(color: AppColors.cyan400.withOpacity(0.2)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16.r),
+          borderSide: const BorderSide(color: AppColors.cyan400),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16.r),
+          borderSide: const BorderSide(color: AppColors.danger),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16.r),
+          borderSide: const BorderSide(color: AppColors.danger, width: 2),
+        ),
+        contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
       ),
     );
   }

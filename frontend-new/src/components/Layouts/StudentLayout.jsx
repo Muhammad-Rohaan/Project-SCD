@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
-import { BellIcon, UserCircleIcon, PowerIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { UserCircleIcon, PowerIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import StudentSidebar from '../Student/StudentSidebar.jsx';
 import AnnouncementBell from './AnnouncementBell.jsx';
 
@@ -9,7 +9,7 @@ const StudentLayout = () => {
     const { auth, logoutUser } = useAuth();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const userName = auth.user?.fullName || auth.user?.name || 'Student';
-    // const stdClass = auth.user?.className || 'StudentCls';
+    const stdClass = auth.user?.profile?.className || 'N/A';
 
 
     const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
@@ -48,7 +48,7 @@ const StudentLayout = () => {
 
                     <div className="flex items-center space-x-2 md:space-x-4" role="toolbar" aria-label="Quick actions">
                         {/* Notifications */}
-                        <AnnouncementBell />
+                        <AnnouncementBell classNameProp={stdClass} />
 
                         <div className="flex items-center space-x-2 border-l border-indigo-700/50 pl-2 md:pl-4" aria-label={`Logged in as ${userName}`}>
                             <UserCircleIcon className="w-8 h-8 text-cyan-400" aria-hidden="true" />

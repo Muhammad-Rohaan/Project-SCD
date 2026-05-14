@@ -6,13 +6,48 @@ class AdminProvider with ChangeNotifier {
   String? _error;
   List<dynamic> _teachers = [];
   List<dynamic> _receptionists = [];
+  Map<String, int> _stats = {
+    'students': 0,
+    'teachers': 0,
+    'announcements': 0,
+  };
 
   bool get isLoading => _isLoading;
   String? get error => _error;
   List<dynamic> get teachers => _teachers;
   List<dynamic> get receptionists => _receptionists;
+  Map<String, int> get stats => _stats;
 
   final ApiService _apiService = ApiService();
+
+  Future<void> fetchStats() async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final results = await Future.wait([
+        _apiService.get('/admin/az-teachers/fetch-all-teachers'),
+        _apiService.get('/admin/az-teachers/getAllStudents'),
+        _apiService.get('/announcement/all'),
+      ]);
+
+      final teachersCount = (results[0].data['teachers'] as List?)?.length ?? 0;
+      final studentsCount = (results[1].data['getStds'] as List?)?.length ?? 0;
+      final announcementsCount = (results[2].data['announcement'] as List?)?.length ?? 0;
+
+      _stats = {
+        'students': studentsCount,
+        'teachers': teachersCount,
+        'announcements': announcementsCount,
+      };
+    } catch (e) {
+      _error = 'Failed to fetch dashboard stats';
+    }
+
+    _isLoading = false;
+    notifyListeners();
+  }
 
   Future<bool> registerUser({
     required String fullName,
@@ -146,7 +181,7 @@ class AdminProvider with ChangeNotifier {
     try {
       final response = await _apiService.get('/admin/az-teachers/fetch-all-teachers');
       if (response.statusCode == 200) {
-        _teachers = response.data['data'] ?? [];
+        _teachers = response.data['teachers'] ?? [];
       }
     } catch (e) {
       _error = 'Failed to fetch teachers';
@@ -164,7 +199,7 @@ class AdminProvider with ChangeNotifier {
     try {
       final response = await _apiService.get('/admin/az-reception/fetch-all-receptionists');
       if (response.statusCode == 200) {
-        _receptionists = response.data['data'] ?? [];
+        _receptionists = response.data['receptionists'] ?? [];
       }
     } catch (e) {
       _error = 'Failed to fetch receptionists';
@@ -211,6 +246,40 @@ class AdminProvider with ChangeNotifier {
       }
     } catch (e) {
       _error = 'Failed to delete receptionist';
+    }
+
+    _isLoading = false;
+    notifyListeners();
+    return false;
+  }
+
+  Future<bool> postAnnouncement({
+    required String title,
+    required String message,
+    required String target,
+    required String className,
+    required String createdBy,
+  }) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final response = await _apiService.post('/announcement/create-new-announcement', data: {
+        'title': title,
+        'message': message,
+        'target': target,
+        'className': className,
+        'createdBy': createdBy,
+      });
+
+      if (response.statusCode == 200) {
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      }
+    } catch (e) {
+      _error = 'Failed to post announcement.';
     }
 
     _isLoading = false;

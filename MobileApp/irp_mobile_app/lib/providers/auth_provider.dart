@@ -36,19 +36,22 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _apiService.post(AppConstants.login, data: {
-        'email': email,
-        'identifier': identifier,
-        'password': password,
-      }..removeWhere((key, value) => value == null));
+      final response = await _apiService.post(
+        AppConstants.login,
+        data: {'email': email, 'identifier': identifier, 'password': password}
+          ..removeWhere((key, value) => value == null),
+      );
 
       if (response.statusCode == 200) {
         final userData = response.data['user'];
         _user = UserModel.fromJson(userData);
-        
+
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString(AppConstants.userKey, json.encode(_user!.toJson()));
-        
+        await prefs.setString(
+          AppConstants.userKey,
+          json.encode(_user!.toJson()),
+        );
+
         _isLoading = false;
         notifyListeners();
         return true;
@@ -74,6 +77,39 @@ class AuthProvider with ChangeNotifier {
     await prefs.remove(AppConstants.userKey);
     await _apiService.clearCookies();
     notifyListeners();
+  }
+
+  Future<Map<String, dynamic>> changePassword(
+    String oldPassword,
+    String newPassword,
+    String confirmPassword,
+  ) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final response = await _apiService.put(
+        AppConstants.changePassword,
+        data: {
+          'oldPassword': oldPassword,
+          'newPassword': newPassword,
+          'confirmPassword': confirmPassword,
+        },
+      );
+
+      _isLoading = false;
+      notifyListeners();
+      return {
+        'success': response.data['success'] ?? true,
+        'message': response.data['message'] ?? 'Password changed successfully',
+      };
+    } catch (e) {
+      _isLoading = false;
+      _error = 'Failed to change password. Please check your old password.';
+      notifyListeners();
+      return {'success': false, 'message': _error};
+    }
   }
 
   void clearError() {

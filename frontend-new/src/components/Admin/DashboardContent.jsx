@@ -53,7 +53,7 @@ const DashboardContent = () => {
                 const [teachersRes, studentsRes, announcementsRes] = await Promise.all([
                     axiosInstance.get('/admin/az-teachers/fetch-all-teachers'),
                     axiosInstance.get('/admin/az-teachers/getAllStudents'),
-                    axiosInstance.get('/announcement')
+                    axiosInstance.get('/announcement/all')
                 ]);
 
                 const teachersCount = teachersRes.data.teachers?.length || 0;

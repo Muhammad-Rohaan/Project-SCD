@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../providers/admin_provider.dart';
 import '../../widgets/custom_text_field.dart';
+import '../../constants/app_colors.dart';
+import '../../widgets/gradient_text.dart';
 
 class RegisterReceptionistScreen extends StatefulWidget {
   const RegisterReceptionistScreen({super.key});
@@ -38,12 +41,12 @@ class _RegisterReceptionistScreenState extends State<RegisterReceptionistScreen>
 
       if (success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Receptionist registered successfully!')),
+          const SnackBar(content: Text('Receptionist registered successfully!'), backgroundColor: AppColors.success),
         );
         Navigator.pop(context);
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(adminProvider.error ?? 'Registration failed')),
+          SnackBar(content: Text(adminProvider.error ?? 'Registration failed'), backgroundColor: AppColors.danger),
         );
       }
     }
@@ -54,79 +57,131 @@ class _RegisterReceptionistScreenState extends State<RegisterReceptionistScreen>
     final adminProvider = Provider.of<AdminProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Register Receptionist')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: AppColors.backgroundGradient,
+        ),
+        child: SafeArea(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              CustomTextField(
-                controller: _fullNameController,
-                label: 'Full Name',
-                prefixIcon: Icons.person,
-                validator: (v) => v!.isEmpty ? 'Required' : null,
+              Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: GradientText(
+                        'Register Receptionist',
+                        gradient: AppColors.textGradient,
+                        style: GoogleFonts.poppins(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: 16),
-              CustomTextField(
-                controller: _emailController,
-                label: 'Email',
-                prefixIcon: Icons.email,
-                keyboardType: TextInputType.emailAddress,
-                validator: (v) => v!.isEmpty ? 'Required' : null,
-              ),
-              const SizedBox(height: 16),
-              CustomTextField(
-                controller: _passwordController,
-                label: 'Password',
-                prefixIcon: Icons.lock,
-                isPassword: true,
-                validator: (v) => v!.length < 6 ? 'Too short' : null,
-              ),
-              const SizedBox(height: 16),
-              CustomTextField(
-                controller: _receptionRegIdController,
-                label: 'Reception Registration ID',
-                prefixIcon: Icons.badge,
-                validator: (v) => v!.isEmpty ? 'Required' : null,
-              ),
-              const SizedBox(height: 16),
-              CustomTextField(
-                controller: _cnicController,
-                label: 'CNIC',
-                prefixIcon: Icons.credit_card,
-                validator: (v) => v!.isEmpty ? 'Required' : null,
-              ),
-              const SizedBox(height: 16),
-              CustomTextField(
-                controller: _salaryController,
-                label: 'Salary',
-                prefixIcon: Icons.payments,
-                keyboardType: TextInputType.number,
-                validator: (v) => double.tryParse(v!) == null ? 'Invalid' : null,
-              ),
-              const SizedBox(height: 16),
-              CustomTextField(
-                controller: _contactController,
-                label: 'Contact',
-                prefixIcon: Icons.phone,
-                validator: (v) => v!.isEmpty ? 'Required' : null,
-              ),
-              const SizedBox(height: 16),
-              CustomTextField(
-                controller: _addressController,
-                label: 'Address',
-                prefixIcon: Icons.home,
-                validator: (v) => v!.isEmpty ? 'Required' : null,
-              ),
-              const SizedBox(height: 32),
-              ElevatedButton(
-                onPressed: adminProvider.isLoading ? null : _handleRegister,
-                style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
-                child: adminProvider.isLoading
-                    ? const CircularProgressIndicator()
-                    : const Text('Register Receptionist'),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        CustomTextField(
+                          controller: _fullNameController,
+                          label: 'Full Name',
+                          prefixIcon: Icons.person_rounded,
+                          validator: (v) => v!.isEmpty ? 'Required' : null,
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          controller: _emailController,
+                          label: 'Email',
+                          prefixIcon: Icons.email_rounded,
+                          keyboardType: TextInputType.emailAddress,
+                          validator: (v) => v!.isEmpty ? 'Required' : null,
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          controller: _passwordController,
+                          label: 'Password',
+                          prefixIcon: Icons.lock_rounded,
+                          isPassword: true,
+                          validator: (v) => v!.length < 6 ? 'Too short' : null,
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          controller: _receptionRegIdController,
+                          label: 'Reception Registration ID',
+                          prefixIcon: Icons.badge_rounded,
+                          validator: (v) => v!.isEmpty ? 'Required' : null,
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          controller: _cnicController,
+                          label: 'CNIC',
+                          prefixIcon: Icons.credit_card_rounded,
+                          validator: (v) => v!.isEmpty ? 'Required' : null,
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          controller: _salaryController,
+                          label: 'Salary',
+                          prefixIcon: Icons.payments_rounded,
+                          keyboardType: TextInputType.number,
+                          validator: (v) => double.tryParse(v!) == null ? 'Invalid' : null,
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          controller: _contactController,
+                          label: 'Contact',
+                          prefixIcon: Icons.phone_rounded,
+                          validator: (v) => v!.isEmpty ? 'Required' : null,
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          controller: _addressController,
+                          label: 'Address',
+                          prefixIcon: Icons.home_rounded,
+                          validator: (v) => v!.isEmpty ? 'Required' : null,
+                        ),
+                        const SizedBox(height: 40),
+                        Container(
+                          width: double.infinity,
+                          height: 56,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16),
+                            gradient: AppColors.buttonGradient,
+                          ),
+                          child: ElevatedButton(
+                            onPressed: adminProvider.isLoading ? null : _handleRegister,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              shadowColor: Colors.transparent,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
+                            child: adminProvider.isLoading
+                                ? const CircularProgressIndicator(color: Colors.white)
+                                : const Text(
+                                    'Register Receptionist',
+                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white),
+                                  ),
+                          ),
+                        ),
+                        const SizedBox(height: 40),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ],
           ),

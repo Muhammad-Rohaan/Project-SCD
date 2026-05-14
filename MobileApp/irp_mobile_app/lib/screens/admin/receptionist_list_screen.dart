@@ -66,17 +66,18 @@ class _ReceptionistListScreenState extends State<ReceptionistListScreen> {
                         separatorBuilder: (context, index) => const Divider(),
                         itemBuilder: (context, index) {
                           final receptionist = adminProvider.receptionists[index];
+                          final name = receptionist['receptionistFullName'] ?? 'No Name';
                           return ListTile(
                             leading: CircleAvatar(
-                              child: Text(receptionist['fullName'][0].toUpperCase()),
+                              child: Text(name[0].toUpperCase()),
                             ),
-                            title: Text(receptionist['fullName']),
+                            title: Text(name),
                             subtitle: Text('ID: ${receptionist['receptionRegId']}'),
                             trailing: IconButton(
                               icon: const Icon(Icons.delete, color: Colors.red),
                               onPressed: () => _confirmDelete(
                                 receptionist['receptionRegId'],
-                                receptionist['fullName'],
+                                name,
                               ),
                             ),
                           );

@@ -10,32 +10,32 @@ import fs from "fs/promises";
 
 
 export const getStudentsByClass = async (req, res) => {
-    try {
+  try {
 
-        const clsFilter = req.params.className;
+    const clsFilter = req.params.className;
 
-        const stds = await StudentProfileModel.find({
-            className: clsFilter
-        })
+    const stds = await StudentProfileModel.find({
+      className: clsFilter
+    })
 
-        if (!stds) {
-            res.status(404).json({
-                msg: "Not Found any Student"
-            });
-        }
-
-        res.status(200).json({
-            msg: "Students",
-            data: stds
-        });
-
-        
-    } catch (error) {
-        res.status(500).json({
-            msg: "Error in searching",
-            err: error
-        });
+    if (!stds) {
+      res.status(404).json({
+        msg: "Not Found any Student"
+      });
     }
+
+    res.status(200).json({
+      msg: "Students",
+      data: stds
+    });
+
+
+  } catch (error) {
+    res.status(500).json({
+      msg: "Error in searching",
+      err: error
+    });
+  }
 }
 
 
@@ -43,7 +43,6 @@ export const getStudentsByClass = async (req, res) => {
 // ________________________________________
 
 // Notes upload feature.
-
 export const uploadNotes = async (req, res) => {
   let tempFilePath = null;
   try {
@@ -62,7 +61,8 @@ export const uploadNotes = async (req, res) => {
     // We use resource_type: "auto" so Cloudinary accepts PDFs/Raw files
     const result = await cloudinary.uploader.upload(tempFilePath, {
       folder: "class_notes",
-      resource_type: "auto", 
+      resource_type: "raw",
+      access_mode: "public",
       public_id: `${subject}_${title.replace(/\s+/g, '_')}_${Date.now()}`
     });
 
@@ -96,6 +96,7 @@ export const uploadNotes = async (req, res) => {
     }
   }
 };
+
 
 // Upload Result Image
 export const uploadResultImage = async (req, res) => {
@@ -160,14 +161,13 @@ export const deleteResultImage = async (req, res) => {
       publicId: pubId
     });
 
-    if(!delImg) {
+    if (!delImg) {
       return res.status(404).json({
         msg: "Not Found"
       });
     }
-
-    // Cloudinary se bhi del kardo:
-    await cloudinary.uploader.destroy(pubId);
+    
+    await cloudinary.uploader.destroy(pubId, { resource_type: 'raw' });
 
     res.json({
       msg: "Deleted Result Image"
@@ -182,6 +182,41 @@ export const deleteResultImage = async (req, res) => {
   }
 }
 
+
+// Delete notes
+
+// Delete notes
+export const deleteNote = async (req, res) => {
+  try {
+    const { pubId } = req.params;
+    const decodedPubId = decodeURIComponent(pubId);
+
+    const deletedNote = await NotesModel.findOneAndDelete({
+      publicId: decodedPubId
+    });
+
+    if (!deletedNote) {
+      return res.status(404).json({
+        success: false,
+        message: "Note not found in database."
+      });
+    }
+    await cloudinary.uploader.destroy(decodedPubId, { resource_type: 'raw' });
+
+    res.status(200).json({
+      success: true,
+      message: "Note and associated file deleted successfully."
+    });
+
+  } catch (error) {
+    console.error("Delete Note Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete note.",
+      error: error.message
+    });
+  }
+};
 
 
 // Get All Results (Teacher/Admin)

@@ -7,6 +7,24 @@ import TeacherProfile from "../models/TeacherProfile.model.js";
 import ReceptionProfileModel from "../models/ReceptionProfile.model.js";
 import mongoose from "mongoose";
 
+
+// Auto-increment RollNo function
+//"className-getTotalStudentCount() + 1" | RollNo Archi = 09-01
+async function generateRollNo(className) {
+
+    const stdsCount = await StudentProfile.countDocuments(
+        {
+            className: className.toUpperCase(),
+        }
+    );
+    const nextNumber = stdsCount+1;
+
+    const newRollNo = `${className.toUpperCase()}-${nextNumber.toString()}`;
+    return newRollNo;
+
+}
+
+
 // POST /api/reception/az-students/register-student
 export const registerStudent = async (req, res) => {
     let newUser = null;
@@ -15,7 +33,7 @@ export const registerStudent = async (req, res) => {
             fullName,
             email,
             password,
-            rollNo,
+            // rollNo,
             fatherName,
             fatherPhone,
             contact,
@@ -27,11 +45,12 @@ export const registerStudent = async (req, res) => {
 
         newUser = await register(null, null, { fullName, email, password, role: 'student' });
 
+        const rollNo = await generateRollNo(className);
 
         // Step 2: Create StudentProfile
         await StudentProfile.create([{
             userId: newUser._id,
-            rollNo: rollNo.toUpperCase(),
+            rollNo: rollNo,
             stdName: fullName,
             fatherName,
             fatherPhone,

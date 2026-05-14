@@ -77,7 +77,7 @@ class ReceptionistProvider with ChangeNotifier {
     required String fullName,
     required String email,
     required String password,
-    required String rollNo,
+    // required String rollNo,
     required String fatherName,
     required String fatherPhone,
     required String contact,
@@ -95,7 +95,7 @@ class ReceptionistProvider with ChangeNotifier {
         'fullName': fullName,
         'email': email,
         'password': password,
-        'rollNo': rollNo,
+        // 'rollNo': rollNo,
         'fatherName': fatherName,
         'fatherPhone': fatherPhone,
         'contact': contact,
@@ -127,7 +127,7 @@ class ReceptionistProvider with ChangeNotifier {
     try {
       final response = await _apiService.get('/reception/az-students/fetch-all-students');
       if (response.statusCode == 200) {
-        final data = response.data['data'];
+        final data = response.data['students'];
         if (data != null && data is List) {
           _students = data.map((s) => StudentModel.fromJson(s)).toList();
         } else {

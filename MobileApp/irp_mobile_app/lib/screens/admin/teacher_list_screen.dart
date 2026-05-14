@@ -66,17 +66,18 @@ class _TeacherListScreenState extends State<TeacherListScreen> {
                         separatorBuilder: (context, index) => const Divider(),
                         itemBuilder: (context, index) {
                           final teacher = adminProvider.teachers[index];
+                          final name = teacher['teacherFullName'] ?? 'No Name';
                           return ListTile(
                             leading: CircleAvatar(
-                              child: Text(teacher['fullName'][0].toUpperCase()),
+                              child: Text(name[0].toUpperCase()),
                             ),
-                            title: Text(teacher['fullName']),
+                            title: Text(name),
                             subtitle: Text('ID: ${teacher['teacherRegId']} | ${teacher['qualification']}'),
                             trailing: IconButton(
                               icon: const Icon(Icons.delete, color: Colors.red),
                               onPressed: () => _confirmDelete(
                                 teacher['teacherRegId'],
-                                teacher['fullName'],
+                                name,
                               ),
                             ),
                             onTap: () {

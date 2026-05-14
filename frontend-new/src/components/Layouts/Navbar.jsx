@@ -1,5 +1,5 @@
 import { useAuth } from '../../context/AuthContext';
-import { BellIcon, UserCircleIcon, Bars3Icon, PowerIcon } from '@heroicons/react/24/outline';
+import { UserCircleIcon, Bars3Icon, PowerIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import AnnouncementBell from './AnnouncementBell.jsx';
 

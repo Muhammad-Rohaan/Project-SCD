@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../providers/admin_provider.dart';
 import '../../widgets/custom_text_field.dart';
+import '../../constants/app_colors.dart';
+import '../../widgets/gradient_text.dart';
 
 class RegisterTeacherScreen extends StatefulWidget {
   const RegisterTeacherScreen({super.key});
@@ -46,12 +49,12 @@ class _RegisterTeacherScreenState extends State<RegisterTeacherScreen> {
 
       if (success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Teacher registered successfully!')),
+          const SnackBar(content: Text('Teacher registered successfully!'), backgroundColor: AppColors.success),
         );
         Navigator.pop(context);
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(adminProvider.error ?? 'Registration failed')),
+          SnackBar(content: Text(adminProvider.error ?? 'Registration failed'), backgroundColor: AppColors.danger),
         );
       }
     }
@@ -62,108 +65,166 @@ class _RegisterTeacherScreenState extends State<RegisterTeacherScreen> {
     final adminProvider = Provider.of<AdminProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Register Teacher')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: AppColors.backgroundGradient,
+        ),
+        child: SafeArea(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              CustomTextField(
-                controller: _fullNameController,
-                label: 'Full Name',
-                prefixIcon: Icons.person,
-                validator: (v) => v!.isEmpty ? 'Required' : null,
+              Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    const SizedBox(width: 8),
+                    GradientText(
+                      'Register Teacher',
+                      gradient: AppColors.textGradient,
+                      style: GoogleFonts.poppins(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: 16),
-              CustomTextField(
-                controller: _emailController,
-                label: 'Email',
-                prefixIcon: Icons.email,
-                keyboardType: TextInputType.emailAddress,
-                validator: (v) => v!.isEmpty ? 'Required' : null,
-              ),
-              const SizedBox(height: 16),
-              CustomTextField(
-                controller: _passwordController,
-                label: 'Password',
-                prefixIcon: Icons.lock,
-                isPassword: true,
-                validator: (v) => v!.length < 6 ? 'Too short' : null,
-              ),
-              const SizedBox(height: 16),
-              CustomTextField(
-                controller: _teacherRegIdController,
-                label: 'Teacher Registration ID',
-                prefixIcon: Icons.badge,
-                validator: (v) => v!.isEmpty ? 'Required' : null,
-              ),
-              const SizedBox(height: 16),
-              CustomTextField(
-                controller: _cnicController,
-                label: 'CNIC',
-                prefixIcon: Icons.credit_card,
-                validator: (v) => v!.isEmpty ? 'Required' : null,
-              ),
-              const SizedBox(height: 16),
-              CustomTextField(
-                controller: _qualificationController,
-                label: 'Qualification',
-                prefixIcon: Icons.school,
-                validator: (v) => v!.isEmpty ? 'Required' : null,
-              ),
-              const SizedBox(height: 16),
-              CustomTextField(
-                controller: _salaryController,
-                label: 'Salary',
-                prefixIcon: Icons.payments,
-                keyboardType: TextInputType.number,
-                validator: (v) => double.tryParse(v!) == null ? 'Invalid' : null,
-              ),
-              const SizedBox(height: 16),
-              CustomTextField(
-                controller: _ageController,
-                label: 'Age',
-                prefixIcon: Icons.cake,
-                keyboardType: TextInputType.number,
-                validator: (v) => int.tryParse(v!) == null ? 'Invalid' : null,
-              ),
-              const SizedBox(height: 16),
-              CustomTextField(
-                controller: _contactController,
-                label: 'Contact',
-                prefixIcon: Icons.phone,
-                validator: (v) => v!.isEmpty ? 'Required' : null,
-              ),
-              const SizedBox(height: 16),
-              CustomTextField(
-                controller: _addressController,
-                label: 'Address',
-                prefixIcon: Icons.home,
-                validator: (v) => v!.isEmpty ? 'Required' : null,
-              ),
-              const SizedBox(height: 16),
-              CustomTextField(
-                controller: _subjectsController,
-                label: 'Subjects (comma separated)',
-                prefixIcon: Icons.book,
-                validator: (v) => v!.isEmpty ? 'Required' : null,
-              ),
-              const SizedBox(height: 16),
-              CustomTextField(
-                controller: _classesController,
-                label: 'Classes (comma separated)',
-                prefixIcon: Icons.class_,
-                validator: (v) => v!.isEmpty ? 'Required' : null,
-              ),
-              const SizedBox(height: 32),
-              ElevatedButton(
-                onPressed: adminProvider.isLoading ? null : _handleRegister,
-                style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
-                child: adminProvider.isLoading
-                    ? const CircularProgressIndicator()
-                    : const Text('Register Teacher'),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        CustomTextField(
+                          controller: _fullNameController,
+                          label: 'Full Name',
+                          prefixIcon: Icons.person_rounded,
+                          validator: (v) => v!.isEmpty ? 'Required' : null,
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          controller: _emailController,
+                          label: 'Email',
+                          prefixIcon: Icons.email_rounded,
+                          keyboardType: TextInputType.emailAddress,
+                          validator: (v) => v!.isEmpty ? 'Required' : null,
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          controller: _passwordController,
+                          label: 'Password',
+                          prefixIcon: Icons.lock_rounded,
+                          isPassword: true,
+                          validator: (v) => v!.length < 6 ? 'Too short' : null,
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          controller: _teacherRegIdController,
+                          label: 'Teacher Registration ID',
+                          prefixIcon: Icons.badge_rounded,
+                          validator: (v) => v!.isEmpty ? 'Required' : null,
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          controller: _cnicController,
+                          label: 'CNIC',
+                          prefixIcon: Icons.credit_card_rounded,
+                          validator: (v) => v!.isEmpty ? 'Required' : null,
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          controller: _qualificationController,
+                          label: 'Qualification',
+                          prefixIcon: Icons.school_rounded,
+                          validator: (v) => v!.isEmpty ? 'Required' : null,
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: CustomTextField(
+                                controller: _salaryController,
+                                label: 'Salary',
+                                prefixIcon: Icons.payments_rounded,
+                                keyboardType: TextInputType.number,
+                                validator: (v) => double.tryParse(v!) == null ? 'Invalid' : null,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: CustomTextField(
+                                controller: _ageController,
+                                label: 'Age',
+                                prefixIcon: Icons.cake_rounded,
+                                keyboardType: TextInputType.number,
+                                validator: (v) => int.tryParse(v!) == null ? 'Invalid' : null,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          controller: _contactController,
+                          label: 'Contact',
+                          prefixIcon: Icons.phone_rounded,
+                          validator: (v) => v!.isEmpty ? 'Required' : null,
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          controller: _addressController,
+                          label: 'Address',
+                          prefixIcon: Icons.home_rounded,
+                          validator: (v) => v!.isEmpty ? 'Required' : null,
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          controller: _subjectsController,
+                          label: 'Subjects (comma separated)',
+                          prefixIcon: Icons.book_rounded,
+                          validator: (v) => v!.isEmpty ? 'Required' : null,
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          controller: _classesController,
+                          label: 'Classes (comma separated)',
+                          prefixIcon: Icons.class_rounded,
+                          validator: (v) => v!.isEmpty ? 'Required' : null,
+                        ),
+                        const SizedBox(height: 40),
+                        Container(
+                          width: double.infinity,
+                          height: 56,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16),
+                            gradient: AppColors.buttonGradient,
+                          ),
+                          child: ElevatedButton(
+                            onPressed: adminProvider.isLoading ? null : _handleRegister,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              shadowColor: Colors.transparent,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
+                            child: adminProvider.isLoading
+                                ? const CircularProgressIndicator(color: Colors.white)
+                                : const Text(
+                                    'Register Teacher',
+                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white),
+                                  ),
+                          ),
+                        ),
+                        const SizedBox(height: 40),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ],
           ),

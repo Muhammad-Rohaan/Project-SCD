@@ -17,12 +17,14 @@ class NoteModel {
 
   factory NoteModel.fromJson(Map<String, dynamic> json) {
     return NoteModel(
-      id: json['_id'],
-      title: json['title'],
-      subject: json['subject'],
-      className: json['className'],
-      fileUrl: json['fileUrl'],
-      createdAt: DateTime.parse(json['createdAt']),
+      id: json['_id'] ?? '',
+      title: json['title'] ?? 'Untitled',
+      subject: json['subject'] ?? 'N/A',
+      className: json['className'] ?? 'N/A',
+      fileUrl: json['fileUrl'] ?? '',
+      createdAt: json['createdAt'] != null 
+          ? DateTime.parse(json['createdAt']) 
+          : DateTime.now(),
     );
   }
 }
