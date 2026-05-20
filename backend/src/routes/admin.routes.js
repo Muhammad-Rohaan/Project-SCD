@@ -45,8 +45,10 @@ router.put('/az-teachers/update-teacher/:teacherRegId', updateTeacher);
 
 router.delete('/az-teachers/delete-teacher/:teacherRegId', deleteTeacherById);
 
+// delete student route...
 
 
-router.get('/finances', (req, res) => res.json({ success: true, message: 'Financial reports endpoint' }));
+
+router.get('/finances', (req, res) => res.json({ message: 'Financial reports endpoint COMMING SOOOOOOOOOOOON' }));
 
 export default router;
