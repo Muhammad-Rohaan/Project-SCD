@@ -16,6 +16,8 @@ import receptionRoutes from "./routes/reception.routes.js";
 import feeRoutes from "./routes/fee.routes.js"
 import attendanceRoutes from "./routes/attendance.routes.js"
 import announcementRoutes from "./routes/announcement.routes.js"
+// import n8nRoutes from "./routes/n8n.routes.js"
+import { registerStudent } from "./controllers/reception.controller.js";
 
 dotenv.config();
 
@@ -78,6 +80,10 @@ app.use("/api/reception", receptionRoutes);
 app.use("/api/reception/attendance", attendanceRoutes);
 app.use("/api/reception/fees", feeRoutes);
 app.use("/api/announcement", announcementRoutes)
+
+// For n8n automation:
+
+app.post('/n8n/register-student', registerStudent);
 
 
 app.listen(port, () => {
