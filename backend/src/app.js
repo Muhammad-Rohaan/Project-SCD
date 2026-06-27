@@ -16,6 +16,9 @@ import receptionRoutes from "./routes/reception.routes.js";
 import feeRoutes from "./routes/fee.routes.js"
 import attendanceRoutes from "./routes/attendance.routes.js"
 import announcementRoutes from "./routes/announcement.routes.js"
+// import n8nRoutes from "./routes/n8n.routes.js"
+import { registerStudent } from "./controllers/reception.controller.js";
+import { changeFeeStatusToUnpaid, getAllPendingFees, getStudentsFeeData } from "./controllers/fees.controller.js";
 
 dotenv.config();
 
@@ -77,7 +80,22 @@ app.use("/api/student", studentRoutes);
 app.use("/api/reception", receptionRoutes);
 app.use("/api/reception/attendance", attendanceRoutes);
 app.use("/api/reception/fees", feeRoutes);
+
 app.use("/api/announcement", announcementRoutes)
+
+
+// ----------------------------------------------------------
+// For n8n automation:
+
+app.post('/n8n/register-student', registerStudent);
+app.get('/n8n/fetch-fee-records', getAllPendingFees);
+app.post('/n8n/fee-status-unpaid', changeFeeStatusToUnpaid);
+app.get('/n8n/get-stdfees-details', getStudentsFeeData);
+
+
+
+
+// ----------------------------------------------------------
 
 
 app.listen(port, () => {
